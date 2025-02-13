@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Order</title>
+    <link rel="stylesheet" href="css/order.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="Home_Page.html">Home</a></li>
+                <li><a href="Catalog_Menu_Page.html">Catalog</a></li>
+                <li><a href="about_us_page/about-us-page.html">About Us</a></li>
+                <li><a href="Order.html" class="active">Order</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="order-page-container">
+            <h1>Your Current Order</h1>
+            <p class="subtitle">Review your items before checkout.</p>
+
+            <div class="order-list-container">
+                <ul id="order-list">
+                    <!-- Order items will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="order-summary">
+                <p class="total-label">Total Price:</p>
+                <p class="total-amount">$<span id="total-price">0.00</span></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Artemis & Steam. All rights reserved.</p>
+    </footer>
+</body>
+</html>
