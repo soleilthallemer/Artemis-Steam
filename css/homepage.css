@@ -77,8 +77,8 @@ button {
   border-radius: 25px;
   font-weight: bold;
   background-color: transparent;
-  color: white; /* Text color stays white */
-  border: 2px solid #bfbb79; /* Darker earthy border */
+  color: white; 
+  border: 2px solid #bfbb79; 
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -109,39 +109,49 @@ button span {
   z-index: 1; 
 }
 
-
 .artemis_steam {
-  font:100;
+  font: 100;
   background-color: #7f7b46;
-  
+  padding: 40px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
-.artemis_steam h2{
-font-size: 24px;
-color: #fff;
-
+.artemis_steam h2 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-family: "script-medium";
+  letter-spacing: 1px;
 }
 
-.artemis_steam p{
-font-size: 16px;
-color: #fff;
+.artemis_steam p {
+  font-size: 18px;
+  color: #fff;
+  line-height: 1.5;
 }
+
 .menu {
   font: 100;
   background-color: #7f7b46;
-  
+  padding: 40px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
-.menu h2{
-font-size: 24px;
-color: white;
+.menu h2 {
+  font-size: 28px;
+  color: white;
+  margin-bottom: 10px;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1px;
 }
 
-.menu p{
-font-size: 16px;
-color: white;
+.menu p {
+  font-size: 18px;
+  color: white;
+  line-height: 1.5;
 }
-
 .amenities {
   text-align: center;
   padding: 50px 20px;
@@ -178,19 +188,29 @@ color: white;
 }
 
 .policy {
-  font:100;
+  font: 100;
   background-color: #583b20;
-
+  padding: 40px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
-.policy h2{
-color: white;
+.policy h2 {
+  color: white;
+  font-size: 28px;
+  margin-bottom: 10px;
+  font-family: "script-medium";
+  letter-spacing: 1px;
 }
 
-.policy p{
-font-size: 16px;
-color: white;
+.policy p {
+  font-size: 18px;
+  color: white;
+  line-height: 1.5;
+  max-width: 800px;
+  margin: 0 auto;
 }
+
 .gallery {
   color: white;
   background-color: #1f1919;

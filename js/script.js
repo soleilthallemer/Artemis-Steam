@@ -122,4 +122,3 @@ function showAddToCartPopup(button, message, isError = false) {
         popup.remove();
     }, 2000);
 }
-
