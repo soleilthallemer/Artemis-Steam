@@ -1,5 +1,5 @@
 body {
-    font-family: "Lora";
+    font-family: 'Poppins', sans-serif;
     background-color: #899064;
     margin: 0;
     padding: 0;
@@ -139,7 +139,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     flex: 1; 
-    font-family: Lora;
+    font-family: 'Poppins', sans-serif;
     font-size: 18px;
     font-weight: bold;
     background-color: #28a745;
@@ -204,7 +204,7 @@ body {
 }
 
 body {
-    font-family: "Lora";
+    font-family: 'Poppins', sans-serif;
     background-color: #899064;
     margin: 0;
     padding: 0;
@@ -344,7 +344,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     flex: 1; 
-    font-family: Lora;
+    font-family: 'Poppins', sans-serif;
     font-size: 18px;
     font-weight: bold;
     background-color: #28a745;

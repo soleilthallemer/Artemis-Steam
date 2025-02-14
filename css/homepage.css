@@ -9,8 +9,7 @@
   background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),url(../images/cafe_image.jpg);
   background-size: cover;
   background-position: center;
-  /* font-family: sans-serif; */
-  font-family: "script-medium";
+  font-family: 'Poppins', sans-serif;
 }
 
 .bar{
@@ -121,7 +120,7 @@ button span {
   font-size: 28px;
   color: #fff;
   margin-bottom: 10px;
-  font-family: "script-medium";
+  font-family: 'Poppins', sans-serif;
   letter-spacing: 1px;
 }
 
@@ -143,7 +142,7 @@ button span {
   font-size: 28px;
   color: white;
   margin-bottom: 10px;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Poppins', sans-serif;
   letter-spacing: 1px;
 }
 
@@ -199,7 +198,7 @@ button span {
   color: white;
   font-size: 28px;
   margin-bottom: 10px;
-  font-family: "script-medium";
+  font-family: 'Poppins', sans-serif;
   letter-spacing: 1px;
 }
 
