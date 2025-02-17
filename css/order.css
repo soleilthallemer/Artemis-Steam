@@ -17,16 +17,17 @@ body {
 
 /* Header Navigation */
 header {
+    font-family: 'Poppins', sans-serif;
     background-color: #27030f;
     padding: 15px 0;
-    text-align: center;
+    text-align: left;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
     list-style: none;
     display: flex;
-    justify-content: center;
+    justify-content: left;
     padding: 0;
 }
 
