@@ -10,6 +10,69 @@ body {
     padding: 0;
 }
 
+.navbar {
+    width: auto;  
+    display: flex;
+    justify-content: flex-end; 
+    padding: 10px 20px; 
+    position: absolute;
+    top: 20px; 
+    right: 30px; 
+    z-index: 1000;
+    border-radius: 10px; 
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 25px; 
+}
+
+.navbar ul li {
+    display: inline-block;
+    position: relative;
+}
+
+
+.navbar ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    transition: color 0.3s ease-in-out;
+    border-radius: 5px;
+}
+
+.navbar ul li::after {
+    content: '';
+    height: 3px;
+    width: 0;
+    background: white;
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%);
+    transition: width 0.5s ease-in-out;
+}
+
+.navbar ul li:hover::after {
+    width: 100%;
+}
+
+.banner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding-top: 60px;
+}
+
 /* Profile Container */
 .profile-container {
     width: 60%;
