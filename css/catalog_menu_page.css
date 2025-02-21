@@ -1,8 +1,40 @@
 body {
-    font-family: "Lora";
+    font-family: 'Poppins', sans-serif;
     background-color: #899064;
     margin: 0;
     padding: 0;
+}
+/* Header Navigation */
+header {
+    background-color: #27030f;
+    padding: 15px 0;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: left;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    text-decoration: underline;
+    color: #7f7b46;
 }
 
 .container {
@@ -76,6 +108,10 @@ body {
     top: 20px;
     right: 20px;
     z-index: 1000;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
 }
 
 .cart-button:hover {
@@ -98,7 +134,7 @@ body {
 
 .cart-modal.show {
     display: flex;
-    right: 0;
+    right: 20;
 }
 
 .cart-modal-content {
@@ -139,7 +175,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     flex: 1; 
-    font-family: Lora;
+    font-family: 'Poppins', sans-serif;
     font-size: 18px;
     font-weight: bold;
     background-color: #28a745;
@@ -204,7 +240,7 @@ body {
 }
 
 body {
-    font-family: "Lora";
+    font-family: 'Poppins', sans-serif;
     background-color: #899064;
     margin: 0;
     padding: 0;
@@ -344,7 +380,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     flex: 1; 
-    font-family: Lora;
+    font-family: 'Poppins', sans-serif;
     font-size: 18px;
     font-weight: bold;
     background-color: #28a745;
@@ -686,7 +722,7 @@ body {
     border: 2px solid #7a7a56;
     border-radius: 5px;
     background-color: #f5f5dc;
-    color: #2c2f23;
+    color: #2c2f23 !important; 
     outline: none;
     transition: border-color 0.3s ease-in-out;
 }
@@ -753,5 +789,3 @@ body {
 .checkout-button:hover {
     background-color: #218838;
 }
-
-

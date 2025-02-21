@@ -1,5 +1,35 @@
 let cart = [];
 
+// New function to show an error popup for quantity inputs
+function showInputError(input, message) {
+    let errorPopup = document.createElement("div");
+    errorPopup.classList.add("input-error-popup");
+    errorPopup.textContent = message;
+    // Position the popup near the input
+    let rect = input.getBoundingClientRect();
+    errorPopup.style.position = "absolute";
+    errorPopup.style.top = (rect.top + window.scrollY - 30) + "px";
+    errorPopup.style.left = (rect.left + window.scrollX) + "px";
+    errorPopup.style.backgroundColor = "#d9534f"; // red
+    errorPopup.style.color = "white";
+    errorPopup.style.padding = "5px 10px";
+    errorPopup.style.borderRadius = "5px";
+    errorPopup.style.zIndex = 1000;
+    document.body.appendChild(errorPopup);
+    setTimeout(() => {
+        errorPopup.remove();
+    }, 2000);
+}
+
+// Updated function to validate quantity inputs to prevent negative or zero values
+function validateQuantity(input) {
+    let val = parseInt(input.value);
+    if (input.value.startsWith("-") || isNaN(val) || val < 1) {
+        showInputError(input, "No negative quantities allowed!");
+        input.value = 1;
+    }
+}
+
 function showTab(category, event) {
   // Hide both sections
   document.getElementById('drinks').classList.add('hidden');
@@ -38,6 +68,12 @@ function addToCart(button) {
     let price = item.querySelector(".item-price").textContent;
     let selectedSize = item.querySelector(".size-btn.selected")?.textContent;
     let quantityInput = item.querySelector(".quantity-input");
+    
+    // Validate the quantity input if it exists
+    if (quantityInput) {
+        validateQuantity(quantityInput);
+    }
+    
     let quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1; // Default to 1 if no input
 
     // Check if the item requires a size selection (for drinks)
@@ -122,4 +158,3 @@ function showAddToCartPopup(button, message, isError = false) {
         popup.remove();
     }, 2000);
 }
-

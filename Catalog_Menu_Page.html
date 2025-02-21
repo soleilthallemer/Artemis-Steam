@@ -8,7 +8,16 @@
     <script defer src="js/script.js"></script>
 </head>
 <body>
-
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../Catalog_Menu_Page.html">Catalog</a></li>
+                <li><a href="../about_us_page/about-us-page.html">About Us</a></li>
+                <li><a href="../Order.html" class="active">Order</a></li>
+            </ul>
+        </nav>
+    </header>
     <div class="container">
         <h1 class="menu-title">OUR MENU</h1>
 
@@ -64,9 +73,8 @@
                             <button class="size-btn" onclick="selectSize(this)">Medium</button>
                             <button class="size-btn" onclick="selectSize(this)">Large</button>
                         </div>
-
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
-
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
                 </li>
@@ -88,6 +96,7 @@
                             <button class="size-btn" onclick="selectSize(this)">Single</button>
                             <button class="size-btn" onclick="selectSize(this)">Double</button>
                         </div>
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
@@ -111,6 +120,7 @@
                             <button class="size-btn" onclick="selectSize(this)">Medium</button>
                             <button class="size-btn" onclick="selectSize(this)">Large</button>
                         </div>
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
@@ -134,6 +144,7 @@
                             <button class="size-btn" onclick="selectSize(this)">Medium</button>
                             <button class="size-btn" onclick="selectSize(this)">Large</button>
                         </div>
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
@@ -157,6 +168,7 @@
                             <button class="size-btn" onclick="selectSize(this)">Medium</button>
                             <button class="size-btn" onclick="selectSize(this)">Large</button>
                         </div>
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
@@ -180,6 +192,7 @@
                             <button class="size-btn" onclick="selectSize(this)">Medium</button>
                             <button class="size-btn" onclick="selectSize(this)">Large</button>
                         </div>
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <div class="no-size-selected hidden">Must select a size</div>
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
@@ -205,7 +218,7 @@
                         <span class="item-price">$3.00</span>
                         <span class="item-calories">300 Calories</span>
                         <input type="number" class="quantity-input" value="1" min="1">
-                    
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
                 </li>
@@ -224,7 +237,7 @@
                         <span class="item-price">$3.50</span>
                         <span class="item-calories">350 Calories</span>
                         <input type="number" class="quantity-input" value="1" min="1">
-
+                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
                 </li>
