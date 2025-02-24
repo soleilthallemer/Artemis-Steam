@@ -1,13 +1,55 @@
 /* General Styles */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #a79ad8 ;
     background-size: 300% 300%;
     animation: gradientAnimation 10s ease infinite;
-    color: white;
     text-align: center;
     margin: 0;
     padding: 0;
+}
+
+/* Header Navigation */
+header {
+    font-family: 'Poppins', sans-serif;
+    background-color: #27030f;
+    padding: 15px 0;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: left;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    text-decoration: underline;
+    color: #7f7b46;
+}
+
+.banner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding-top: 60px;
 }
 
 /* Profile Container */
@@ -15,7 +57,7 @@ body {
     width: 60%;
     max-width: 600px;
     margin: 50px auto;
-    background: rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #ac7a74,#cd918b ); /* Add a colorful gradient */
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -35,12 +77,13 @@ body {
 h1 {
     font-size: 28px;
     margin-bottom: 5px;
+    color: #c0ba69;
 }
 
 .role {
     font-size: 18px;
     font-weight: bold;
-    color: #ffeb99;
+    color: #6d6a3c;
 }
 
 /* Biography */
@@ -55,6 +98,7 @@ h1 {
 h2 {
     font-size: 20px;
     margin-top: 20px;
+    color: #6d6a3c;
 }
 
 .interests {
@@ -93,12 +137,12 @@ h2 {
     margin: 5px;
     font-size: 14px;
     color: white;
-    background: rgba(0, 0, 0, 0.5);
+    background: #c0ba69;
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s ease-in-out;
 }
 
 .links a:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #ffeb99;
 }
