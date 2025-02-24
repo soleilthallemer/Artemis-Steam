@@ -8,6 +8,7 @@ import Paloma from './pages/paloma';
 import Soleil from './pages/soleil';
 import Bliss from './pages/bliss';
 import Jocelyn from './pages/jocelyn';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
   return (

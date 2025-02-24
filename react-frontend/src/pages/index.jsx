@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../css/home.css'; // Import your CSS
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function HomePage() {
   return (
@@ -11,7 +12,7 @@ function HomePage() {
       <link
         rel="stylesheet"
       />
-      <div className="banner">
+      <div className="home-banner">
         <div className="content">
           <h1>Artemis &amp; Steam</h1>
           <p>Where Nature Meets Craft</p>
