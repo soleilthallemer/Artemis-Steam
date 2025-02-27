@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Page</title>
+  <link rel="stylesheet" href="css/loginPage.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="left-panel">
+      <div class="bar">
+        <ul>
+          <li><a href="HomePage.html">Home</a></li>
+          <li><a href="Catalog_Menu_Page.html">Menu</a></li>
+          <li><a href="about_us_page/about-us-page.html">About Us</a></li>
+          <li><a href="../Order.html" class="active">Order</a></li>
+        </ul>
+      </div>
+      
+      <div class="form-section">
+        <h1>Log in</h1>
+        
+        <form>
+          <div class="form-group">
+            <label for="email">Email or Phone Number</label>
+            <div class="input-container">
+              <span class="icon material-icons">mail</span>
+              <input 
+                type="text" 
+                id="email" 
+                name="email" 
+                placeholder="Enter your email or phone number" 
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-container">
+              <span class="icon material-icons">lock</span>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder="Enter your password" 
+                required
+              />
+              <span class="toggle-password material-icons" onclick="togglePassword()">
+                visibility_off
+              </span>
+            </div>
+          </div>
+
+          <div class="options">
+            <label>
+              <input type="checkbox" name="rememberMe" /> Remember me
+            </label>
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn-login">Log In</button>
+        </form>
+
+        <!--
+        <p class="social-text">Log in with</p>
+        <div class="social-login">
+          <button>
+            <img src="images/google-icon.png" alt="Google Icon" />
+            Google
+          </button>
+          <button>
+            <img src="images/facebook-icon.png" alt="Facebook Icon" />
+            Facebook
+          </button>
+        </div>
+        -->
+
+        <div class="register-link">
+          <p>Don’t have an account? <a href="registrationPage.html">Register now</a></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="image-section"></div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const toggleIcon = document.querySelector('.toggle-password');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.textContent = 'visibility';
+      } else {
+        passwordField.type = 'password';
+        toggleIcon.textContent = 'visibility_off';
+      }
+    }
+  </script>
+</body>
+</html>

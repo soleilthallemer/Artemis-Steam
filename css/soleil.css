@@ -1,126 +1,104 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
-
+/* General Styles */
 body {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Poppins', sans-serif;
+    background-color: #a79ad8 ;
+    background-size: 300% 300%;
+    animation: gradientAnimation 10s ease infinite;
+    color: white;
+    text-align: center;
     margin: 0;
     padding: 0;
-    background: #eeeee4;
-    color: #2E2E2E;
 }
 
-.split-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    padding: 0 10%;
+/* Profile Container */
+.profile-container {
+    width: 60%;
+    max-width: 600px;
+    margin: 50px auto;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.left-content {
-    flex: 1;
-    text-align: left;
+/* Profile Picture */
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+    margin-bottom: 15px;
 }
 
-.left-content h1 {
-    font-size: 4rem;
+/* Name & Role */
+h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.role {
+    font-size: 18px;
     font-weight: bold;
-    margin: 0;
+    color: #ffeb99;
 }
 
-.left-content p {
-    font-size: 1.5rem;
+/* Biography */
+.bio p {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: auto;
+}
+
+/* Interests Section */
+h2 {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.interests {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.interest-item {
+    width: 45%;
+    text-align: center;
+}
+
+.interest-item img {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 10px;
+    border: 3px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.interest-item p {
+    font-size: 15px;
     margin-top: 10px;
 }
 
-.right-content {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Links */
+.links {
+    margin-top: 20px;
 }
 
-.right-content img {
-    width: 100%; /* Adjust width as needed */
-    height: 500px; /* Increase the height */
-    object-fit: cover; /* Ensures the image fills the container */
-    border-radius: 12px; /* Keeps rounded corners */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Maintains shadow effect */
+.links a {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px;
+    font-size: 14px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.3s ease-in-out;
 }
 
-
-.about, .interests {
-    background: #F4F3EE;
-    padding: 60px 40px;
-    margin: 40px auto;
-    max-width: 1000px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    text-align: left;
-    line-height: 1.8;
-    font-size: 20px;
-}
-
-.about-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.about-text {
-    flex: 2;
-}
-
-.about-photo {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.about-photo img {
-    width: 150px;
-    height: 150px;
-    border-radius: 12px;
-    background: #D8C3A5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #444;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-h2 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 28px;
-    border-left: 5px solid #8E8D8A;
-    padding-left: 15px;
-}
-
-.photo-container {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    margin: 20px auto;
-}
-
-.photo-box {
-    width: 100%;
-    max-width: 400px;
-    height: 280px;
-    background: #D8C3A5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #444;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-.photo-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
+.links a:hover {
+    background: rgba(255, 255, 255, 0.3);
 }

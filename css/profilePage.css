@@ -1,0 +1,113 @@
+/* Import Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #e5e0da;
+  font-family: 'Poppins', sans-serif;
+  color: #27030f;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.logout-button {
+  padding: 8px 16px;
+  background: linear-gradient(90deg, #9bb359, #8eab40);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  opacity: 0.9;
+}
+
+/* Profile Card */
+.profile-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Profile Info */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.email {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Order History */
+.order-history h3 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.order-history table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-history th, 
+.order-history td {
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 1px solid #9bb359;
+}
+
+.order-history th {
+  background-color: #f4f4f4;
+}
+
+.order-history tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .profile-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

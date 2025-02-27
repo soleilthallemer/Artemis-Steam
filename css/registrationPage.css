@@ -1,0 +1,207 @@
+/* Importing Poppins from Google Fonts (optional) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto; 
+  font-family: 'Poppins', sans-serif;
+  color: #27030f;  /* Font color */
+  background-color: #ebe6e0;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  min-width: 800px;  
+}
+
+/* Left: Image Section */
+.image-section {
+  width: 100%;
+  min-width: 400px;
+  background: url("../images/logIn.jpeg") no-repeat center center;
+  background-size: cover;
+}
+
+/* Right: Panel holds the nav bar + form */
+.right-panel {
+  width: 50%;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column; /* .bar on top, .form-section below */
+  background-color: #ebe6e0;
+}
+
+/* Navigation bar (ribbon) */
+.bar {
+  width: 85%;
+  margin: auto;
+  padding: 35px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* or space-between, center, etc. */
+  font-family: sans-serif;
+  background-color: #ebe6e0;
+}
+
+/* Key fix: make UL a flex container so items stay in one row */
+.bar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;        /* Ensures horizontal alignment */
+  gap: 20px;            /* Optional: space between items */
+}
+
+.bar ul li {
+  position: relative;
+}
+
+/* Link styling */
+.bar ul li a {
+  text-decoration: none;
+  color: #27030f;
+  text-transform: uppercase;
+}
+
+/* Hover underline effect */
+.bar ul li::after {
+  content: '';
+  height: 3px;
+  width: 0;
+  background: #27030f;
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  transition: 0.5s;
+}
+
+.bar ul li:hover::after {
+  width: 100%;
+}
+
+/* Form Section */
+.form-section {
+  flex: 1; 
+  /* Decrease padding to reduce gap below the ribbon */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #ebe6e0;
+}
+
+.form-section h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Input Container with Icons */
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Icon styling */
+.icon {
+  position: absolute;
+  left: 12px;
+  color: #9bb359;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+/* Inputs: underline style with #9bb359 */
+.input-container input[type="text"],
+.input-container input[type="password"] {
+  width: 100%;
+  padding: 8px 0;
+  padding-left: 40px; /* space for icon */
+  border: none;
+  border-bottom: 1px solid #9bb359;
+  font-size: 1rem;
+  background: transparent;
+}
+
+.input-container input::placeholder {
+  color: #aaa;
+}
+
+.input-container input:focus {
+  outline: none;
+  border-bottom-color: #9bb359;
+}
+
+/* Register Button with gradient */
+.btn-register {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #9bb359, #8eab40);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
+
+/* Social register (if uncommented) */
+.social-register {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.social-register button {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #ebe6e0;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-register button:hover {
+  background-color: #ebe6e0;
+}
+
+/* Login Link */
+.login-link {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.login-link a {
+  text-decoration: none;
+  color: #9bb359;
+  font-weight: bold;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

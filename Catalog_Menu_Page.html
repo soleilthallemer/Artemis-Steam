@@ -8,16 +8,17 @@
     <script defer src="js/script.js"></script>
 </head>
 <body>
-    <header>
-        <nav>
+    <div class="banner">
+        <div class="bar">
             <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../Catalog_Menu_Page.html">Catalog</a></li>
-                <li><a href="../about_us_page/about-us-page.html">About Us</a></li>
-                <li><a href="../Order.html" class="active">Order</a></li>
+                <li><a href="HomePage.html">Home</a></li>
+                <li><a href="Catalog_Menu_Page.html">Menu</a></li>
+                <li><a href="about_us_page/about-us-page.html">About Us</a></li>
+                <li><a href="Order.html" class="active">Order</a></li>
             </ul>
-        </nav>
-    </header>
+        </div>
+    </div>      
+
     <div class="container">
         <h1 class="menu-title">OUR MENU</h1>
 
@@ -43,8 +44,6 @@
             </div>
         </div>
         
-        
-
         <!-- Tabs for Drinks and Food -->
         <div class="tab-buttons">
             <button class="tab-button active" onclick="showTab('drinks')">DRINKS</button>
@@ -218,7 +217,6 @@
                         <span class="item-price">$3.00</span>
                         <span class="item-calories">300 Calories</span>
                         <input type="number" class="quantity-input" value="1" min="1">
-                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
                 </li>
@@ -237,7 +235,6 @@
                         <span class="item-price">$3.50</span>
                         <span class="item-calories">350 Calories</span>
                         <input type="number" class="quantity-input" value="1" min="1">
-                        <input type="number" class="quantity-input" value="1" min="1" oninput="validateQuantity(this)">
                         <button class="add-to-cart" onclick="addToCart(this)">Add to Cart</button>
                     </div>
                 </li>
