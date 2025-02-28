@@ -1,4 +1,5 @@
 /* General Styles */
+
 body {
     font-family: 'Poppins', sans-serif;
     background-size: 300% 300%;
@@ -6,6 +7,7 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    background-color: #27030f;
 }
 
 /* Header Navigation */
@@ -137,7 +139,7 @@ h2 {
     margin: 5px;
     font-size: 14px;
     color: white;
-    background: #c0ba69;
+    background: #b2ca78;
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s ease-in-out;

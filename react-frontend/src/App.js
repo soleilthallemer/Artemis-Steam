@@ -1,47 +1,35 @@
-import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import HomePage from './pages/index'; // Adjust import paths
-import AboutUs from './pages/about-us';
-import Menu from './pages/menu';
-import Order from './pages/order';
-import Paloma from './pages/paloma';
-import Soleil from './pages/soleil';
-import Bliss from './pages/bliss';
-import Jocelyn from './pages/jocelyn';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HomePage from "./components/HomePage";
+import CatalogMenuPage from "./components/CatalogMenuPage";
+import LoginPage from "./components/LoginPage"; // Import LoginPage if available
+import RegistrationPage from "./components/RegistrationPage";
+import OrderPage from "./components/OrderPage";
+import AboutUsPage from "./components/AboutUsPage"; // Import AboutUs
+import ProfilePage from "./components/ProfilePage";
+import Jocelyn from './components/jocelyn';
+import Soleil from './components/soleil';
+import Bliss from './components/bliss';
+import Paloma from './components/paloma';
 function App() {
   return (
-    <div> {/* Or <React.Fragment> */}
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/menu">Menu</Link>
-          </li>
-          <li>
-            <Link to="/about-us">About Us</Link>
-          </li>
-          <li>
-            <Link to="/order">Order</Link>
-          </li>
-        </ul>
-      </nav>
-
+    <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/order" element={<Order />} />
-        <Route path="/paloma" element={<Paloma />} />
+        <Route path="/menu" element={<CatalogMenuPage />} />
+        <Route path="/about-us" element={<AboutUsPage />} />  {/* Example additional route */}
+        <Route path="/order" element={<OrderPage />} />
+        <Route path="/login" element={<LoginPage />} />  {/* Example additional route */}
+        <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+
+        <Route path="/jocelyn" element={<Jocelyn />} />
         <Route path="/soleil" element={<Soleil />} />
         <Route path="/bliss" element={<Bliss />} />
-        <Route path="/jocelyn" element={<Jocelyn />} />
-        <Route path='*' element={<div>404 - Page Not Found</div>} />
-      </Routes> 
-    </div>
+        <Route path="/paloma" element={<Paloma />} />
+
+      </Routes>
+    </Router>
   );
 }
 

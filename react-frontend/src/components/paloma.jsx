@@ -1,15 +1,21 @@
+// src/components/Paloma.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../css/person.css';
 
+
+// Import images using variables
+import PalomaPic from '../assets/images/group_pictures/PalomaMedium.jpeg';
+import FriendsInLondonPic from '../assets/images/FriendsInLondon.jpeg';
+
 function Paloma() {
   return (
     <>
-      <title>About Paloma</title>
       <div className="profile-container">
+        {/* Use the imported image variable for the profile picture */}
         <img
-          src="/images/group_pictures/PalomaHeadshot.jpeg" // Corrected path
-          alt="Paloma's Profile"
+          src={PalomaPic}
+          alt="Paloma Escobedo"
           className="profile-pic"
         />
         <h1>Paloma Escobedo</h1>
@@ -26,7 +32,11 @@ function Paloma() {
         <h2>My Interests</h2>
         <div className="interests">
           <div className="interest-item">
-            <img src="/images/FriendsInLondon.jpeg" alt="FriendsInLondonImage" />
+            {/* Use the imported FriendsInLondonPic */}
+            <img
+              src={FriendsInLondonPic}
+              alt="Friends in London"
+            />
             <p>
               This was over winter break when I took a trip abroad to London,
               England.
@@ -40,7 +50,7 @@ function Paloma() {
             >
               <img
                 src="https://www.artic.edu/iiif/2/3c27b499-af56-f0d5-93b5-a7f2f1ad5813/full/843,/0/default.jpg"
-                alt="WaterLillies"
+                alt="Water Lilies"
               />
             </a>
             <p>This is my favorite painting at the moment.</p>
