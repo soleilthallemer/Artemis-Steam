@@ -29,7 +29,7 @@ const Registration = () => {
       const firstName = fullNameParts[0];
       const lastName = fullNameParts.slice(1).join(" ");
 
-      const response = await fetch("http://157.245.80.36:5000/customers", { // Replace with your API URL
+      const response = await fetch("http://157.245.80.36/customers", { // Replace with your API URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

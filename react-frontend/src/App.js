@@ -14,6 +14,7 @@ import Jocelyn from './pages/jocelyn';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
+  
   return (
     <div> {/* Or <React.Fragment> */}
       <nav>
@@ -21,9 +22,9 @@ function App() {
           <li>
             <Link to="/login">Login</Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/registration">Register</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/">Home</Link>
           </li>
@@ -33,9 +34,9 @@ function App() {
           <li>
             <Link to="/about-us">About Us</Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/order">Order</Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/profile">Profile</Link>
           </li>
