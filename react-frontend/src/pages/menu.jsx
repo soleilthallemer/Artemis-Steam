@@ -62,6 +62,9 @@ function Menu() {
           if (newQuantity > 0) {
             return { ...item, quantity: newQuantity };
           }
+          else {
+            return removeFromCart;
+          }
         }
         return item;
       }).filter(item => item.quantity > 0);
