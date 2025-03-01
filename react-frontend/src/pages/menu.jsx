@@ -54,7 +54,20 @@ function Menu() {
       }
     });
   };
-
+  const adjustQuantity = (itemId, change) => {
+    setCartItems((prevItems) => {
+      return prevItems.map((item) => {
+        if (item.item_id === itemId) {
+          const newQuantity = item.quantity + change;
+          if (newQuantity > 0) {
+            return { ...item, quantity: newQuantity };
+          }
+        }
+        return item;
+      }).filter(item => item.quantity > 0);
+    });
+  };
+  
   const removeFromCart = (itemId) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.item_id !== itemId));
   };
@@ -79,15 +92,21 @@ function Menu() {
                     {cartItems.map((cartItem) => (
                       <li key={cartItem.item_id} className="cart-item">
                         <div className="cart-item-details">
-                            <span>{cartItem.name}</span>
-                            <span>Quantity: {cartItem.quantity}</span>
-                            <span>${cartItem.price * cartItem.quantity}</span>
+                          <span>{cartItem.name}</span>
+                          <span>Quantity: {cartItem.quantity}</span>
+                          <span>${cartItem.price * cartItem.quantity}</span>
                         </div>
-                        <button onClick={() => removeFromCart(cartItem.item_id)}>Remove</button>
+                        <div>
+                          <button className="quantity-btn" onClick={() => adjustQuantity(cartItem.item_id, -1)}>-</button>
+                          <button className="quantity-btn" onClick={() => adjustQuantity(cartItem.item_id, 1)}>+</button>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
+              </div>
+              <div className="cart-total">
+                Total: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
               </div>
             </div>
             <div className="cart-modal-footer">
@@ -117,7 +136,7 @@ function Menu() {
                     <br />
                     <span className="item-price">${item.price}</span>
                     <br />
-                     <span className="item-description">{item.description}</span>
+                    <span className="item-description">{item.description}</span>
                   </div>
                 </div>
                 <div className="item-right">
