@@ -25,7 +25,7 @@
     transition: background-color 0.3s ease-in-out;
 }
 body {
-    background: linear-gradient(90deg, #480c07, #87223e, #d13c66);
+    background: #87223e;
     background-size: 300% 300%;
     animation: gradientAnimation 10s ease infinite;
     text-align: center;
