@@ -1,4 +1,3 @@
-// Login.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/login.css';
@@ -16,7 +15,7 @@ function Login() {
     setLoginError(null);
 
     try {
-      const response = await fetch('http://YOUR_API_URL/login', { // Replace with your API URL
+      const response = await fetch('http://157.245.80.36/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

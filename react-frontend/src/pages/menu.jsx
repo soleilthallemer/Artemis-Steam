@@ -6,6 +6,8 @@ function Menu() {
   const [menuData, setMenuData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,12 +32,31 @@ function Menu() {
   if (error) return <p>Error loading menu: {error.message}</p>;
   if (!menuData) return <p>No menu data available.</p>;
 
-  const showCart = () => {};
-  const closeCart = () => {};
-  const showTab = (tabName) => {};
-  const selectSize = (element) => {};
+  const showCart = () => {
+    setIsCartOpen(true);
+  };
+
+  const closeCart = () => {
+    setIsCartOpen(false);
+  };
+
   const addToCart = (item) => {
-    console.log(item);
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((cartItem) => cartItem.item_id === item.item_id);
+      if (existingItem) {
+        return prevItems.map((cartItem) =>
+          cartItem.item_id === item.item_id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevItems, { ...item, quantity: 1 }];
+      }
+    });
+  };
+
+  const removeFromCart = (itemId) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.item_id !== itemId));
   };
 
   return (
@@ -44,17 +65,33 @@ function Menu() {
       <div className="container">
         <h1 className="menu-title">OUR MENU</h1>
         <button className="cart-button" onClick={showCart}>
-          Cart (<span className="cart-count">0</span>)
+          Cart (<span className="cart-count">{cartItems.reduce((total, item) => total + item.quantity, 0)}</span>)
         </button>
-        {/* Cart Modal */}
-        <div className="cart-modal hidden" id="cartModal">
+        <div className={`cart-modal ${isCartOpen ? 'open' : 'hidden'}`} id="cartModal">
           <div className="cart-modal-content">
             <div className="cart-modal-header">Your Cart</div>
             <div className="cart-modal-body">
-              <div id="cartContents">Nothing has been added to the cart.</div>
+              <div id="cartContents">
+                {cartItems.length === 0 ? (
+                  <p>Nothing has been added to the cart.</p>
+                ) : (
+                  <ul>
+                    {cartItems.map((cartItem) => (
+                      <li key={cartItem.item_id} className="cart-item">
+                        <div className="cart-item-details">
+                            <span>{cartItem.name}</span>
+                            <span>Quantity: {cartItem.quantity}</span>
+                            <span>${cartItem.price * cartItem.quantity}</span>
+                        </div>
+                        <button onClick={() => removeFromCart(cartItem.item_id)}>Remove</button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             <div className="cart-modal-footer">
-              <Link to="/order" className="checkout-button">
+              <Link to="/order" state={{ cartItems: cartItems }} className="checkout-button">
                 Checkout
               </Link>
             </div>
@@ -65,7 +102,6 @@ function Menu() {
             </div>
           </div>
         </div>
-        {/* Menu Items */}
         <div className="menu-category">
           <ul className="menu-list">
             {menuData.map((item) => (
