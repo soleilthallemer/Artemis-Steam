@@ -15,7 +15,7 @@ function Menu() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setMenuData(data); // Store the flat array
+        setMenuData(data);
         setLoading(false);
       } catch (e) {
         setError(e);
@@ -69,12 +69,19 @@ function Menu() {
         <div className="menu-category">
           <ul className="menu-list">
             {menuData.map((item) => (
-              <li key={item.item_id}>
+              <li key={item.item_id} className="menu-item">
                 <div className="item-left">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="item-image"
+                  />
                   <div className="item-text">
                     <span className="item-name">{item.name}</span>
                     <br />
                     <span className="item-price">${item.price}</span>
+                    <br />
+                     <span className="item-description">{item.description}</span>
                   </div>
                 </div>
                 <div className="item-right">
