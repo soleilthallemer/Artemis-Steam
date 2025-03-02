@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/menu.css';
 
@@ -8,6 +8,7 @@ function Menu() {
   const [error, setError] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartModalRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +27,18 @@ function Menu() {
     };
 
     fetchData();
-  }, []);
+
+    const handleClickOutside = (event) => {
+      if (cartModalRef.current && !cartModalRef.current.contains(event.target) && isCartOpen) {
+        setIsCartOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCartOpen]);
 
   if (loading) return <p>Loading menu...</p>;
   if (error) return <p>Error loading menu: {error.message}</p>;
@@ -83,7 +95,11 @@ function Menu() {
         <button className="cart-button" onClick={showCart}>
           Cart (<span className="cart-count">{cartItems.reduce((total, item) => total + item.quantity, 0)}</span>)
         </button>
-        <div className={`cart-modal ${isCartOpen ? 'open' : 'hidden'}`} id="cartModal">
+        <div
+          className={`cart-modal ${isCartOpen ? 'open' : 'hidden'}`}
+          id="cartModal"
+          ref={cartModalRef}
+        >
           <div className="cart-modal-content">
             <div className="cart-modal-header">Your Cart</div>
             <div className="cart-modal-body">
@@ -116,11 +132,6 @@ function Menu() {
               <Link to="/order" state={{ cartItems: cartItems }} className="checkout-button">
                 Checkout
               </Link>
-            </div>
-            <div className="cart-modal-footer">
-              <button className="cart-modal-close" onClick={closeCart}>
-                Close
-              </button>
             </div>
           </div>
         </div>
