@@ -53,9 +53,9 @@ function Login() {
           {loginError && <p className="error-message">{loginError}</p>}
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="username">Username</label> {/* Change label to Username */}
+              <label htmlFor="username">Username</label> 
               <div className="input-container">
-                <span className="icon material-icons">person</span> {/*Change Icon to person or similar*/}
+                <span className="icon material-icons">person</span> 
                 <input
                   type="text" // Change type to text since it's a username
                   id="username" // Change id to username
@@ -89,7 +89,7 @@ function Login() {
           <div className="register-link">
             <p>
               Don’t have an account?
-              <Link to="/registration"> Register now</Link>
+              <Link to="/registration-page"> Register now</Link>
             </p>
           </div>
         </div>
