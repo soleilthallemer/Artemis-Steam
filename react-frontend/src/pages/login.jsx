@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../css/login.css';
 
 function Login() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,12 +20,12 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.msg || 'Login failed');
+        throw new Error(errorData.error || 'Login failed');
       }
 
       const data = await response.json();
@@ -53,16 +53,16 @@ function Login() {
           {loginError && <p className="error-message">{loginError}</p>}
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="username">Username</label> {/* Change label to Username */}
               <div className="input-container">
-                <span className="icon material-icons">mail</span>
+                <span className="icon material-icons">person</span> {/*Change Icon to person or similar*/}
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text" // Change type to text since it's a username
+                  id="username" // Change id to username
+                  name="username" // Change name to username
+                  placeholder="Enter your username" // Change placeholder
+                  value={username} // Change value to username
+                  onChange={(e) => setUsername(e.target.value)} // Change onChange to setUsername
                   required
                 />
               </div>

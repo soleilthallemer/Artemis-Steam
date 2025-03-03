@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../css/registrationPage.css";
 
 const Registration = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -28,8 +27,27 @@ const Registration = () => {
       const fullNameParts = fullName.split(" ");
       const firstName = fullNameParts[0];
       const lastName = fullNameParts.slice(1).join(" ");
+      const username = email.split("@")[0];
 
-      const response = await fetch("http://157.245.80.36/customers", { // Replace with your API URL
+      // Register user
+      const registerResponse = await fetch("http://157.245.80.36/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      if (!registerResponse.ok) {
+        const errorData = await registerResponse.json();
+        throw new Error(errorData.error || "User registration failed");
+      }
+
+      // Create customer
+      const customerResponse = await fetch("http://157.245.80.36/customer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,13 +57,12 @@ const Registration = () => {
           last_name: lastName,
           email: email,
           phone_number: phoneNumber,
-          password: password, // Send password
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
+      if (!customerResponse.ok) {
+        const errorData = await customerResponse.json();
+        throw new Error(errorData.message || "Customer creation failed");
       }
 
       console.log("Registration successful");
@@ -56,9 +73,6 @@ const Registration = () => {
       setLoading(false);
     }
   };
-
-  const [fullName, setFullName] = useState("");
-
   return (
     <div className="registration-page">
       <div className="registration-container">
