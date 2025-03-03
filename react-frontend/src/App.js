@@ -20,7 +20,7 @@ function App() {
       <nav>
         <ul>
           <li>
-            <Link to="/login">Login</Link>
+            <Link to="/login-page">Login</Link>
           </li>
           {/* <li>
             <Link to="/registration">Register</Link>
@@ -46,9 +46,9 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/login" element={<Login/>} />
+        <Route path="/login-page" element={<Login/>} />
         <Route path="/profile" element={<Profile/>} />
-        <Route path="/registration" element={<Registration/>} />
+        <Route path="/registration-page" element={<Registration/>} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/order" element={<Order />} />
         <Route path="/paloma" element={<Paloma />} />
