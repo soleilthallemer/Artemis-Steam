@@ -67,7 +67,7 @@ const Registration = () => {
 
       console.log("Registration successful");
       setLoading(false);
-      navigate("/login"); // Redirect to login page
+      navigate("/login-page");
     } catch (err) {
       setError(err.message);
       setLoading(false);

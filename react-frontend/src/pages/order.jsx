@@ -11,7 +11,7 @@ function Order() {
 
   const handleCheckout = async () => {
     try {
-      const response = await fetch('http://157.245.80.36:5000/order', { // Replace with your backend endpoint
+      const response = await fetch('http://157.245.80.36/order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
