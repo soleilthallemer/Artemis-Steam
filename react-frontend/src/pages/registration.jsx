@@ -30,7 +30,7 @@ const Registration = () => {
       const username = email.split("@")[0];
 
       // Register user
-      const registerResponse = await fetch("http://157.245.80.36/register", {
+      const registerResponse = await fetch("http://127.0.0.1:5000/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +47,7 @@ const Registration = () => {
       }
 
       // Create customer
-      const customerResponse = await fetch("http://157.245.80.36/customer", {
+      const customerResponse = await fetch("http://127.0.0.1:5000/customers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
