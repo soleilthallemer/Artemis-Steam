@@ -219,3 +219,12 @@
 .registration-page .login-link p {
   color: #27030f !important;
 }
+/* Toggle Password Icon */
+.registration-page .toggle-password {
+  position: absolute;
+  right: 8px;
+  color: #9bb359 !important;
+  font-size: 1.2rem;
+  cursor: pointer;
+  
+}

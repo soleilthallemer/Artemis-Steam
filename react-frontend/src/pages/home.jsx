@@ -1,8 +1,8 @@
-// src/components/HomePage.jsx
+// src/pages/HomePage.jsx
 
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../css/homepage.css"; // Import styles
+import "../css/home.css"; // Import styles
 import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome Icons
 import backgroundImg from "../assets/images/cafe_image.jpg"; // Background image
 import img1 from "../assets/images/img1.jpg";
@@ -41,12 +41,10 @@ const HomePage = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order" className="active">Order</Link></li>
+            <li><Link to="/order">Order</Link></li>
+            <li><Link to="/login">Log In</Link></li>
+            <li><Link to="/profile">Profile</Link></li>
           </ul>
-          <div className="nav-right">
-            <Link to="/login" className="login-btn">Log In</Link>
-            <Link to="/profile" className="profile-btn">Profile</Link>
-          </div>
         </div>
         <div className="content">
           <h1>Artemis & Steam</h1>

@@ -1,6 +1,3 @@
-/* src/css/catalogmenu.css */
-
-
 .catalog * {
   margin: 0;
   padding: 0;
@@ -28,28 +25,18 @@
   background-color: #899064; 
   height: auto;
   min-height: 80px; 
-  display: flex;
+  display: inline-block;
   align-items: center;
   justify-content: center;
   padding: 10px;
-  margin-left: -60px; 
   gap: 5px;
-  position: relative; 
-}
-
-.catalog .bar {
-  width: 85%;
-  margin: auto;
-  padding: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: sans-serif;
-  background-color: transparent;
+  position: relative;
+  padding: 22px 0;
 }
 
 .catalog .bar ul {
   list-style: none;
+  display: flex;
 }
 
 .catalog .bar ul li {
@@ -62,7 +49,6 @@
   text-decoration: none;
   color: white;
   text-transform: uppercase;
-  transition: color 0.3s;
 }
 
 .catalog .bar ul li::after {
@@ -152,7 +138,6 @@
   top: 20px;
   right: 20px;
   z-index: 1000;
-  
 }
 
 .catalog .cart-button:hover {
@@ -169,7 +154,6 @@
   right: 20px;
   z-index: 1000;
   margin-right: -60px;
-
 }
 
 .catalog .nav-right a {
@@ -235,28 +219,44 @@
   background-color: #7f8d50;
 }
 
+/* --- Cart Modal and Overlay --- */
+.catalog .cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align the modal to the right */
+  z-index: 10000;
+}
+
 .catalog .cart-modal {
   position: fixed;
   top: 0;
-  right: -300px; 
+  right: -320px; /* Hidden by default */
   width: 300px;
   height: 100%;
   background-color: #583b20;
-  z-index: 9999; 
+  z-index: 9999;
   transition: right 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
 }
 
-
 .catalog .cart-modal.show {
-  right: 0; 
+  right: 0; /* Slide into view */
 }
 
 .catalog .cart-modal-content {
+  background-color: #583b20;
+  width: 300px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  transition: transform 0.3s ease-in-out;
 }
 
 .catalog .cart-modal-header {
@@ -265,11 +265,7 @@
   padding: 15px;
   text-align: center;
   font-weight: bold;
-  border-bottom: 1px solid #ddd;
-}
-
-.catalog .cart-modal-header h2 {
-  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .catalog .cart-modal-body {
@@ -282,6 +278,7 @@
 .catalog .cart-modal-body ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .catalog .cart-modal-body li {
@@ -290,7 +287,7 @@
 
 .catalog .cart-modal-footer {
   padding: 15px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
   background-color: #583b20;
   display: flex;
   justify-content: space-between;
@@ -308,6 +305,7 @@
   cursor: pointer;
   margin-left: 8px;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .catalog .cart-modal-close {
@@ -322,6 +320,7 @@
   background-color: #218838;
 }
 
+/* --- Menu Category and List --- */
 .catalog .menu-category {
   display: block;
 }
@@ -403,7 +402,7 @@
   color: #cfbb9a;
 }
 
-/* 16. Extra options (hidden by default) */
+/* --- Extra Options (Hidden by Default) --- */
 .catalog .size-options,
 .catalog .extra-details,
 .catalog .add-to-cart,
@@ -454,7 +453,7 @@
 
 .catalog .size-btn.selected {
   background-color: #7a7a56;
-  color: white;
+  color: white !important;
   font-weight: bold;
 }
 
@@ -507,4 +506,72 @@
 
 .catalog .cart-popup.error {
   background: #d9534f;
+}
+
+.catalog .quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between buttons and quantity number */
+}
+
+.catalog .quantity-controls button {
+  background-color: #7a7a56;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.catalog .quantity-controls button:hover {
+  background-color: #5a5e40;
+}
+
+.catalog .quantity-controls .item-quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Make each cart item a flex container */
+.catalog .cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Spreads them horizontally */
+  gap: 10px; /* optional spacing */
+}
+
+/* The item name and quantity controls each go in separate containers, if needed */
+.catalog .cart-item .cart-item-name {
+  /* optional styling */
+}
+
+.catalog .cart-item .quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Buttons and quantity styling */
+.catalog .quantity-controls button {
+  background-color: #7a7a56;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.catalog .quantity-controls button:hover {
+  background-color: #5a5e40;
+}
+
+.catalog .quantity-controls .item-quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
 }

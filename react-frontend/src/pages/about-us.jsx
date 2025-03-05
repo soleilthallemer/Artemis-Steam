@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../css/about_us_page.css';
+import '../css/about-us.css';
 
 // Import slideshow images
 import TeamMedium2 from "../assets/images/group_pictures/TeamMedium2.jpg";
@@ -42,13 +42,11 @@ const AboutUsPage = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order" className="active">Order</Link></li>
+            <li><Link to="/order">Order</Link></li>
+            <li><Link to="/login">Log In</Link></li>
+            <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
-        <div className="nav-right">
-            <Link to="/login" className="login-btn">Log In</Link>
-            <Link to="/profile" className="profile-btn">Profile</Link>
-          </div>
       </div>
 
       <div className="container">

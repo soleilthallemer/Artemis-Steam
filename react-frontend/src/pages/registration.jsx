@@ -1,23 +1,33 @@
 // src/components/RegistrationPage.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../css/registrationPage.css";
 
-
 const RegistrationPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
+
   return (
     <div className="registration-page">
       <div className="registration-container">
         <div className="image-section"></div>
         <div className="right-panel">
           <div className="banner">
-          <div className="bar">
-            <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/menu">Menu</Link></li>
-              <li><Link to="/about-us">About Us</Link></li>
-              <li><Link to="/order" className="active">Order</Link></li>
-            </ul>
+            <div className="bar">
+              <ul>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/menu">Menu</Link></li>
+                <li><Link to="/about-us">About Us</Link></li>
+                <li><Link to="/order" className="active">Order</Link></li>
+              </ul>
             </div>
           </div>
           <div className="form-section">
@@ -41,14 +51,38 @@ const RegistrationPage = () => {
                 <label htmlFor="password">Password</label>
                 <div className="input-container">
                   <span className="icon material-icons">lock</span>
-                  <input type="password" id="password" name="password" placeholder="Create a password" required />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    required
+                  />
+                  <span
+                    className="toggle-password material-icons"
+                    onClick={togglePassword}
+                  >
+                    {showPassword ? "visibility" : "visibility_off"}
+                  </span>
                 </div>
               </div>
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <div className="input-container">
                   <span className="icon material-icons">lock</span>
-                  <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <span
+                    className="toggle-password material-icons"
+                    onClick={toggleConfirmPassword}
+                  >
+                    {showConfirmPassword ? "visibility" : "visibility_off"}
+                  </span>
                 </div>
               </div>
               <button type="submit" className="btn-register">Register</button>

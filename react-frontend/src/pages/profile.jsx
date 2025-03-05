@@ -1,11 +1,24 @@
 // src/components/ProfilePage.jsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/profilepage.css";
 import profilePicture from "../assets/images/profilepicture.jpg";
 
-
 const ProfilePage = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setShowLogoutModal(true);
+  };
+
+  const closeModal = () => {
+    setShowLogoutModal(false);
+    // Optionally navigate to the login page after closing the modal
+    navigate("/login");
+  };
+
   return (
     <div className="profile-page">
       {/* Optional Banner */}
@@ -24,15 +37,15 @@ const ProfilePage = () => {
       <div className="container">
         <section className="profile-card">
           <div className="profile-info">
-          <img className="profile-picture" src={profilePicture} alt="Profile Picture" />
-
+            {/* Updated alt text to remove redundancy */}
+            <img className="profile-picture" src={profilePicture} alt="John Doe" />
             <div className="user-details">
               <h2 className="username">John Doe</h2>
               <p className="email">john.doe@example.com</p>
             </div>
-            <Link className="logout-button" to="/logout">
+            <button className="logout-button" onClick={handleLogout}>
               Logout
-            </Link>
+            </button>
           </div>
 
           <div className="order-history">
@@ -47,7 +60,7 @@ const ProfilePage = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* Example rows or dynamic data */}
+                {/* Example row; replace with dynamic data as needed */}
                 <tr>
                   <td>001</td>
                   <td>Latte, Croissant</td>
@@ -59,6 +72,20 @@ const ProfilePage = () => {
           </div>
         </section>
       </div>
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="logout-modal">
+          <div className="logout-modal-content">
+            <p>You have successfully logged out.</p>
+            <button onClick={closeModal}>Close</button>
+          </div>
+        </div>
+      )}
+
+      <footer>
+        <p>&copy; 2025 Artemis &amp; Steam. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

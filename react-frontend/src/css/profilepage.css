@@ -19,19 +19,9 @@
 }
 
 .profile-page .banner {
-  padding: 5px 0; 
-  margin-left: -48px; 
+  padding: 60px 0;
   font-family: "script-medium";
-}
-
-.profile-page .bar {
-  width: 85%;
-  margin: auto;
-  padding: 35px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: sans-serif;
+  margin-left: -6px;
 }
 
 .profile-page .bar ul li {
@@ -178,4 +168,45 @@
 .profile-page .order-history th,
 .profile-page .order-history td {
   color: #27030f !important;
+}
+
+/* Logout Modal Overlay */
+.logout-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+/* Logout Modal Content */
+.logout-modal-content {
+  background: #bec5a4;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Button */
+.logout-modal-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-modal-content button:hover {
+  background-color: #218838;
 }

@@ -1,0 +1,292 @@
+
+.order-page {
+  font-family: 'Poppins', sans-serif;
+  background-color: #bec5a4;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* BANNER: Nav bar at the top of the Order page */
+.order-page .banner {
+  padding: 60px 0;
+  font-family: "script-medium";
+}
+
+.order-page .banner .bar ul {
+  list-style: none;
+  display: flex;
+}
+
+.order-page .banner .bar ul li {
+  display: inline-block;
+  margin: 0 20px;
+  position: relative;
+}
+
+.order-page .banner .bar ul li a {
+  text-decoration: none;
+  color: white;
+  text-transform: uppercase;
+}
+
+.order-page .banner .bar ul li a.active {
+  font-weight: bold;
+}
+
+.order-page .banner .bar ul li::after {
+  content: '';
+  height: 3px;
+  width: 0;
+  background: white;
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  transition: 0.5s;
+}
+
+.order-page .banner .bar ul li:hover::after {
+  width: 100%;
+}
+
+/* Order Page Container (holds order content) */
+.order-page .order-page-container {
+  width: 90%;
+  max-width: 800px;
+  height: 80vh;
+  background: #7f7b46;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  margin: auto;
+}
+
+/* Titles and subtitles */
+.order-page .order-page-container h1 {
+  font-size: 28px;
+  color: white;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.order-page .order-page-container .subtitle {
+  color: #ddd;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Order List Container */
+.order-page .order-page-container .order-list-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+
+.order-page .order-page-container #order-list {
+  list-style: none;
+  padding: 0;
+}
+
+/* Order Items */
+.order-page .order-page-container .order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: #644d32;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.order-page .order-page-container .order-item:hover {
+  transform: scale(1.02);
+}
+
+.order-page .order-page-container .order-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+
+.order-page .order-page-container .item-details {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.order-page .order-page-container .item-name {
+  font-weight: bold;
+  color: white;
+}
+
+.order-page .order-page-container .item-price {
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* Order Summary */
+.order-page .order-page-container .order-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #27030f;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 0 0 10px 10px;
+}
+
+.order-page .order-page-container .total-label {
+  margin: 0;
+}
+
+.order-page .order-page-container .total-amount {
+  font-size: 22px;
+}
+
+/* Order Actions */
+.order-page .order-page-container .order-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.order-page .order-page-container #place-order-btn {
+  background-color: #27030f;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.order-page .order-page-container #place-order-btn:hover {
+  background-color: #644d32;
+  transform: scale(1.05);
+}
+
+.order-page .order-page-container #place-order-btn:active {
+  transform: scale(0.98);
+}
+
+/* Footer */
+.order-page footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #27030f;
+  color: white;
+  margin-top: 20px;
+}
+
+/* OPTIONAL: If you have additional styles for order items (if used) */
+.order-page .order-page-container .order-item-name {
+  font-weight: bold;
+}
+
+.order-page .order-page-container .order-item-price {
+  color: #00b300;
+}
+
+.order-page .nav-right {
+  display: flex;
+  flex-direction: row; 
+  align-items: center; 
+  gap: 10px;           
+  margin-left: auto; 
+  padding-right: 20px;
+}
+
+.order-page .nav-right .login-btn,
+.nav-right .profile-btn {
+  display: block;
+  margin: 0; 
+  padding: 10px 20px;
+  color: white;
+  border: 2px solid white;
+  border-radius: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-family: sans-serif;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.order-page .nav-right .login-btn:hover,
+.nav-right .profile-btn:hover {
+  background-color: white;
+  color: #27030f;
+}
+
+/* --- Order Placed Modal Overlay --- */
+.order-modal {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);  /* semi-transparent overlay */
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 5000;  /* make sure it's on top */
+}
+
+/* --- Modal Content --- */
+.order-modal-content {
+background: #bec5a4;
+padding: 20px 30px;
+border-radius: 8px;
+width: 90%;
+max-width: 400px;
+text-align: center;
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Modal Buttons Container --- */
+.order-modal-buttons {
+margin-top: 20px;
+display: flex;
+justify-content: space-around;
+}
+
+/* --- Button Styles --- */
+.view-order-btn,
+.close-modal-btn {
+padding: 10px 20px;
+border: none;
+border-radius: 4px;
+font-size: 1em;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.view-order-btn {
+background-color: #28a745;
+color: #fff;
+}
+
+.view-order-btn:hover {
+background-color: #218838;
+}
+
+.close-modal-btn {
+background-color: #d9534f;
+color: #fff;
+}
+
+.close-modal-btn:hover {
+background-color: darkred;
+}
