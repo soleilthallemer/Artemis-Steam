@@ -231,3 +231,17 @@
   background: url("../assets/images/logIn.jpeg") no-repeat center center;
   background-size: cover;
 }
+
+.login-page .error-message {
+  color: #d9534f !important; /* red */
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.login-page .success-message {
+  color: #28a745 !important; /* green */
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}

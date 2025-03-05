@@ -1,12 +1,42 @@
 // src/components/ProfilePage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/profilepage.css";
 import profilePicture from "../assets/images/profilepicture.jpg";
 
 const ProfilePage = () => {
+  const [user, setUser] = useState(null);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch profile and order history data from API
+    async function fetchProfile() {
+      try {
+        const response = await fetch("https://your-api-endpoint.com/profile", {
+          headers: {
+            "Content-Type": "application/json",
+            // Assuming you store your auth token in localStorage:
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // Assuming API returns an object with user and orderHistory properties
+          setUser(data.user);
+          setOrderHistory(data.orderHistory);
+        } else {
+          console.error("Failed to fetch profile data.");
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+      setLoading(false);
+    }
+    fetchProfile();
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -15,13 +45,18 @@ const ProfilePage = () => {
 
   const closeModal = () => {
     setShowLogoutModal(false);
-    // Optionally navigate to the login page after closing the modal
+    // Clear stored token and navigate to login page
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
+  if (loading) {
+    return <div className="profile-page"><p>Loading...</p></div>;
+  }
+
   return (
     <div className="profile-page">
-      {/* Optional Banner */}
+      {/* Banner */}
       <div className="banner">
         <div className="bar">
           <ul>
@@ -37,11 +72,15 @@ const ProfilePage = () => {
       <div className="container">
         <section className="profile-card">
           <div className="profile-info">
-            {/* Updated alt text to remove redundancy */}
-            <img className="profile-picture" src={profilePicture} alt="John Doe" />
+            {/* Use a fallback image or alt text if user data is missing */}
+            <img 
+              className="profile-picture" 
+              src={user && user.profilePicture ? user.profilePicture : profilePicture} 
+              alt={user ? user.name : "User profile"} 
+            />
             <div className="user-details">
-              <h2 className="username">John Doe</h2>
-              <p className="email">john.doe@example.com</p>
+              <h2 className="username">{user ? user.name : "User"}</h2>
+              <p className="email">{user ? user.email : ""}</p>
             </div>
             <button className="logout-button" onClick={handleLogout}>
               Logout
@@ -50,25 +89,30 @@ const ProfilePage = () => {
 
           <div className="order-history">
             <h3>Order History</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Order #</th>
-                  <th>Items</th>
-                  <th>Status</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Example row; replace with dynamic data as needed */}
-                <tr>
-                  <td>001</td>
-                  <td>Latte, Croissant</td>
-                  <td>Delivered</td>
-                  <td>$7.50</td>
-                </tr>
-              </tbody>
-            </table>
+            {orderHistory.length === 0 ? (
+              <p>No orders found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderHistory.map((order, index) => (
+                    <tr key={index}>
+                      <td>{order.orderNumber}</td>
+                      <td>{order.items.join(", ")}</td>
+                      <td>{order.status}</td>
+                      <td>${order.price.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </section>
       </div>

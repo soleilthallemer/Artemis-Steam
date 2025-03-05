@@ -228,3 +228,17 @@
   cursor: pointer;
   
 }
+
+.registration-page .error-message {
+  color: #d9534f !important; /* red color */
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.registration-page .success-message {
+  color: #28a745 !important; /* green color */
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}

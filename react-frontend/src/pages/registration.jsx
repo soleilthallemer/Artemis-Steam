@@ -1,11 +1,18 @@
 // src/components/RegistrationPage.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/registrationPage.css";
 
 const RegistrationPage = () => {
+  const [fullName, setFullName] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const navigate = useNavigate();
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
@@ -13,6 +20,48 @@ const RegistrationPage = () => {
 
   const toggleConfirmPassword = () => {
     setShowConfirmPassword((prev) => !prev);
+  };
+
+  const handleRegistration = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    // Simple validation: check if passwords match
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const response = await fetch("https://your-api-endpoint.com/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fullName,
+          emailOrPhone,
+          password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Registration successful, show a success message or redirect
+        setSuccessMsg("Registration successful! Redirecting to login...");
+        // Optionally, wait a moment then navigate to the login page
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        // Handle error returned from API
+        setErrorMsg(data.error || "Registration failed. Please try again.");
+      }
+    } catch (error) {
+      setErrorMsg("An error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -32,19 +81,37 @@ const RegistrationPage = () => {
           </div>
           <div className="form-section">
             <h1>Register</h1>
-            <form>
+            {errorMsg && <p className="error-message">{errorMsg}</p>}
+            {successMsg && <p className="success-message">{successMsg}</p>}
+            <form onSubmit={handleRegistration}>
               <div className="form-group">
                 <label htmlFor="fullName">Full Name</label>
                 <div className="input-container">
                   <span className="icon material-icons">person</span>
-                  <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required />
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label htmlFor="email">Email or Phone Number</label>
                 <div className="input-container">
                   <span className="icon material-icons">mail</span>
-                  <input type="text" id="email" name="email" placeholder="Enter your email or phone number" required />
+                  <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email or phone number"
+                    value={emailOrPhone}
+                    onChange={(e) => setEmailOrPhone(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -56,6 +123,8 @@ const RegistrationPage = () => {
                     id="password"
                     name="password"
                     placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <span
@@ -75,6 +144,8 @@ const RegistrationPage = () => {
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                   <span
