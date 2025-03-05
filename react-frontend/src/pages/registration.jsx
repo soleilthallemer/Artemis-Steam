@@ -5,7 +5,8 @@ import "../css/registrationPage.css";
 
 const RegistrationPage = () => {
   const [fullName, setFullName] = useState("");
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState(""); // optional phone input
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +42,8 @@ const RegistrationPage = () => {
         },
         body: JSON.stringify({
           fullName,
-          emailOrPhone,
+          email,
+          phone, // optional; if empty, you can handle it on the backend
           password
         })
       });
@@ -51,7 +53,6 @@ const RegistrationPage = () => {
       if (response.ok) {
         // Registration successful, show a success message or redirect
         setSuccessMsg("Registration successful! Redirecting to login...");
-        // Optionally, wait a moment then navigate to the login page
         setTimeout(() => {
           navigate("/login");
         }, 2000);
@@ -100,17 +101,31 @@ const RegistrationPage = () => {
                 </div>
               </div>
               <div className="form-group">
-                <label htmlFor="email">Email or Phone Number</label>
+                <label htmlFor="email">Email</label>
                 <div className="input-container">
                   <span className="icon material-icons">mail</span>
                   <input
-                    type="text"
+                    type="email"
                     id="email"
                     name="email"
-                    placeholder="Enter your email or phone number"
-                    value={emailOrPhone}
-                    onChange={(e) => setEmailOrPhone(e.target.value)}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="phone">Phone Number (Optional)</label>
+                <div className="input-container">
+                  <span className="icon material-icons">phone</span>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </div>
