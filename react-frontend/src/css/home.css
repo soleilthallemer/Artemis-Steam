@@ -11,7 +11,7 @@ html, body {
 }
 
 .homepage .banner {
-background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/images/cafe_image.jpg') !important;
+background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(/static/media/cafe_image.9467c2b86eb14172e8f9.jpg) !important;
 background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
