@@ -214,7 +214,7 @@
 
 .login-page .image-column {
   flex: 1;
-  background: url("../assets/images/logIn.jpeg") no-repeat center center;
+  background: url("../../public/images/logIn.jpeg") no-repeat center center;
   background-size: cover;
 }
 
