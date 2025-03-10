@@ -17,12 +17,11 @@
   font-family: "Poppins", sans-serif;
 }
 
-
 .registration-page .image-section {
   width: 50%; 
-  background: url("../../public/images/register.jpeg") no-repeat center center;
+  background: url("../../public/images/logIn.jpeg") no-repeat center center;
   background-size: cover;
-}
+}s
 
 .registration-page .right-panel {
   flex: 1; 
