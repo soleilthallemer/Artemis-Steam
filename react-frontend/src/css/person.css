@@ -1,4 +1,3 @@
-/* General Styles */
 body {
     font-family: 'Poppins', sans-serif;
     background-size: 300% 300%;
@@ -6,9 +5,9 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    background-color: #27030f;
 }
 
-/* Header Navigation */
 header {
     font-family: 'Poppins', sans-serif;
     background-color: #27030f;
@@ -52,7 +51,6 @@ nav ul li a.active {
     padding-top: 60px;
 }
 
-/* Profile Container */
 .profile-container {
     width: 60%;
     max-width: 600px;
@@ -63,7 +61,6 @@ nav ul li a.active {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Profile Picture */
 .profile-pic {
     width: 150px;
     height: 150px;
@@ -73,7 +70,6 @@ nav ul li a.active {
     margin-bottom: 15px;
 }
 
-/* Name & Role */
 h1 {
     font-size: 28px;
     margin-bottom: 5px;
@@ -86,7 +82,6 @@ h1 {
     color: #6d6a3c;
 }
 
-/* Biography */
 .bio p {
     font-size: 15px;
     line-height: 1.6;
@@ -94,7 +89,6 @@ h1 {
     margin: auto;
 }
 
-/* Interests Section */
 h2 {
     font-size: 20px;
     margin-top: 20px;
@@ -126,7 +120,6 @@ h2 {
     margin-top: 10px;
 }
 
-/* Links */
 .links {
     margin-top: 20px;
 }
@@ -137,7 +130,7 @@ h2 {
     margin: 5px;
     font-size: 14px;
     color: white;
-    background: #c0ba69;
+    background: #b2ca78;
     border-radius: 5px;
     text-decoration: none;
     transition: background 0.3s ease-in-out;

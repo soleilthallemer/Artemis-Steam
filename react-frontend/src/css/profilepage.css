@@ -1,12 +1,9 @@
-/* src/css/profilePage.css */
-
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 .profile-page {
-  /* A full-page container approach */
   min-height: 100vh;
   width: 100%;
+  background-color: #bec5a4; 
   font-family: 'Poppins', sans-serif;
   color: #27030f !important;
 }
@@ -18,19 +15,9 @@
 }
 
 .profile-page .banner {
-  padding: 5px 0; 
-  margin-left: -48px; 
+  padding: 60px 0;
   font-family: "script-medium";
-}
-
-.profile-page .bar {
-  width: 85%;
-  margin: auto;
-  padding: 35px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: sans-serif;
+  margin-left: -6px;
 }
 
 .profile-page .bar ul li {
@@ -44,12 +31,10 @@
   text-decoration: none;
   color: white;
   text-transform: uppercase;
-
 }
 
 .profile-page .banner {
     padding: 40px;
-
 }
 
 .profile-page .bar ul li::after {
@@ -67,7 +52,6 @@
   width: 100%;
 }
 
-/* Profile Card Container */
 .profile-page .profile-card {
   background-color: #ebe6e0; 
   border-radius: 10px;
@@ -78,15 +62,13 @@
   gap: 30px;
 }
 
-/* Profile Info Row */
 .profile-page .profile-info {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* space between profile picture+details and logout */
+  justify-content: space-between; 
   gap: 20px;
 }
 
-/* Profile Picture */
 .profile-page .profile-picture {
   width: 100px;
   height: 100px;
@@ -97,27 +79,22 @@
 
 }
 
-/* User details (Name + Email) */
 .profile-page .user-details {
   flex-grow: 1;
   text-align: left;
-  
 }
 
 .profile-page .username {
   font-size: 1.8rem;
   margin: 0;
   color: #27030f !important;
-
 }
 
 .profile-page .email {
   font-size: 1rem;
   color: #666 !important;
-  
 }
 
-/* Logout button styling */
 .profile-page .logout-button {
   padding: 8px 16px;
   background: linear-gradient(90deg, #9bb359, #8eab40);
@@ -134,7 +111,6 @@
   opacity: 0.9;
 }
 
-/* Order History Section */
 .profile-page .order-history h3 {
   margin-bottom: 10px;
   font-size: 1.5rem;
@@ -158,14 +134,12 @@
 .profile-page .order-history th {
   background-color: #ebe6e0;
   color: #27030f !important;
-
 }
 
 .profile-page .order-history tr:hover {
   background-color: #ebe6e0;
 }
 
-/* Responsive adjustments */
 @media (max-width: 600px) {
   .profile-page .profile-info {
     flex-direction: column;
@@ -177,4 +151,42 @@
 .profile-page .order-history th,
 .profile-page .order-history td {
   color: #27030f !important;
+}
+
+.logout-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.logout-modal-content {
+  background: #bec5a4;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.logout-modal-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-modal-content button:hover {
+  background-color: #218838;
 }
