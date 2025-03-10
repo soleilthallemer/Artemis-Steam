@@ -20,7 +20,7 @@
 
 .registration-page .image-section {
   width: 50%; 
-  background: url("../assets/images/logIn.jpeg") no-repeat center center;
+  background: url("../../public/images/register.jpeg") no-repeat center center;
   background-size: cover;
 }
 
