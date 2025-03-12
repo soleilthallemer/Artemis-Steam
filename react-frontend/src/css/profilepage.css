@@ -18,6 +18,13 @@
   padding: 60px 0;
   font-family: "script-medium";
   margin-left: -6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  margin: 0;
+  padding: 30px 0; 
+  text-align: left; 
 }
 
 .profile-page .bar ul li {

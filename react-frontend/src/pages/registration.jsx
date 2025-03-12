@@ -1,86 +1,100 @@
+// src/components/RegistrationPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/registrationPage.css";
 
-const Registration = () => {
+const RegistrationPage = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
 
   const handleRegistration = async (e) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    setErrorMsg("");
+    setSuccessMsg("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
+      setErrorMsg("Passwords do not match.");
       return;
     }
 
     try {
-      const fullNameParts = fullName.split(" ");
-      const firstName = fullNameParts[0];
-      const lastName = fullNameParts.slice(1).join(" ");
-      const username = email.split("@")[0];
-
-      // Register user
-      const registerResponse = await fetch("http://157.245.80.36:5000/auth/register", {
+      const response = await fetch("https://your-api-endpoint.com/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: username,
-          password: password,
+          fullName,
+          email,
+          phone,
+          password,
         }),
       });
 
-      if (!registerResponse.ok) {
-        const errorData = await registerResponse.json();
-        throw new Error(errorData.error || "User registration failed");
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMsg("Registration successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setErrorMsg(data.error || "Registration failed. Please try again.");
       }
-
-      // Create customer
-      const customerResponse = await fetch("http://157.245.80.36:5000/customers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          phone_number: phoneNumber,
-        }),
-      });
-
-      if (!customerResponse.ok) {
-        const errorData = await customerResponse.json();
-        throw new Error(errorData.message || "Customer creation failed");
-      }
-
-      console.log("Registration successful");
-      setLoading(false);
-      navigate("/login-page");
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
+    } catch (error) {
+      setErrorMsg("An error occurred. Please try again later.");
     }
   };
+
   return (
     <div className="registration-page">
       <div className="registration-container">
+        {/* Left Image Section */}
         <div className="image-section"></div>
+
+        {/* Right Panel with a Page-Specific Banner */}
         <div className="right-panel">
+          <div className="banner">
+            <div className="bar">
+              <ul>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/menu">Menu</Link>
+                </li>
+                <li>
+                  <Link to="/about-us">About Us</Link>
+                </li>
+                <li>
+                  <Link to="/order">Order</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Form Section */}
           <div className="form-section">
             <h1>Register</h1>
-            {error && <p className="error-message">{error}</p>}
+            {errorMsg && <p className="error-message">{errorMsg}</p>}
+            {successMsg && <p className="success-message">{successMsg}</p>}
+
             <form onSubmit={handleRegistration}>
               <div className="form-group">
                 <label htmlFor="fullName">Full Name</label>
@@ -97,6 +111,7 @@ const Registration = () => {
                   />
                 </div>
               </div>
+
               <div className="form-group">
                 <label htmlFor="email">Email</label>
                 <div className="input-container">
@@ -105,33 +120,35 @@ const Registration = () => {
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="Enter your email"
+                    placeholder="email@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
               </div>
+
               <div className="form-group">
-                <label htmlFor="phoneNumber">Phone Number (Optional)</label>
+                <label htmlFor="phone">Phone Number (Optional)</label>
                 <div className="input-container">
                   <span className="icon material-icons">phone</span>
                   <input
                     type="tel"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    placeholder="Enter your phone number"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    id="phone"
+                    name="phone"
+                    placeholder="(xxx)-xxx-xxxx"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </div>
+
               <div className="form-group">
                 <label htmlFor="password">Password</label>
                 <div className="input-container">
                   <span className="icon material-icons">lock</span>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
                     placeholder="Create a password"
@@ -139,14 +156,21 @@ const Registration = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                  <span
+                    className="toggle-password material-icons"
+                    onClick={togglePassword}
+                  >
+                    {showPassword ? "visibility" : "visibility_off"}
+                  </span>
                 </div>
               </div>
+
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <div className="input-container">
                   <span className="icon material-icons">lock</span>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm your password"
@@ -154,15 +178,23 @@ const Registration = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
+                  <span
+                    className="toggle-password material-icons"
+                    onClick={toggleConfirmPassword}
+                  >
+                    {showConfirmPassword ? "visibility" : "visibility_off"}
+                  </span>
                 </div>
               </div>
-              <button type="submit" className="btn-register" disabled={loading}>
-                {loading ? "Registering..." : "Register"}
+
+              <button type="submit" className="btn-register">
+                Register
               </button>
             </form>
+
             <div className="login-link">
               <p>
-                Already have an account? <Link to="/login-page">Log in</Link>
+                Already have an account? <Link to="/login">Log in</Link>
               </p>
             </div>
           </div>
@@ -172,4 +204,4 @@ const Registration = () => {
   );
 };
 
-export default Registration;
+export default RegistrationPage;

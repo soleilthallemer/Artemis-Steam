@@ -1,23 +1,45 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import '../css/home.css'; // Import your CSS
-import '@fortawesome/fontawesome-free/css/all.min.css';
+// src/pages/HomePage.jsx
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../css/home.css"; // Your existing CSS file
+import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome Icons
 
 function HomePage() {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <meta charSet="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Home Page</title>
-      <link
-        rel="stylesheet"
-      />
-      <div className="home-banner">
+    <div className="homepage">
+      {/* Banner Section with Nav Bar and Background Image */}
+      <div className="banner">
+        <div className="bar">
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/menu">Menu</Link>
+            </li>
+            <li>
+              <Link to="/about-us">About Us</Link>
+            </li>
+            <li>
+              <Link to="/order">Order</Link>
+            </li>
+            <li>
+              <Link to="/login">Log In</Link>
+            </li>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+          </ul>
+        </div>
         <div className="content">
           <h1>Artemis &amp; Steam</h1>
           <p>Where Nature Meets Craft</p>
         </div>
       </div>
+
+      {/* About Section */}
       <div className="artemis_steam">
         <h2>Artemis and Steam</h2>
         <p>
@@ -25,13 +47,18 @@ function HomePage() {
           ingenuity.
         </p>
       </div>
+
+      {/* Menu Section with Styled Button */}
       <div className="menu">
         <h2>Menu</h2>
         <p>Explore our delicious offerings.</p>
-        <Link to="/menu">
+        {/* The button here is styled via .homepage button in your CSS */}
+        <button type="button" onClick={() => navigate("/menu")}>
           <span>View Menu</span>
-        </Link>
+        </button>
       </div>
+
+      {/* Amenities Section */}
       <div className="amenities">
         <h2>Amenities</h2>
         <div className="amenities-grid">
@@ -57,6 +84,8 @@ function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Policy Section */}
       <div className="policy">
         <h2>Policy</h2>
         <p>
@@ -66,12 +95,12 @@ function HomePage() {
           Please be mindful of other visitors, keep noise levels appropriate, and
           maintain the
           <br />
-          cleanliness of our environment. We appreciate your cooperation in creating
-          a warm and
-          <br />
-          inviting atmosphere for everyone.
+          cleanliness of our environment. We appreciate your cooperation in
+          creating a warm and inviting atmosphere for everyone.
         </p>
       </div>
+
+      {/* Gallery Section */}
       <div className="gallery">
         <div className="gallery-item">
           <img src="/images/img1.jpg" alt="Cocktail" />
@@ -86,6 +115,8 @@ function HomePage() {
           <img src="/images/img4.jpg" alt="Bar stool" />
         </div>
       </div>
+
+      {/* Bottom Section */}
       <div className="bottom-section">
         <div className="bottom-hours">
           <h3>Hours of Operation</h3>
@@ -133,31 +164,39 @@ function HomePage() {
             <a
               href="https://www.facebook.com"
               target="_blank"
-              aria-label="Facebook" rel="noreferrer"
+              rel="noreferrer"
+              aria-label="Facebook"
             >
               <i className="fab fa-facebook-f" />
             </a>
             <a
               href="https://www.instagram.com"
               target="_blank"
-              aria-label="Instagram" rel="noreferrer"
+              rel="noreferrer"
+              aria-label="Instagram"
             >
               <i className="fab fa-instagram" />
             </a>
             <a
               href="https://www.snapchat.com"
               target="_blank"
-              aria-label="Snapchat" rel="noreferrer"
+              rel="noreferrer"
+              aria-label="Snapchat"
             >
               <i className="fab fa-snapchat-ghost" />
             </a>
-            <a href="https://www.twitter.com" target="_blank" aria-label="Twitter" rel="noreferrer">
+            <a
+              href="https://www.twitter.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Twitter"
+            >
               <i className="fab fa-twitter" />
             </a>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

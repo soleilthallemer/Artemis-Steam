@@ -46,7 +46,7 @@ function Soleil() {
             My GitHub
           </a>
           <Link to="/about-us" className="about-us">
-            Back to my team!
+            Back to about us
           </Link>
         </div>
       </div>

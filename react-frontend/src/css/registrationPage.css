@@ -6,25 +6,30 @@
   box-sizing: border-box;
 }
 
+/* Overall Login Page Container */
 .registration-page {
   height: 100vh;
   font-family: "Poppins", sans-serif;
 }
 
+/* Main container for the page: left image + right panel */
 .registration-page .registration-container {
   display: flex;
   height: 100vh;
   font-family: "Poppins", sans-serif;
 }
 
+
+/* LEFT SIDE: Coffee/pastry image */
 .registration-page .image-section {
-  width: 50%; 
+  width: 50%; /* half the screen for the image */
   background: url("../../public/images/logIn.jpeg") no-repeat center center;
   background-size: cover;
-}s
+}
 
+/* RIGHT SIDE: nav + form */
 .registration-page .right-panel {
-  flex: 1; 
+  flex: 1; /* fill remaining width */
   display: flex;
   flex-direction: column;
   background-color: #ebe6e0 !important;
@@ -38,6 +43,7 @@
   padding: 10px;
 }
 
+/* Navigation bar at top of right panel */
 .registration-page .banner .bar {
   background-color: #ebe6e0 !important;
 }
@@ -61,7 +67,7 @@
 }
 
 .registration-page .banner .bar ul li a.active {
-  font-weight: 700; 
+  font-weight: 700; /* highlight active link */
 }
 
 .registration-page .banner .bar ul li::after {
@@ -79,11 +85,12 @@
   width: 100%;
 }
 
+/* Form Section in right panel */
 .registration-page .form-section {
-  flex: 1; 
+  flex: 1; /* fill remaining vertical space in the right panel */
   display: flex;
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center; /* center form vertically */
   padding: 40px 60px;
   color: #27030f !important;
 }
@@ -100,6 +107,7 @@
   margin-bottom: 20px;
 }
 
+/* Form Groups */
 .registration-page .form-group {
   margin-bottom: 20px;
 }
@@ -113,6 +121,7 @@
   text-align: left;
 }
 
+/* Input container with icon */
 .registration-page .input-container {
   position: relative;
   display: flex;
@@ -130,7 +139,7 @@
 .registration-page .input-container input {
   width: 100%;
   padding: 8px 0;
-  padding-left: 35px;
+  padding-left: 35px; /* space for icon */
   border: none;
   border-bottom: 1px solid #9bb359;
   font-size: 1rem;
@@ -147,6 +156,7 @@
   border-bottom-color: #9bb359;
 }
 
+/* Register button */
 .registration-page .btn-register {
   width: 100%;
   padding: 12px;
@@ -163,6 +173,7 @@
   opacity: 0.9;
 }
 
+/* Optional social register area */
 .registration-page .social-register {
   display: flex;
   justify-content: center;
@@ -186,6 +197,7 @@
   background-color: #f9f9f9;
 }
 
+/* "Already have an account?" link */
 .registration-page .login-link {
   text-align: center;
   font-size: 0.9rem;
@@ -205,7 +217,7 @@
 .registration-page .login-link p {
   color: #27030f !important;
 }
-
+/* Toggle Password Icon */
 .registration-page .toggle-password {
   position: absolute;
   right: 8px;
@@ -216,14 +228,14 @@
 }
 
 .registration-page .error-message {
-  color: #d9534f !important; 
+  color: #d9534f !important; /* red color */
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
 }
 
 .registration-page .success-message {
-  color: #28a745 !important; 
+  color: #28a745 !important; /* green color */
   font-size: 14px;
   margin-top: 10px;
   text-align: center;

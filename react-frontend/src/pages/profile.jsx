@@ -1,173 +1,133 @@
+// src/components/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/profilepage.css";
 
-// const Profile = () => {
-//   const [customer, setCustomer] = useState(null);
-//   const [orders, setOrders] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const fetchProfileData = async () => {
-//       setLoading(true);
-//       setError(null);
-//       try {
-//         const token = localStorage.getItem("token"); // Get token
-//         if (!token) {
-//           throw new Error("No token found");
-//         }
-//         // Fetch customer data
-//         const customerResponse = await fetch("http://157.245.80.36:5000/customers", {
-//           headers: {
-//             Authorization: `Bearer ${token}`, // Include token
-//           },
-//         });
-//         if (!customerResponse.ok) {
-//           throw new Error("Failed to fetch customer data");
-//         }
-//         const customerData = await customerResponse.json();
-//         setCustomer(customerData[0]);
-
-//         // Fetch order history
-//         const ordersResponse = await fetch("http://157.245.80.36:5000/orders", {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         if (!ordersResponse.ok) {
-//           throw new Error("Failed to fetch orders");
-//         }
-//         const ordersData = await ordersResponse.json();
-//         setOrders(ordersData.filter((order) => order.customer_id === customerData[0].id)); //Filter orders
-//       } catch (err) {
-//         setError(err.message);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProfileData();
-//   }, []);
-
-//   if (loading) return <p>Loading profile...</p>;
-//   if (error) return <p>Error: {error}</p>;
-//   if (!customer) return <p>No customer data available.</p>;
-
-//   return (
-//     <div className="profile-page">
-//       <div className="banner">
-//         <div className="bar">
-//           <ul>
-//             <li>
-//               <Link to="/">Home</Link>
-//             </li>
-//             <li>
-//               <Link to="/menu">Menu</Link>
-//             </li>
-//             <li>
-//               <Link to="/about-us">About Us</Link>
-//             </li>
-//             <li>
-//               <Link to="/order" className="active">Order</Link>
-//             </li>
-//           </ul>
-//         </div>
-//       </div>
-
-//       <div className="container">
-//         <section className="profile-card">
-//           <div className="profile-info">
-//           <img className="profile-picture" src="/images/profilepicture.jpg" alt="Profile" />
-//             <div className="user-details">
-//               <h2 className="username">
-//                 {customer.first_name} {customer.last_name}
-//               </h2>
-//               <p className="email">{customer.email}</p>
-//             </div>
-//             <Link className="logout-button" to="/logout">
-//               Logout
-//             </Link>
-//           </div>
-
-//           <div className="order-history">
-//             <h3>Order History</h3>
-//             <table>
-//               <thead>
-//                 <tr>
-//                   <th>Order #</th>
-//                   <th>Customer ID</th>
-//                   <th>Order Date</th>
-//                   <th>Total Amount</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {orders.map((order) => (
-//                   <tr key={order.id}>
-//                     <td>{order.id}</td>
-//                     <td>{order.customer_id}</td>
-//                     <td>{order.order_date}</td>
-//                     <td>${order.total_amount}</td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </section>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Profile;
-
 const ProfilePage = () => {
+  const [user, setUser] = useState(null);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch profile and order history data from API
+    async function fetchProfile() {
+      try {
+        const response = await fetch("https://your-api-endpoint.com/profile", {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // Assuming API returns an object with user and orderHistory properties
+          setUser(data.user);
+          setOrderHistory(data.orderHistory);
+        } else {
+          console.error("Failed to fetch profile data.");
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      }
+      setLoading(false);
+    }
+    fetchProfile();
+  }, []);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setShowLogoutModal(true);
+  };
+
+  const closeModal = () => {
+    setShowLogoutModal(false);
+    // Clear stored token and navigate to login page
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  if (loading) {
+    return <div className="profile-page"><p>Loading...</p></div>;
+  }
+
   return (
     <div className="profile-page">
+      {/* Banner */}
+      <div className="banner">
+        <div className="bar">
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/menu">Menu</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
+            <li><Link to="/order" className="active">Order</Link></li>
+          </ul>
+        </div>
+      </div>
+
       {/* Main Container */}
       <div className="container">
         <section className="profile-card">
           <div className="profile-info">
-          <img className="profile-picture" src="/images/profilepicture.jpg" alt="Profile" />
+            {/* Use an absolute path to the image in public */}
+            <img 
+              className="profile-picture" 
+              src={user && user.profilePicture ? user.profilePicture : "/images/profilepicture.jpg"} 
+              alt={user ? user.name : "User profile"} 
+            />
             <div className="user-details">
-              <h2 className="username">Andy Parker</h2>
-              <p className="email">parkerandy@gmail.com</p>
+              <h2 className="username">{user ? user.name : "User"}</h2>
+              <p className="email">{user ? user.email : ""}</p>
             </div>
-            <Link className="logout-button" to="/">
+            <button className="logout-button" onClick={handleLogout}>
               Logout
-            </Link>
+            </button>
           </div>
 
           <div className="order-history">
             <h3>Order History</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Order #</th>
-                  <th>Items</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Example rows or dynamic data */}
-                <tr>
-                  <td>1</td>
-                  <td>Latte, Croissant</td>
-                  <td>Delivered</td>
-                  <td>$7.00</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Drip Coffee</td>
-                  <td>Delivered</td>
-                  <td>$2.50</td>
-                </tr>
-              </tbody>
-            </table>
+            {orderHistory.length === 0 ? (
+              <p>No orders found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderHistory.map((order, index) => (
+                    <tr key={index}>
+                      <td>{order.orderNumber}</td>
+                      <td>{order.items.join(", ")}</td>
+                      <td>{order.status}</td>
+                      <td>${order.price.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </section>
       </div>
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="logout-modal">
+          <div className="logout-modal-content">
+            <p>You have successfully logged out.</p>
+            <button onClick={closeModal}>Close</button>
+          </div>
+        </div>
+      )}
+
+      <footer>
+        <p>&copy; 2025 Artemis &amp; Steam. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

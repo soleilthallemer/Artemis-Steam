@@ -1,9 +1,10 @@
+// src/components/LoginPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/login.css';
 
-function Login() {
-  const [username, setUsername] = useState('');
+const LoginPage = () => {
+  const [email, setEmail] = useState(''); // using email instead of username
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -29,16 +30,10 @@ function Login() {
       }
 
       const data = await response.json();
-      const token = data.access_token;
-
-      // Store the token (e.g., in localStorage, cookies)
-      localStorage.setItem('token', token);
-
-      console.log('Login successful');
+      localStorage.setItem('token', data.access_token);
       setLoading(false);
-      navigate('/'); // Redirect to home or dashboard
+      navigate('/'); // Redirect after successful login
     } catch (error) {
-      console.error('Login error:', error);
       setLoginError(error.message);
       setLoading(false);
     }
@@ -47,22 +42,35 @@ function Login() {
   return (
     <div className="login-page">
       <div className="left-panel">
+        {/* Page-Specific Banner */}
+        <div className="banner">
+          <div className="bar">
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/menu">Menu</Link></li>
+              <li><Link to="/about-us">About Us</Link></li>
+              <li><Link to="/order">Order</Link></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Form Section */}
         <div className="form-section">
           <h1>Log in</h1>
           <p>Please enter your credentials to log in.</p>
           {loginError && <p className="error-message">{loginError}</p>}
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="username">Username</label> 
+              <label htmlFor="email">Email</label>
               <div className="input-container">
-                <span className="icon material-icons">person</span> 
+                <span className="icon material-icons">mail</span>
                 <input
-                  type="text" // Change type to text since it's a username
-                  id="username" // Change id to username
-                  name="username" // Change name to username
-                  placeholder="Enter your username" // Change placeholder
-                  value={username} // Change value to username
-                  onChange={(e) => setUsername(e.target.value)} // Change onChange to setUsername
+                  type="text"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -88,8 +96,7 @@ function Login() {
           </form>
           <div className="register-link">
             <p>
-              Don’t have an account?
-              <Link to="/registration-page"> Register now</Link>
+              Don’t have an account? <Link to="/registration-page">Register now</Link>
             </p>
           </div>
         </div>
@@ -97,6 +104,6 @@ function Login() {
       <div className="image-column"></div>
     </div>
   );
-}
+};
 
-export default Login;
+export default LoginPage;

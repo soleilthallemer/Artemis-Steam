@@ -11,6 +11,13 @@
   .order-page .banner {
     padding: 60px 0;
     font-family: "script-medium";
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    margin: 0;
+    font-family: "script-medium";
+    text-align: left; 
   }
   
   .order-page .banner .bar ul {

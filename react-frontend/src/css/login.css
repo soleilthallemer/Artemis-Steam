@@ -1,17 +1,21 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+
+/* Reset inside the login page container */
 .login-page * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Overall Login Page Container */
 .login-page {
   display: flex;
   height: 100vh;
   font-family: "Poppins", sans-serif;
 }
 
+/* LEFT PANEL (White background) */
 .login-page .left-panel {
   width: 50%;
   min-width: 400px;
@@ -20,6 +24,7 @@
   flex-direction: column;
 }
 
+/* Banner in left-panel */
 .login-page .banner {
   background-color: #ebe6e0; 
   height: auto;
@@ -30,6 +35,7 @@
   padding: 10px;
 }
 
+/* Navigation Bar in banner (inside left-panel) */
 .login-page .banner .bar {
   padding: 20px 10px;
   text-align: left;
@@ -72,6 +78,7 @@
   width: 100%;
 }
 
+/* Form Section in left-panel */
 .login-page .form-section {
   flex: 1;
   display: flex;
@@ -111,6 +118,7 @@
 
 }
 
+/* Input container with icon */
 .login-page .input-container {
   position: relative;
   display: flex;
@@ -146,6 +154,7 @@
   border-bottom-color: #9bb359;
 }
 
+/* Toggle Password Icon */
 .login-page .toggle-password {
   position: absolute;
   right: 8px;
@@ -155,6 +164,7 @@
   
 }
 
+/* Options row */
 .login-page .options {
   display: flex;
   justify-content: space-between;
@@ -175,11 +185,13 @@
   
 }
 
+/* Remember Me Checkbox */
 .login-page .options label {
   color: #27030f !important;
   font-weight: 500;
 }
 
+/* Login Button */
 .login-page .btn-login {
   width: 100%;
   padding: 12px;
@@ -196,6 +208,7 @@
   opacity: 0.9;
 }
 
+/* Register Link */
 .login-page .register-link {
   font-size: 0.9rem;
   margin-top: auto;
@@ -212,6 +225,7 @@
   text-decoration: underline;
 }
 
+/* RIGHT PANEL: Full-height image */
 .login-page .image-column {
   flex: 1;
   background: url("../../public/images/logIn.jpeg") no-repeat center center;
@@ -219,14 +233,14 @@
 }
 
 .login-page .error-message {
-  color: #d9534f !important; 
+  color: #d9534f !important; /* red */
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
 }
 
 .login-page .success-message {
-  color: #28a745 !important; 
+  color: #28a745 !important; /* green */
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
