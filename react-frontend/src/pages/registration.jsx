@@ -1,10 +1,10 @@
-// src/components/RegistrationPage.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/registrationPage.css";
 
 const RegistrationPage = () => {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState(""); // ✅ Separate first name
+  const [lastName, setLastName] = useState("");   // ✅ Separate last name
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -15,13 +15,8 @@ const RegistrationPage = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
 
-  const togglePassword = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const toggleConfirmPassword = () => {
-    setShowConfirmPassword((prev) => !prev);
-  };
+  const togglePassword = () => setShowPassword((prev) => !prev);
+  const toggleConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
 
   const handleRegistration = async (e) => {
     e.preventDefault();
@@ -34,13 +29,12 @@ const RegistrationPage = () => {
     }
 
     try {
-      const response = await fetch("http://157.245.80.36:5000/auth/register", {
+      const response = await fetch("http://157.245.80.36:5000/auth/register", { // ✅ Correct API URL
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName,
+          first_name: firstName,  // ✅ Match backend expected keys
+          last_name: lastName,
           email,
           phone,
           password,
@@ -51,9 +45,7 @@ const RegistrationPage = () => {
 
       if (response.ok) {
         setSuccessMsg("Registration successful! Redirecting to login...");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         setErrorMsg(data.error || "Registration failed. Please try again.");
       }
@@ -73,18 +65,10 @@ const RegistrationPage = () => {
           <div className="banner">
             <div className="bar">
               <ul>
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>
-                  <Link to="/menu">Menu</Link>
-                </li>
-                <li>
-                  <Link to="/about-us">About Us</Link>
-                </li>
-                <li>
-                  <Link to="/order">Order</Link>
-                </li>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/menu">Menu</Link></li>
+                <li><Link to="/about-us">About Us</Link></li>
+                <li><Link to="/order">Order</Link></li>
               </ul>
             </div>
           </div>
@@ -97,16 +81,32 @@ const RegistrationPage = () => {
 
             <form onSubmit={handleRegistration}>
               <div className="form-group">
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="firstName">First Name</label>
                 <div className="input-container">
                   <span className="icon material-icons">person</span>
                   <input
                     type="text"
-                    id="fullName"
-                    name="fullName"
-                    placeholder="Enter your full name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    id="firstName"
+                    name="firstName"
+                    placeholder="Enter your first name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name</label>
+                <div className="input-container">
+                  <span className="icon material-icons">person</span>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    placeholder="Enter your last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     required
                   />
                 </div>
