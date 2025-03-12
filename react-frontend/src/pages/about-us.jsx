@@ -55,7 +55,7 @@ const AboutUsPage = () => {
         </div>
         <div className="about-description">
           <p>
-            We are a team of four passionate women in software engineering who
+            We are a team of three passionate women in software engineering who
             came together to create something special. Our journey led us to
             develop a website for Artemis &amp; Steam, a unique cafe that blends
             creativity with technology. Inspired by the fusion of art and

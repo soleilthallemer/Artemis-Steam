@@ -41,10 +41,13 @@ function HomePage() {
 
       {/* About Section */}
       <div className="artemis_steam">
-        <h2>Artemis and Steam</h2>
+        <h2>A Little Bit About Artemis & Steam</h2>
         <p>
-          Here at Artemis &amp; Steam, we blend the art of nature with human
-          ingenuity.
+          Artemis & Steam - where nature meets craft. 
+          Our vision is to blend the artistry of nature with 
+          human ingenuity, creating a space where every detail 
+          is a reflection of our passion for creating memorable 
+          experiences.
         </p>
       </div>
 
@@ -54,8 +57,26 @@ function HomePage() {
         <p>Explore our delicious offerings.</p>
         {/* The button here is styled via .homepage button in your CSS */}
         <button type="button" onClick={() => navigate("/menu")}>
-          <span>View Menu</span>
+          <span>View Menu </span>
         </button>
+        
+        {/* Featured Items */}
+        <h3 className="featured-items-title">Featured Items</h3>
+        <div className="featured-items">
+          <div className="featured-item">
+            <img src="/images/drip_coffee.webp" alt="Drip Coffee" />
+          </div>
+          <div className="featured-item">
+            <img src="/images/espresso.webp" alt="Espresso" />
+          </div>
+          <div className="featured-item">
+            <img src="/images/matcha.webp" alt="Matcha" />
+          </div>
+          <div className="featured-item">
+            <img src="/images/blueberry_muffin.webp" alt="Blueberry Muffin" />
+          </div>
+        </div>
+
       </div>
 
       {/* Amenities Section */}
