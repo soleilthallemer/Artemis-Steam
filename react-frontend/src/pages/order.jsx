@@ -20,7 +20,7 @@ const OrderPage = () => {
   // Combined functionality: place order (via fetch) and then clear order items and show modal
   const handlePlaceOrder = async () => {
     try {
-      const response = await fetch("http://157.245.80.36/order", {
+      const response = await fetch("http://157.245.80.36/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
