@@ -24,9 +24,9 @@ function Soleil() {
           <div className="interest-item">
             <img
               src="https://res.cloudinary.com/dtljonz0f/image/upload/c_auto,ar_4:3,w_3840,g_auto/f_auto/q_auto/v1/gc-v1/san-francisco/shutterstock_2392291507_san_francisco_non_editorial?_a=BAVARSAP0"
-              alt="Rowing on Lady Bird Lake"
+              alt="Traveling throughout California!"
             />
-            <p>Rowing on Lady Bird Lake</p>
+            <p>Traveling throughout California!</p>
           </div>
           <div className="interest-item">
             <img
