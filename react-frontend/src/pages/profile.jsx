@@ -9,22 +9,25 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+  const email = localStorage.getItem("user_email");
+  const userId = localStorage.getItem("user_id");
+  const fullName = localStorage.getItem("first_name") + " " + localStorage.getItem("last_name");
 
   useEffect(() => {
     // Fetch profile and order history data from API
     async function fetchProfile() {
       try {
-        const response = await fetch("https://your-api-endpoint.com/profile", {
+        const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
+            //"Authorization": `Bearer ${localStorage.getItem("token")}`
           }
         });
         if (response.ok) {
           const data = await response.json();
           // Assuming API returns an object with user and orderHistory properties
-          setUser(data.user);
-          setOrderHistory(data.orderHistory);
+          setUser(data);
+          //setOrderHistory(data.orderHistory);
         } else {
           console.error("Failed to fetch profile data.");
         }
@@ -34,7 +37,45 @@ const ProfilePage = () => {
       setLoading(false);
     }
     fetchProfile();
+    fetchUserOrders(userId);
+    //setFullName(user.first_name, " ", user.last_name);
+    //console.log(user.first_name);
   }, []);
+
+  const fetchUserOrders = async (userId) => {
+    try {
+        // ✅ Make a GET request to fetch orders for the user
+        const response = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        // ❌ Handle HTTP errors
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        // ✅ Convert response to JSON
+        const orders = await response.json();
+
+        // ✅ Handle empty orders case
+        if (orders.length === 0) {
+            console.log("No orders found for this user.");
+            return [];
+        }
+
+        console.log("User Orders:", orders);
+        setOrderHistory(orders);
+        return orders;
+    } catch (error) {
+        console.error("Failed to fetch user orders:", error);
+        return null;
+    }
+};
+
+
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -74,10 +115,10 @@ const ProfilePage = () => {
             <img 
               className="profile-picture" 
               src={user && user.profilePicture ? user.profilePicture : "/images/profilepicture.jpg"} 
-              alt={user ? user.name : "User profile"} 
+              alt={user ? fullName : "User profile"} 
             />
             <div className="user-details">
-              <h2 className="username">{user ? user.name : "User"}</h2>
+              <h2 className="username">{user ? fullName : "User"}</h2>
               <p className="email">{user ? user.email : ""}</p>
             </div>
             <button className="logout-button" onClick={handleLogout}>
@@ -102,10 +143,10 @@ const ProfilePage = () => {
                 <tbody>
                   {orderHistory.map((order, index) => (
                     <tr key={index}>
-                      <td>{order.orderNumber}</td>
+                      <td>{order.id}</td>
                       <td>{order.items.join(", ")}</td>
                       <td>{order.status}</td>
-                      <td>${order.price.toFixed(2)}</td>
+                      <td>${order.total_amount.toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

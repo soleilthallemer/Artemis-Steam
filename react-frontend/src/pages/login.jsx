@@ -31,6 +31,7 @@ const LoginPage = () => {
 
       const data = await response.json();
       localStorage.setItem('token', data.access_token);
+      localStorage.setItem("user_email", email);
 
       // ✅ Call handleGetUser after successful login
       await handleGetUser();

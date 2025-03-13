@@ -28,7 +28,7 @@ const OrderPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ total_amount: totalPrice }),
+        body: JSON.stringify({ total_amount: totalPrice, order_items: orderItems }),
       });
 
       if (response.ok) {
