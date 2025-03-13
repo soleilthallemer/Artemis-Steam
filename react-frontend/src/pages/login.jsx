@@ -31,6 +31,9 @@ const LoginPage = () => {
 
       const data = await response.json();
       localStorage.setItem('token', data.access_token);
+
+      // ✅ Call handleGetUser after successful login
+      await handleGetUser();
       setLoading(false);
       navigate('/'); // Redirect after successful login
     } catch (error) {
@@ -38,6 +41,48 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+  const handleGetUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+  
+      const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          //"Authorization": `Bearer ${token}`, // Send the token for authentication
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch user data");
+      }
+  
+      const userData = await response.json();
+      
+      // ✅ Store each user property separately in localStorage
+      Object.keys(userData).forEach((key) => {
+      const value = userData[key];
+
+      // ✅ Ensure value is not null/undefined before storing
+      if (value !== null && value !== undefined) {
+        localStorage.setItem(key, value.toString());
+      } else {
+        localStorage.setItem(key, ""); // Store empty string if value is null
+      }
+});
+      
+  
+      console.log("User Data Retrieved:", userData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+  
 
   return (
     <div className="login-page">

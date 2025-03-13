@@ -10,6 +10,7 @@ const OrderPage = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [showOrderPlacedModal, setShowOrderPlacedModal] = useState(false);
   const navigate = useNavigate();
+  const orderId = localStorage.getItem("order_id");
 
   useEffect(() => {
     // Compute total price using numeric values
@@ -20,12 +21,14 @@ const OrderPage = () => {
   // Combined functionality: place order (via fetch) and then clear order items and show modal
   const handlePlaceOrder = async () => {
     try {
-      const response = await fetch("http://157.245.80.36/orders", {
-        method: "POST",
+      console.log("total price: ", totalPrice);
+      console.log("order Items: ", orderItems)
+      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ items: orderItems }),
+        body: JSON.stringify({ total_amount: totalPrice }),
       });
 
       if (response.ok) {

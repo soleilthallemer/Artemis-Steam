@@ -61,6 +61,48 @@ const CatalogMenuPage = () => {
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+  
+    // ✅ Retrieve user ID (Assuming it's stored in localStorage or Context)
+    const userId = localStorage.getItem("user_id"); // Modify based on auth handling
+    console.log(userId);
+    if (!userId) {
+      alert("User not logged in!");
+      return;
+    }
+  
+    try {
+      // ✅ Create a new order with the current user and total_amount = 0
+      const response = await fetch("http://157.245.80.36:5000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId, total_amount: 0 }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to create order");
+  
+      const orderData = await response.json();
+      const orderId = orderData.id.toString();
+      localStorage.setItem("order_id", orderId);
+      console.log(localStorage.getItem("order_id"));
+  
+      // ✅ Redirect to the Order Page and pass the cart items
+      //navigate("/order", { state: { orderId, cartItems } });
+  
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("Failed to place the order. Try again.");
+    }
+  };
+  
+
+
   // Increment quantity
   const handleIncrement = (index) => {
     setCartItems((prevCart) => {
@@ -248,6 +290,7 @@ const CatalogMenuPage = () => {
                   to="/order"
                   className="checkout-button"
                   state={{ cartItems: cartItems }}
+                  onClick={handleCheckout}
                 >
                   Checkout
                 </Link>
