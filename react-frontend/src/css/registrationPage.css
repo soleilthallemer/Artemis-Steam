@@ -19,7 +19,6 @@
   font-family: "Poppins", sans-serif;
 }
 
-
 /* LEFT SIDE: Coffee/pastry image */
 .registration-page .image-section {
   width: 50%; /* half the screen for the image */
@@ -33,6 +32,7 @@
   display: flex;
   flex-direction: column;
   background-color: #ebe6e0 !important;
+  overflow: hidden;
 }
 
 .registration-page .banner {
@@ -40,7 +40,6 @@
   height: auto;
   min-height: 80px; 
   align-items: left;
-  padding: 10px;
 }
 
 /* Navigation bar at top of right panel */
@@ -93,6 +92,7 @@
   justify-content: center; /* center form vertically */
   padding: 40px 60px;
   color: #27030f !important;
+  margin-top: -35px;
 }
 
 .registration-page .form-section h1 {
@@ -109,7 +109,7 @@
 
 /* Form Groups */
 .registration-page .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .registration-page .form-group label {
@@ -126,6 +126,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  margin-top: 0px;
 }
 
 .registration-page .icon {

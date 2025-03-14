@@ -9,6 +9,7 @@ const CatalogMenuPage = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
   const [quantities, setQuantities] = useState({});
+  const [popupInfo, setPopupInfo] = useState(null);
   const cartModalRef = useRef(null);
 
   // Utility to handle size selection
@@ -27,8 +28,9 @@ const CatalogMenuPage = () => {
     return drinkItems.some((drink) => drink.name === itemName);
   };
 
-  // Add item to cart
-  const addToCart = (itemName) => {
+  // Updated addToCart function that takes event and itemName
+  const addToCart = (e, itemName) => {
+    e.stopPropagation();
     const size = selectedSizes[itemName];
     if (!size && isDrinkItem(itemName)) {
       alert("Please select a size before adding to cart.");
@@ -55,28 +57,33 @@ const CatalogMenuPage = () => {
         return [...prevCart, { name: itemName, size, quantity, price }];
       }
     });
+
+    // Show pop-up near the clicked button
+    const rect = e.target.getBoundingClientRect();
+    setPopupInfo({
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY,
+      message: "Added to cart!",
+    });
+    setTimeout(() => setPopupInfo(null), 2000);
   };
 
   // Toggle cart open/close
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
+  // Checkout function (example; modify as needed)
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert("Your cart is empty!");
       return;
     }
-  
-    // ✅ Retrieve user ID (Assuming it's stored in localStorage or Context)
-    const userId = localStorage.getItem("user_id"); // Modify based on auth handling
-    console.log(userId);
+    const userId = localStorage.getItem("user_id");
     if (!userId) {
       alert("User not logged in!");
       return;
     }
-  
     try {
-      // ✅ Create a new order with the current user and total_amount = 0
       const response = await fetch("http://157.245.80.36:5000/orders", {
         method: "POST",
         headers: {
@@ -84,24 +91,17 @@ const CatalogMenuPage = () => {
         },
         body: JSON.stringify({ user_id: userId, total_amount: 0 }),
       });
-  
       if (!response.ok) throw new Error("Failed to create order");
-  
       const orderData = await response.json();
       const orderId = orderData.id.toString();
       localStorage.setItem("order_id", orderId);
-      console.log(localStorage.getItem("order_id"));
-  
-      // ✅ Redirect to the Order Page and pass the cart items
-      //navigate("/order", { state: { orderId, cartItems } });
-  
+      // Optionally, redirect to order page
+      // navigate("/order", { state: { orderId, cartItems } });
     } catch (error) {
       console.error("Checkout Error:", error);
       alert("Failed to place the order. Try again.");
     }
   };
-  
-
 
   // Increment quantity
   const handleIncrement = (index) => {
@@ -323,8 +323,7 @@ const CatalogMenuPage = () => {
           <div className="menu-category">
             <ul className="menu-list">
               {drinkItems.map((drink, index) => {
-                const { name, desc, ingredients, img, price, calories } =
-                  drink;
+                const { name, desc, ingredients, img, price, calories } = drink;
                 return (
                   <li key={index}>
                     <div className="item-left">
@@ -366,7 +365,7 @@ const CatalogMenuPage = () => {
                       />
                       <button
                         className="add-to-cart"
-                        onClick={() => addToCart(name)}
+                        onClick={(e) => addToCart(e, name)}
                       >
                         Add to Cart
                       </button>
@@ -383,8 +382,7 @@ const CatalogMenuPage = () => {
           <div className="menu-category">
             <ul className="menu-list">
               {foodItems.map((food, index) => {
-                const { name, desc, ingredients, img, price, calories } =
-                  food;
+                const { name, desc, ingredients, img, price, calories } = food;
                 return (
                   <li key={index}>
                     <div className="item-left">
@@ -413,9 +411,9 @@ const CatalogMenuPage = () => {
                       />
                       <button
                         className="add-to-cart"
-                        onClick={() => {
+                        onClick={(e) => {
                           selectSize(name, "Default");
-                          addToCart(name);
+                          addToCart(e, name);
                         }}
                       >
                         Add to Cart
@@ -428,6 +426,19 @@ const CatalogMenuPage = () => {
           </div>
         )}
       </div>
+      {/* Pop-Up Notification */}
+      {popupInfo && (
+        <div
+          className="cart-popup"
+          style={{
+            position: "absolute",
+            top: popupInfo.y,
+            left: popupInfo.x,
+          }}
+        >
+          {popupInfo.message}
+        </div>
+      )}
     </div>
   );
 };

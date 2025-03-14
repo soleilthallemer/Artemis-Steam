@@ -12,17 +12,51 @@ const OrderPage = () => {
   const navigate = useNavigate();
   const orderId = localStorage.getItem("order_id");
 
+  // Calculate total price whenever orderItems changes
   useEffect(() => {
-    // Compute total price using numeric values
-    const total = orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const total = orderItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
     setTotalPrice(total);
   }, [orderItems]);
 
-  // Combined functionality: place order (via fetch) and then clear order items and show modal
+  // Increase item quantity by 1
+  const handleIncrement = (index) => {
+    setOrderItems((prevItems) => {
+      const updated = [...prevItems];
+      updated[index].quantity += 1;
+      return updated;
+    });
+  };
+
+  // Decrease item quantity by 1 (remove if quantity goes to 0)
+  const handleDecrement = (index) => {
+    setOrderItems((prevItems) => {
+      const updated = [...prevItems];
+      if (updated[index].quantity > 1) {
+        updated[index].quantity -= 1;
+      } else {
+        updated.splice(index, 1);
+      }
+      return updated;
+    });
+  };
+
+  // Remove an item entirely
+  const handleRemove = (index) => {
+    setOrderItems((prevItems) => {
+      const updated = [...prevItems];
+      updated.splice(index, 1);
+      return updated;
+    });
+  };
+
+  // Place Order: update the order with total_amount and order_items
   const handlePlaceOrder = async () => {
     try {
-      console.log("total price: ", totalPrice);
-      console.log("order Items: ", orderItems)
+      console.log("Total Price: ", totalPrice);
+      console.log("Order Items: ", orderItems);
       const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}`, {
         method: "PUT",
         headers: {
@@ -33,9 +67,7 @@ const OrderPage = () => {
 
       if (response.ok) {
         alert("Your order is complete!");
-        // Show confirmation modal
         setShowOrderPlacedModal(true);
-        // Clear order items and reset total price
         setOrderItems([]);
         setTotalPrice(0);
       } else {
@@ -87,7 +119,21 @@ const OrderPage = () => {
                     <span>
                       {orderItem.name} {orderItem.size ? `(${orderItem.size})` : ""} x {orderItem.quantity}
                     </span>
-                    <span>${(orderItem.price * orderItem.quantity).toFixed(2)}</span>
+                    <span className="quantity-controls">
+                      <button className="quantity-btn" onClick={() => handleDecrement(index)}>
+                        –
+                      </button>
+                      <span className="item-quantity">{orderItem.quantity}</span>
+                      <button className="quantity-btn" onClick={() => handleIncrement(index)}>
+                        +
+                      </button>
+                    </span>
+                    <span>
+                      ${ (orderItem.price * orderItem.quantity).toFixed(2) }
+                    </span>
+                    <button className="remove-button" onClick={() => handleRemove(index)}>
+                      Remove
+                    </button>
                   </li>
                 ))
               )}
