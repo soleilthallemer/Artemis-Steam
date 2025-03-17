@@ -1,4 +1,3 @@
-// src/components/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/profilepage.css";
@@ -7,86 +6,76 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [orderHistory, setOrderHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+
   const email = localStorage.getItem("user_email");
   const userId = localStorage.getItem("user_id");
-  const fullName = localStorage.getItem("first_name") + " " + localStorage.getItem("last_name");
+  const fullName = `${localStorage.getItem("first_name") || ""} ${localStorage.getItem("last_name") || ""}`;
 
   useEffect(() => {
-    // Fetch profile and order history data from API
-    async function fetchProfile() {
+    async function fetchProfileAndOrders() {
+      if (!email || !userId) {
+        console.warn("No email or userId found in localStorage.");
+        navigate("/login"); // Redirect to login if no user info is found
+        return;
+      }
+
       try {
-        const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
-          headers: {
-            "Content-Type": "application/json",
-            //"Authorization": `Bearer ${localStorage.getItem("token")}`
-          }
+        // Fetch user profile
+        const userResponse = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+          headers: { "Content-Type": "application/json" }
         });
-        if (response.ok) {
-          const data = await response.json();
-          // Assuming API returns an object with user and orderHistory properties
-          setUser(data);
-          //setOrderHistory(data.orderHistory);
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
         } else {
           console.error("Failed to fetch profile data.");
         }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      }
-      setLoading(false);
-    }
-    fetchProfile();
-    fetchUserOrders(userId);
-    //setFullName(user.first_name, " ", user.last_name);
-    //console.log(user.first_name);
-  }, []);
 
-  const fetchUserOrders = async (userId) => {
-    try {
-        // ✅ Make a GET request to fetch orders for the user
-        const response = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+        // Fetch user orders
+        const orderResponse = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
+          headers: { "Content-Type": "application/json" }
         });
 
-        // ❌ Handle HTTP errors
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        if (orderResponse.ok) {
+          const orders = await orderResponse.json();
+          console.log("Raw Order Data:", orders); // Debugging log
+
+          // Ensure order data is formatted correctly
+          const formattedOrders = orders.map(order => ({
+            id: order.order_id, // ✅ Change from `order.id` to `order.order_id`
+            total_price: order.total_amount ? order.total_amount.toFixed(2) : "0.00",
+            order_date: order.order_date ? new Date(order.order_date).toLocaleDateString() : "Unknown Date"
+          }));
+
+          console.log("Formatted Orders:", formattedOrders); // Debugging log
+          setOrderHistory(formattedOrders);
+        } else {
+          console.error("Failed to fetch user orders.");
         }
 
-        // ✅ Convert response to JSON
-        const orders = await response.json();
-
-        // ✅ Handle empty orders case
-        if (orders.length === 0) {
-            console.log("No orders found for this user.");
-            return [];
-        }
-
-        console.log("User Orders:", orders);
-        setOrderHistory(orders);
-        return orders;
-    } catch (error) {
-        console.error("Failed to fetch user orders:", error);
-        return null;
+      } catch (error) {
+        console.error("Error fetching profile or orders:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-};
 
+    fetchProfileAndOrders();
+  }, [email, userId, navigate]);
 
-
+  // ✅ Directly log out the user
   const handleLogout = (e) => {
     e.preventDefault();
-    setShowLogoutModal(true);
-  };
-
-  const closeModal = () => {
-    setShowLogoutModal(false);
-    // Clear stored token and navigate to login page
+    setUser(null);
+    setOrderHistory([]);
     localStorage.removeItem("token");
-    navigate("/login");
+    localStorage.removeItem("user_email");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("first_name");
+    localStorage.removeItem("last_name");
+    navigate("/login"); // ✅ Redirect to login page immediately
   };
 
   if (loading) {
@@ -95,7 +84,6 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      {/* Banner */}
       <div className="banner">
         <div className="bar">
           <ul>
@@ -107,23 +95,15 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Main Container */}
       <div className="container">
         <section className="profile-card">
           <div className="profile-info">
-            {/* Use an absolute path to the image in public */}
-            <img 
-              className="profile-picture" 
-              src={user && user.profilePicture ? user.profilePicture : "/images/profilepicture.jpg"} 
-              alt={user ? fullName : "User profile"} 
-            />
+            <img className="profile-picture" src={user?.profilePicture || "/images/profilepicture.jpg"} alt={fullName || "User profile"} />
             <div className="user-details">
-              <h2 className="username">{user ? fullName : "User"}</h2>
-              <p className="email">{user ? user.email : ""}</p>
+              <h2 className="username">{fullName || "User"}</h2>
+              <p className="email">{user?.email || ""}</p>
             </div>
-            <button className="logout-button" onClick={handleLogout}>
-              Logout
-            </button>
+            <button className="logout-button" onClick={handleLogout}>Logout</button>
           </div>
 
           <div className="order-history">
@@ -133,20 +113,14 @@ const ProfilePage = () => {
             ) : (
               <table>
                 <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>Items</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                  </tr>
+                  <tr><th>Order #</th><th>Date</th><th>Price</th></tr>
                 </thead>
                 <tbody>
                   {orderHistory.map((order, index) => (
                     <tr key={index}>
-                      <td>{order.id}</td>
-                      <td>{order.items.join(", ")}</td>
-                      <td>{order.status}</td>
-                      <td>${order.total_amount.toFixed(2)}</td>
+                      <td>{order.id || order.order_id || "N/A"}</td>
+                      <td>{order.order_date}</td>
+                      <td>${order.total_price}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -155,20 +129,6 @@ const ProfilePage = () => {
           </div>
         </section>
       </div>
-
-      {/* Logout Modal */}
-      {showLogoutModal && (
-        <div className="logout-modal">
-          <div className="logout-modal-content">
-            <p>You have successfully logged out.</p>
-            <button onClick={closeModal}>Close</button>
-          </div>
-        </div>
-      )}
-
-      <footer>
-        <p>&copy; 2025 Artemis &amp; Steam. All rights reserved.</p>
-      </footer>
     </div>
   );
 };
