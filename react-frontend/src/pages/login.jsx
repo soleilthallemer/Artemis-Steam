@@ -8,7 +8,12 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +38,7 @@ const LoginPage = () => {
       localStorage.setItem('token', data.access_token);
       localStorage.setItem("user_email", email);
 
-      // ✅ Call handleGetUser after successful login
+      // Call handleGetUser after successful login
       await handleGetUser();
       setLoading(false);
       navigate('/'); // Redirect after successful login
@@ -54,7 +59,7 @@ const LoginPage = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          //"Authorization": `Bearer ${token}`, // Send the token for authentication
+          // "Authorization": `Bearer ${token}`, // Uncomment if needed
         },
       });
   
@@ -64,26 +69,22 @@ const LoginPage = () => {
       }
   
       const userData = await response.json();
-      
-      // ✅ Store each user property separately in localStorage
+  
+      // Store each user property in localStorage
       Object.keys(userData).forEach((key) => {
-      const value = userData[key];
-
-      // ✅ Ensure value is not null/undefined before storing
-      if (value !== null && value !== undefined) {
-        localStorage.setItem(key, value.toString());
-      } else {
-        localStorage.setItem(key, ""); // Store empty string if value is null
-      }
-});
-      
+        const value = userData[key];
+        if (value !== null && value !== undefined) {
+          localStorage.setItem(key, value.toString());
+        } else {
+          localStorage.setItem(key, "");
+        }
+      });
   
       console.log("User Data Retrieved:", userData);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
-  
 
   return (
     <div className="login-page">
@@ -126,7 +127,7 @@ const LoginPage = () => {
               <div className="input-container">
                 <span className="icon material-icons">lock</span>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   placeholder="Enter your password"
@@ -134,6 +135,12 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <span
+                  className="toggle-password material-icons"
+                  onClick={togglePassword}
+                >
+                  {showPassword ? "visibility" : "visibility_off"}
+                </span>
               </div>
             </div>
             <button type="submit" className="btn-login" disabled={loading}>

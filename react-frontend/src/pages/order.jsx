@@ -5,12 +5,16 @@ import "../css/order.css";
 
 const OrderPage = () => {
   const location = useLocation();
-  // Store the passed cart items (default to an empty array)
-  const [orderItems, setOrderItems] = useState(location.state?.cartItems || []);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [showOrderPlacedModal, setShowOrderPlacedModal] = useState(false);
   const navigate = useNavigate();
   const orderId = localStorage.getItem("order_id");
+
+  // Initialize orderItems from localStorage if available, otherwise from location.state
+  const [orderItems, setOrderItems] = useState(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    return savedCart ? JSON.parse(savedCart) : (location.state?.cartItems || []);
+  });
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [showOrderPlacedModal, setShowOrderPlacedModal] = useState(false);
 
   // Calculate total price whenever orderItems changes
   useEffect(() => {
@@ -26,6 +30,8 @@ const OrderPage = () => {
     setOrderItems((prevItems) => {
       const updated = [...prevItems];
       updated[index].quantity += 1;
+      // Persist changes to localStorage
+      localStorage.setItem("cartItems", JSON.stringify(updated));
       return updated;
     });
   };
@@ -39,6 +45,7 @@ const OrderPage = () => {
       } else {
         updated.splice(index, 1);
       }
+      localStorage.setItem("cartItems", JSON.stringify(updated));
       return updated;
     });
   };
@@ -48,6 +55,7 @@ const OrderPage = () => {
     setOrderItems((prevItems) => {
       const updated = [...prevItems];
       updated.splice(index, 1);
+      localStorage.setItem("cartItems", JSON.stringify(updated));
       return updated;
     });
   };
@@ -70,6 +78,8 @@ const OrderPage = () => {
         setShowOrderPlacedModal(true);
         setOrderItems([]);
         setTotalPrice(0);
+        // Clear the saved cart items from localStorage
+        localStorage.removeItem("cartItems");
       } else {
         console.error("Error placing order:", response.status);
         alert("Error placing order. Please try again later.");
@@ -116,24 +126,22 @@ const OrderPage = () => {
               ) : (
                 orderItems.map((orderItem, index) => (
                   <li key={index} className="order-item">
-                    <span>
+                    {/* Column 1: Name (size) x quantity */}
+                    <span className="order-item-info">
                       {orderItem.name} {orderItem.size ? `(${orderItem.size})` : ""} x {orderItem.quantity}
                     </span>
-                    <span className="quantity-controls">
-                      <button className="quantity-btn" onClick={() => handleDecrement(index)}>
-                        –
-                      </button>
-                      <span className="item-quantity">{orderItem.quantity}</span>
-                      <button className="quantity-btn" onClick={() => handleIncrement(index)}>
-                        +
-                      </button>
-                    </span>
-                    <span>
+                    {/* Column 2: Price */}
+                    <span className="order-item-price">
                       ${ (orderItem.price * orderItem.quantity).toFixed(2) }
                     </span>
-                    <button className="remove-button" onClick={() => handleRemove(index)}>
-                      Remove
-                    </button>
+                    {/* Column 3: Quantity controls */}
+                    <span className="quantity-controls">
+                      <button className="quantity-btn" onClick={() => handleDecrement(index)}>–</button>
+                      <span className="item-quantity">{orderItem.quantity}</span>
+                      <button className="quantity-btn" onClick={() => handleIncrement(index)}>+</button>
+                    </span>
+                    {/* Column 4: Remove button */}
+                    <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
                   </li>
                 ))
               )}
@@ -152,19 +160,14 @@ const OrderPage = () => {
         </div>
       </main>
 
-      {/* Order Placed Modal */}
       {showOrderPlacedModal && (
         <div className="order-modal">
           <div className="order-modal-content">
             <h2>Your order was placed!</h2>
             <p>Would you like to view your order in your profile?</p>
             <div className="order-modal-buttons">
-              <button className="view-order-btn" onClick={viewOrderInProfile}>
-                View Order
-              </button>
-              <button className="close-modal-btn" onClick={closeModal}>
-                Close
-              </button>
+              <button className="view-order-btn" onClick={viewOrderInProfile}>View Order</button>
+              <button className="close-modal-btn" onClick={closeModal}>Close</button>
             </div>
           </div>
         </div>

@@ -1,34 +1,51 @@
 // src/components/CatalogMenuPage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/menu.css";
 
 const CatalogMenuPage = () => {
-  const [activeTab, setActiveTab] = useState("drinks");
-  const [cartItems, setCartItems] = useState([]);
+  // State for tab selection (drinks vs. food)
+  const [tabState, setTabState] = useState("drinks");
+
+  // Cart state: initialize from localStorage if available, otherwise empty array
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
   const [isCartOpen, setIsCartOpen] = useState(false);
+  // For items being added (temporary selections)
   const [selectedSizes, setSelectedSizes] = useState({});
   const [quantities, setQuantities] = useState({});
+  // Popup notification state
   const [popupInfo, setPopupInfo] = useState(null);
-  const cartModalRef = useRef(null);
+  // Track which cart item (index) is being edited for size (drinks only)
+  const [editingSizeIndex, setEditingSizeIndex] = useState(null);
 
-  // Utility to handle size selection
+  const cartModalRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Persist cartItems in localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  // Check if an item is a drink
+  const isDrinkItem = (itemName) =>
+    drinkItems.some((drink) => drink.name === itemName);
+
+  // For adding items: select size
   const selectSize = (itemName, size) => {
     setSelectedSizes((prev) => ({ ...prev, [itemName]: size }));
   };
 
-  // Utility to handle quantity input
+  // For adding items: handle quantity input
   const handleQuantityChange = (itemName, newQty) => {
     const qty = Math.max(Number(newQty), 1);
     setQuantities((prev) => ({ ...prev, [itemName]: qty }));
   };
 
-  // Helper to check if an item is a drink
-  const isDrinkItem = (itemName) => {
-    return drinkItems.some((drink) => drink.name === itemName);
-  };
-
-  // Updated addToCart function that takes event and itemName
+  // Add item to cart
   const addToCart = (e, itemName) => {
     e.stopPropagation();
     const size = selectedSizes[itemName];
@@ -37,28 +54,25 @@ const CatalogMenuPage = () => {
       return;
     }
     const quantity = quantities[itemName] || 1;
-    // Get price from sample data (convert string price to number)
     const itemData =
-      drinkItems.find((drink) => drink.name === itemName) ||
-      foodItems.find((food) => food.name === itemName);
+      drinkItems.find((d) => d.name === itemName) ||
+      foodItems.find((f) => f.name === itemName);
     const price = itemData ? parseFloat(itemData.price.replace("$", "")) : 0;
+
     setCartItems((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (cartItem) => cartItem.name === itemName && cartItem.size === size
       );
       if (existingIndex >= 0) {
         const updatedCart = [...prevCart];
-        updatedCart[existingIndex] = {
-          ...updatedCart[existingIndex],
-          quantity: updatedCart[existingIndex].quantity + quantity,
-        };
+        updatedCart[existingIndex].quantity += quantity;
         return updatedCart;
       } else {
         return [...prevCart, { name: itemName, size, quantity, price }];
       }
     });
 
-    // Show pop-up near the clicked button
+    // Show a pop-up notification near the clicked button
     const rect = e.target.getBoundingClientRect();
     setPopupInfo({
       x: rect.left + window.scrollX,
@@ -68,64 +82,57 @@ const CatalogMenuPage = () => {
     setTimeout(() => setPopupInfo(null), 2000);
   };
 
-  // Toggle cart open/close
+  // Toggle cart modal open/close
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  // Checkout function (example; modify as needed)
-  const handleCheckout = async () => {
-    if (cartItems.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-    const userId = localStorage.getItem("user_id");
-    if (!userId) {
-      alert("User not logged in!");
-      return;
-    }
-    try {
-      const response = await fetch("http://157.245.80.36:5000/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId, total_amount: 0 }),
-      });
-      if (!response.ok) throw new Error("Failed to create order");
-      const orderData = await response.json();
-      const orderId = orderData.id.toString();
-      localStorage.setItem("order_id", orderId);
-      // Optionally, redirect to order page
-      // navigate("/order", { state: { orderId, cartItems } });
-    } catch (error) {
-      console.error("Checkout Error:", error);
-      alert("Failed to place the order. Try again.");
-    }
+  // Handle editing size: toggle slide-in panel for the selected cart item (drinks only)
+  const handleEditSize = (index) => {
+    setEditingSizeIndex((prev) => (prev === index ? null : index));
   };
 
-  // Increment quantity
+  // When a new size is selected from the panel, update the cart item and close panel
+  const handleSizeChangeInCart = (index, newSize) => {
+    setCartItems((prev) => {
+      const updated = [...prev];
+      updated[index].size = newSize;
+      return updated;
+    });
+    setEditingSizeIndex(null);
+  };
+
+  // Increment quantity in cart
   const handleIncrement = (index) => {
-    setCartItems((prevCart) => {
-      const updatedCart = [...prevCart];
-      updatedCart[index].quantity += 1;
-      return updatedCart;
+    setCartItems((prev) => {
+      const updated = [...prev];
+      updated[index].quantity += 1;
+      return updated;
     });
   };
 
-  // Decrement quantity
+  // Decrement quantity in cart
   const handleDecrement = (index) => {
-    setCartItems((prevCart) => {
-      const updatedCart = [...prevCart];
-      if (updatedCart[index].quantity > 1) {
-        updatedCart[index].quantity -= 1;
+    setCartItems((prev) => {
+      const updated = [...prev];
+      if (updated[index].quantity > 1) {
+        updated[index].quantity -= 1;
       } else {
-        updatedCart.splice(index, 1);
+        updated.splice(index, 1);
       }
-      return updatedCart;
+      return updated;
     });
   };
 
-  // Close cart modal on outside click
+  // (Optional) Remove an item entirely from the cart
+  const handleRemove = (index) => {
+    setCartItems((prev) => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
+  };
+
+  // Close cart modal if clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -141,7 +148,42 @@ const CatalogMenuPage = () => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, [isCartOpen]);
 
-  // Sample data for DRINKS using images from the public folder
+  // Compute total price
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  // Checkout function
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      alert("User not logged in!");
+      return;
+    }
+    try {
+      const response = await fetch("http://157.245.80.36:5000/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, total_amount: 0 }),
+      });
+      if (!response.ok) throw new Error("Failed to create order");
+      const orderData = await response.json();
+      const orderId = orderData.id.toString();
+      localStorage.setItem("order_id", orderId);
+      // Optionally navigate to order page:
+      // navigate("/order", { state: { orderId, cartItems } });
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("Failed to place the order. Try again.");
+    }
+  };
+
+  // Sample DRINKS data (using public folder images)
   const drinkItems = [
     {
       name: "Drip Coffee",
@@ -193,7 +235,7 @@ const CatalogMenuPage = () => {
     },
   ];
 
-  // Sample data for FOOD using images from the public folder
+  // Sample FOOD data (using public folder images)
   const foodItems = [
     {
       name: "Butter Croissant",
@@ -219,24 +261,12 @@ const CatalogMenuPage = () => {
       <div className="banner">
         <div className="bar">
           <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/menu">Menu</Link>
-            </li>
-            <li>
-              <Link to="/about-us">About Us</Link>
-            </li>
-            <li>
-              <Link to="/order">Order</Link>
-            </li>
-            <li>
-              <Link to="/login">Log In</Link>
-            </li>
-            <li>
-              <Link to="/profile">Profile</Link>
-            </li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/menu">Menu</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
+            <li><Link to="/order">Order</Link></li>
+            <li><Link to="/login">Log In</Link></li>
+            <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
       </div>
@@ -245,51 +275,78 @@ const CatalogMenuPage = () => {
       <div className="container">
         <h1 className="menu-title">OUR MENU</h1>
         <button className="cart-button" onClick={showCart}>
-          Cart (
-          <span className="cart-count">
-            {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-          </span>
-          )
+          Cart (<span className="cart-count">{cartItems.reduce((sum, i) => sum + i.quantity, 0)}</span>)
         </button>
 
-        {/* Cart Overlay Modal */}
+        {/* Cart Overlay */}
         {isCartOpen && (
           <div className="cart-overlay" onClick={closeCart}>
-            <div
-              className="cart-modal-content"
-              ref={cartModalRef}
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="cart-modal-content" ref={cartModalRef} onClick={(e) => e.stopPropagation()}>
               <div className="cart-modal-header">Your Cart</div>
               <div className="cart-modal-body">
                 {cartItems.length > 0 ? (
                   <ul>
-                    {cartItems.map((item, index) => (
-                      <li key={index} className="cart-item">
-                        <span>
-                          {item.name} {item.size ? `(${item.size})` : ""}
-                        </span>
-                        <div className="quantity-controls">
-                          <button onClick={() => handleDecrement(index)}>
-                            –
+                    {cartItems.map((item, index) => {
+                      const isDrink = isDrinkItem(item.name);
+                      return (
+                        <li key={index} className="cart-item">
+                          {/* Left Section: Product name and, if drink, size with edit */}
+                          <div className="cart-item-left">
+                            <div className="cart-item-name">{item.name}</div>
+                            {isDrink && (
+                              <div className="cart-item-size">
+                                {item.size}
+                                <button
+                                  className="edit-size-btn"
+                                  onClick={() => handleEditSize(index)}
+                                  title="Edit size"
+                                >
+                                  ✎
+                                </button>
+                              </div>
+                            )}
+                            {isDrink && editingSizeIndex === index && (
+                              <div className="size-edit-panel slide-in">
+                                {["Small", "Medium", "Large"].map((sz) => (
+                                  <button key={sz} onClick={() => handleSizeChangeInCart(index, sz)}>
+                                    {sz}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          {/* Middle Section: Quantity Controls */}
+                          <div className="quantity-controls">
+                            <button className="quantity-btn" onClick={() => handleDecrement(index)}>
+                              –
+                            </button>
+                            <span className="item-quantity">{item.quantity}</span>
+                            <button className="quantity-btn" onClick={() => handleIncrement(index)}>
+                              +
+                            </button>
+                          </div>
+                          {/* Right Section: Price */}
+                          <div className="item-price">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </div>
+                          {/* Remove Button (if needed) */}
+                          <button className="remove-button" onClick={() => handleRemove(index)}>
+                            Remove
                           </button>
-                          <span className="item-quantity">{item.quantity}</span>
-                          <button onClick={() => handleIncrement(index)}>
-                            +
-                          </button>
-                        </div>
-                      </li>
-                    ))}
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <p>Nothing has been added to the cart.</p>
                 )}
               </div>
               <div className="cart-modal-footer">
+                <div className="cart-total">Total: ${totalPrice.toFixed(2)}</div>
                 <Link
                   to="/order"
                   className="checkout-button"
-                  state={{ cartItems: cartItems }}
+                  state={{ cartItems }}
                   onClick={handleCheckout}
                 >
                   Checkout
@@ -305,27 +362,27 @@ const CatalogMenuPage = () => {
         {/* Tab Buttons */}
         <div className="tab-buttons">
           <button
-            className={`tab-button ${activeTab === "drinks" ? "active" : ""}`}
-            onClick={() => setActiveTab("drinks")}
+            className={`tab-button ${tabState === "drinks" ? "active" : ""}`}
+            onClick={() => setTabState("drinks")}
           >
             DRINKS
           </button>
           <button
-            className={`tab-button ${activeTab === "food" ? "active" : ""}`}
-            onClick={() => setActiveTab("food")}
+            className={`tab-button ${tabState === "food" ? "active" : ""}`}
+            onClick={() => setTabState("food")}
           >
             FOOD
           </button>
         </div>
 
         {/* DRINKS Section */}
-        {activeTab === "drinks" && (
+        {tabState === "drinks" && (
           <div className="menu-category">
             <ul className="menu-list">
-              {drinkItems.map((drink, index) => {
+              {drinkItems.map((drink, idx) => {
                 const { name, desc, ingredients, img, price, calories } = drink;
                 return (
-                  <li key={index}>
+                  <li key={idx}>
                     <div className="item-left">
                       <img src={img} alt={name} className="item-image" />
                       <div className="item-text">
@@ -345,9 +402,7 @@ const CatalogMenuPage = () => {
                         {["Small", "Medium", "Large"].map((sizeOption) => (
                           <button
                             key={sizeOption}
-                            className={`size-btn ${
-                              selectedSizes[name] === sizeOption ? "selected" : ""
-                            }`}
+                            className={`size-btn ${selectedSizes[name] === sizeOption ? "selected" : ""}`}
                             onClick={() => selectSize(name, sizeOption)}
                           >
                             {sizeOption}
@@ -359,14 +414,9 @@ const CatalogMenuPage = () => {
                         className="quantity-input"
                         min="1"
                         value={quantities[name] || 1}
-                        onChange={(e) =>
-                          handleQuantityChange(name, e.target.value)
-                        }
+                        onChange={(e) => handleQuantityChange(name, e.target.value)}
                       />
-                      <button
-                        className="add-to-cart"
-                        onClick={(e) => addToCart(e, name)}
-                      >
+                      <button className="add-to-cart" onClick={(e) => addToCart(e, name)}>
                         Add to Cart
                       </button>
                     </div>
@@ -378,13 +428,13 @@ const CatalogMenuPage = () => {
         )}
 
         {/* FOOD Section */}
-        {activeTab === "food" && (
+        {tabState === "food" && (
           <div className="menu-category">
             <ul className="menu-list">
-              {foodItems.map((food, index) => {
+              {foodItems.map((food, idx) => {
                 const { name, desc, ingredients, img, price, calories } = food;
                 return (
-                  <li key={index}>
+                  <li key={idx}>
                     <div className="item-left">
                       <img src={img} alt={name} className="item-image" />
                       <div className="item-text">
@@ -405,17 +455,9 @@ const CatalogMenuPage = () => {
                         className="quantity-input"
                         min="1"
                         value={quantities[name] || 1}
-                        onChange={(e) =>
-                          handleQuantityChange(name, e.target.value)
-                        }
+                        onChange={(e) => handleQuantityChange(name, e.target.value)}
                       />
-                      <button
-                        className="add-to-cart"
-                        onClick={(e) => {
-                          selectSize(name, "Default");
-                          addToCart(e, name);
-                        }}
-                      >
+                      <button className="add-to-cart" onClick={(e) => addToCart(e, name)}>
                         Add to Cart
                       </button>
                     </div>
@@ -426,6 +468,7 @@ const CatalogMenuPage = () => {
           </div>
         )}
       </div>
+
       {/* Pop-Up Notification */}
       {popupInfo && (
         <div
