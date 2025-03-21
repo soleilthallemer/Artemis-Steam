@@ -6,76 +6,77 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [orderHistory, setOrderHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  // Check authentication immediately
-  const email = localStorage.getItem("user_email");
-  const userId = localStorage.getItem("user_id");
-
   useEffect(() => {
+    const email = localStorage.getItem("user_email");
+    const userId = localStorage.getItem("user_id");
+
     if (!email || !userId) {
-      console.warn("No email or userId found in localStorage. Redirecting to login...");
-      navigate("/login", { replace: true });  // Use replace to prevent navigating back
+      setIsAuthenticated(false);
+      setLoading(false);
       return;
     }
 
-    async function fetchProfileAndOrders() {
+    setIsAuthenticated(true);
+
+    const fetchProfileAndOrders = async () => {
       try {
-        const userResponse = await fetch(`http://157.245.80.36:5000/users/${email}`, {
-          headers: { "Content-Type": "application/json" }
+        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+          headers: { "Content-Type": "application/json" },
         });
 
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
+        if (userRes.ok) {
+          const userData = await userRes.json();
           setUser(userData);
         } else {
-          console.error("Failed to fetch profile data.");
+          console.error("Failed to fetch user profile.");
         }
 
-        const orderResponse = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
-          headers: { "Content-Type": "application/json" }
+        const orderRes = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
+          headers: { "Content-Type": "application/json" },
         });
 
-        if (orderResponse.ok) {
-          const orders = await orderResponse.json();
-          setOrderHistory(orders.map(order => ({
+        if (orderRes.ok) {
+          const orderData = await orderRes.json();
+          const formatted = orderData.map((order) => ({
             id: order.order_id || "N/A",
             total_price: order.total_amount ? order.total_amount.toFixed(2) : "0.00",
-            order_date: order.order_date ? new Date(order.order_date).toLocaleDateString() : "Unknown Date",
+            order_date: order.order_date
+              ? new Date(order.order_date).toLocaleDateString()
+              : "Unknown Date",
             status: order.status || "Pending",
-            items: order.items || []
-          })));
+            items: order.items || [],
+          }));
+          setOrderHistory(formatted);
         } else {
-          console.error("Failed to fetch user orders.");
+          console.error("Failed to fetch order history.");
         }
-      } catch (error) {
-        console.error("Error fetching profile or orders:", error);
+      } catch (err) {
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchProfileAndOrders();
-  }, [email, userId, navigate]);
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
     setUser(null);
     setOrderHistory([]);
     localStorage.clear();
+    setIsAuthenticated(false);
     navigate("/login", { replace: true });
   };
 
-  // 🚀 Prevent rendering if user is not logged in
-  if (!email || !userId) {
-    return null;  // Ensures component doesn't render anything before redirection
-  }
+  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "Guest";
 
   if (loading) {
     return <div className="profile-page"><p>Loading...</p></div>;
   }
-
-  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Guest" : "Guest";
 
   return (
     <div className="profile-page">
@@ -92,19 +93,21 @@ const ProfilePage = () => {
 
       <div className="container">
         <section className="profile-card">
-          {user ? (
+          {isAuthenticated && user ? (
             <>
               <div className="profile-info">
-                <img 
-                  className="profile-picture" 
-                  src={user.profilePicture || "/images/profilepicture.jpg"} 
-                  alt={fullName || "User profile"} 
+                <img
+                  className="profile-picture"
+                  src={user.profilePicture || "/images/profilepicture.jpg"}
+                  alt={fullName}
                 />
                 <div className="user-details">
                   <h2 className="username">{fullName}</h2>
-                  <p className="email">{user.email || "No email available"}</p>
+                  <p className="email">{user.email || "No email"}</p>
                 </div>
-                <button className="logout-button" onClick={handleLogout}>Logout</button>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
               </div>
 
               <div className="order-history">
@@ -150,9 +153,23 @@ const ProfilePage = () => {
               </div>
             </>
           ) : (
-            <div className="profile-info">
-              <p>Please log in to view your profile.</p>
-              <Link to="/login" className="login-button">Login</Link>
+            <div className="profile-info" style={{ textAlign: "center", marginTop: "2rem" }}>
+              <p style={{ fontSize: "1.5rem", color: "black", fontWeight: "bold" }}>
+                No user is logged in.
+              </p>
+              <Link
+                to="/login"
+                className="login-button"
+                style={{
+                  display: "inline-block",
+                  fontSize: "1.2rem",
+                  color: "black",
+                  textDecoration: "underline",
+                  marginTop: "1rem"
+                }}
+              >
+                Go to Login
+              </Link>
             </div>
           )}
         </section>
