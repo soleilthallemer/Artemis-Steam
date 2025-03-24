@@ -1,141 +1,87 @@
 // src/components/EmployeeProfile.jsx
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../css/employee-profile.css';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../css/employee-profile.css";
 
 const EmployeeProfile = () => {
-  // 1) Employee data, fetched from backend
-  const [employee, setEmployee] = useState(null);
-
-  // 2) Claimed orders for this employee, fetched from backend
+  const [user, setUser] = useState(null);
   const [claimedOrders, setClaimedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-  // We'll assume the employee's ID is stored in localStorage when they log in
-  const employeeId = localStorage.getItem('employee_id');
-
-  // Fetch employee data and claimed orders from backend on mount
   useEffect(() => {
-    // If no employee_id is found, handle error or redirect
-    if (!employeeId) {
-      console.error('No employee_id found in localStorage');
+    // Use stored user_email and user_id (for employees, they are users)
+    const email = localStorage.getItem("user_email");
+    const userId = localStorage.getItem("user_id");
+
+    if (!email || !userId) {
+      setIsAuthenticated(false);
+      setLoading(false);
       return;
     }
 
-    // 1) Fetch employee info
-    const fetchEmployeeData = async () => {
+    setIsAuthenticated(true);
+
+    const fetchProfileAndOrders = async () => {
       try {
-        const response = await fetch(`https://your-backend-url.com/employees/${employeeId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch employee data');
+        // Fetch user profile using the /users/<email> endpoint
+        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUser(userData);
+        } else {
+          console.error("Failed to fetch user profile.");
         }
-        const data = await response.json();
-        setEmployee(data);
-      } catch (error) {
-        console.error('Error fetching employee data:', error);
+
+        // Fetch all orders and then filter those claimed by this user (employee)
+        const orderRes = await fetch(`http://157.245.80.36:5000/orders`, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (orderRes.ok) {
+          const orderData = await orderRes.json();
+          // Filter orders where claimed_by equals the current user's id.
+          const filteredOrders = orderData.filter(
+            order => order.claimed_by == userId
+          );
+          // Sort orders by newest first using order_date
+          filteredOrders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
+          setClaimedOrders(filteredOrders);
+        } else {
+          console.error("Failed to fetch order history.");
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // 2) Fetch claimed orders for this employee
-    const fetchClaimedOrders = async () => {
-      try {
-        // Example: your backend might support a query param for claimedBy
-        const response = await fetch(`https://your-backend-url.com/orders?claimedBy=${employeeId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch claimed orders');
-        }
-        const orders = await response.json();
+    fetchProfileAndOrders();
+  }, []);
 
-        // Optionally sort the orders if you want a specific order
-        // e.g. newest first or oldest first
-        // Example: newest first:
-        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        setClaimedOrders(orders);
-      } catch (error) {
-        console.error('Error fetching claimed orders:', error);
-      }
-    };
-
-    fetchEmployeeData();
-    fetchClaimedOrders();
-  }, [employeeId]);
-
-  // ========== Methods for updating the front-end state ==========
-
-  // Update order status (PUT/PATCH to backend)
-  const updateOrderStatus = async (orderId, newStatus) => {
-    try {
-      const response = await fetch(`https://your-backend-url.com/orders/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-
-      // If successful, update state locally
-      setClaimedOrders(prev =>
-        prev.map(order =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        )
-      );
-    } catch (error) {
-      console.error('Error updating order status:', error);
-      alert('Failed to update order status.');
-    }
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setUser(null);
+    setClaimedOrders([]);
+    localStorage.clear();
+    setIsAuthenticated(false);
+    navigate("/login", { replace: true });
   };
 
-  // Remove an order from the list (PUT/PATCH or DELETE to backend)
-  const removeOrder = async (orderId) => {
-    try {
-      // Suppose you have an endpoint that "unclaims" or removes the order
-      const response = await fetch(`https://your-backend-url.com/orders/${orderId}/remove-claim`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to remove order claim');
-      }
+  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "Guest";
 
-      // If successful, remove from local state
-      setClaimedOrders(prev => prev.filter(order => order.id !== orderId));
-    } catch (error) {
-      console.error('Error removing order claim:', error);
-      alert('Failed to remove order.');
-    }
-  };
-
-  // Finalize an order (mark as "Completed")
-  const finalizeOrder = async (orderId) => {
-    try {
-      const response = await fetch(`https://your-backend-url.com/orders/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Completed' })
-      });
-      if (!response.ok) {
-        throw new Error('Failed to finalize order');
-      }
-
-      // Update local state
-      setClaimedOrders(prev =>
-        prev.map(order =>
-          order.id === orderId ? { ...order, status: 'Completed' } : order
-        )
-      );
-
-      // Optionally remove it from local state if you do not want it shown
-      // setClaimedOrders(prev => prev.filter(order => order.id !== orderId));
-    } catch (error) {
-      console.error('Error finalizing order:', error);
-      alert('Failed to finalize order.');
-    }
-  };
+  if (loading) {
+    return <div className="profile-page"><p>Loading...</p></div>;
+  }
 
   return (
-    <div className="employee-profile">
-      <header className="banner">
+    <div className="profile-page">
+      <div className="banner">
         <div className="bar">
           <ul>
             <li><Link to="/">Home</Link></li>
@@ -144,75 +90,95 @@ const EmployeeProfile = () => {
             <li><Link to="/login">Log Out</Link></li>
           </ul>
         </div>
-      </header>
+      </div>
 
-      <main>
-        <div className="profile-info">
-          {employee ? (
+      <div className="container">
+        <section className="profile-card">
+          {isAuthenticated && user ? (
             <>
-              <h1>{employee.name}</h1>
-              <p>{employee.email}</p>
+              <div className="profile-info">
+                <img
+                  className="profile-picture"
+                  src={user.profilePicture || "/images/profilepicture.jpg"}
+                  alt={fullName}
+                />
+                <div className="user-details">
+                  <h2 className="username">{fullName}</h2>
+                  <p className="email">{user.email || "No email"}</p>
+                </div>
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+
+              <div className="order-history">
+                <h3>Order History</h3>
+                {claimedOrders.length === 0 ? (
+                  <p>No orders claimed yet.</p>
+                ) : (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Items</th>
+                        <th>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {claimedOrders.map((order, index) => (
+                        <tr key={index}>
+                          <td>{order.id}</td>
+                          <td>
+                            {order.order_date
+                              ? new Date(order.order_date).toLocaleDateString()
+                              : "Unknown Date"}
+                          </td>
+                          <td>{order.status || "Pending"}</td>
+                          <td>
+                            {order.items && order.items.length > 0 ? (
+                              <ul>
+                                {order.items.map((item, i) => (
+                                  <li key={i}>
+                                    {item.name} (x{item.quantity}) - ${item.price.toFixed(2)}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              "No items"
+                            )}
+                          </td>
+                          <td>${order.total_amount ? order.total_amount.toFixed(2) : "0.00"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
             </>
           ) : (
-            <p>Loading employee data...</p>
-          )}
-        </div>
-
-        <section className="claimed-orders">
-          <h2>Claimed Orders</h2>
-          {claimedOrders.length === 0 ? (
-            <p>No orders claimed yet.</p>
-          ) : (
-            <ul className="order-list">
-              {claimedOrders.map(order => (
-                <li key={order.id} className="order-summary-item">
-                  <div className="order-info">
-                    <strong>Order #{order.id}</strong>
-                    {order.items && Array.isArray(order.items) ? (
-                      <p>Items: {order.items.join(', ')}</p>
-                    ) : (
-                      <p>Items: (none listed)</p>
-                    )}
-                  </div>
-
-                  <div className="status-and-actions-column">
-                    <div className="status-container">
-                      <span className="status-label">Status:</span>
-                      <select
-                        value={order.status}
-                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                      >
-                        <option value="Claimed">Claimed</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                    </div>
-
-                    <div className="order-actions">
-                      <button
-                        className="action-btn remove-btn"
-                        onClick={() => removeOrder(order.id)}
-                      >
-                        Remove
-                      </button>
-                      <button
-                        className="action-btn finalize-btn"
-                        onClick={() => finalizeOrder(order.id)}
-                      >
-                        Finalize
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <div className="profile-info" style={{ textAlign: "center", marginTop: "2rem" }}>
+              <p style={{ fontSize: "1.5rem", color: "black", fontWeight: "bold" }}>
+                No user is logged in.
+              </p>
+              <Link
+                to="/login"
+                className="login-button"
+                style={{
+                  display: "inline-block",
+                  fontSize: "1.2rem",
+                  color: "black",
+                  textDecoration: "underline",
+                  marginTop: "1rem"
+                }}
+              >
+                Go to Login
+              </Link>
+            </div>
           )}
         </section>
-      </main>
-
-      <footer>
-        <p>© 2025 Artemis &amp; Steam. All rights reserved.</p>
-      </footer>
+      </div>
     </div>
   );
 };

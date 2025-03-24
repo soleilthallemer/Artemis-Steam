@@ -12,7 +12,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const togglePassword = () => {
-    setShowPassword((prev) => !prev);
+    setShowPassword(prev => !prev);
   };
 
   const handleLogin = async (e) => {
@@ -36,12 +36,22 @@ const LoginPage = () => {
 
       const data = await response.json();
       localStorage.setItem('token', data.access_token);
-      localStorage.setItem("user_email", email);
+      localStorage.setItem('user_email', email);
 
-      // Call handleGetUser after successful login
+      // Retrieve user data and store properties in localStorage, including user_id and role
       await handleGetUser();
+
       setLoading(false);
-      navigate('/'); // Redirect after successful login
+      // Check the user's role and navigate accordingly
+      const role = localStorage.getItem('role');
+      if (role === 'employee') {
+        navigate('/employee-dashboard');
+      } else if (role === 'manager') {
+        navigate('/manager-dashboard');
+      } else {
+        // Default redirection for customers or other roles
+        navigate('/customer-dashboard');
+      }
     } catch (error) {
       setLoginError(error.message);
       setLoading(false);
@@ -50,39 +60,46 @@ const LoginPage = () => {
 
   const handleGetUser = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error("No authentication token found");
+        throw new Error('No authentication token found');
       }
-  
+
       const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}`, // Uncomment if needed
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${token}`, // Uncomment if your backend requires authorization
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch user data");
+        throw new Error(errorData.error || 'Failed to fetch user data');
       }
-  
+
       const userData = await response.json();
-  
-      // Store each user property in localStorage
+
+      // Explicitly store key user properties in localStorage
+      if (userData.user_id) {
+        localStorage.setItem('user_id', userData.user_id.toString());
+      }
+      if (userData.role) {
+        localStorage.setItem('role', userData.role);
+      }
+      // Optionally store other properties if needed
       Object.keys(userData).forEach((key) => {
         const value = userData[key];
         if (value !== null && value !== undefined) {
           localStorage.setItem(key, value.toString());
         } else {
-          localStorage.setItem(key, "");
+          localStorage.setItem(key, '');
         }
       });
-  
-      console.log("User Data Retrieved:", userData);
+
+      console.log('User Data Retrieved:', userData);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error('Error fetching user data:', error);
     }
   };
 
@@ -127,7 +144,7 @@ const LoginPage = () => {
               <div className="input-container">
                 <span className="icon material-icons">lock</span>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   placeholder="Enter your password"
@@ -139,7 +156,7 @@ const LoginPage = () => {
                   className="toggle-password material-icons"
                   onClick={togglePassword}
                 >
-                  {showPassword ? "visibility" : "visibility_off"}
+                  {showPassword ? 'visibility' : 'visibility_off'}
                 </span>
               </div>
             </div>

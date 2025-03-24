@@ -7,8 +7,8 @@ const EmployeeDashboard = () => {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
-  // Get current employee name from localStorage (assumes it's stored upon login)
-  const currentEmployee = localStorage.getItem("employee_name") || "Employee";
+  // Use employee id stored in localStorage after login
+  const currentEmployeeId = localStorage.getItem("user_id");
 
   useEffect(() => {
     // Fetch orders from backend API dynamically
@@ -19,7 +19,6 @@ const EmployeeDashboard = () => {
           throw new Error("Failed to fetch orders");
         }
         const data = await response.json();
-        // Assume data is an array of order objects with properties: id, createdAt, items, status, claimedBy
         setOrders(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -29,26 +28,24 @@ const EmployeeDashboard = () => {
     fetchOrders();
   }, []);
 
-  // Separate orders into unclaimed and claimed
-  const unclaimedOrders = orders.filter(order => order.claimedBy === null)
-    // Sort unclaimed orders in reverse chronological order (newest first)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // Separate orders into unclaimed and claimed using loose equality to catch null/undefined
+  const unclaimedOrders = orders
+    .filter(order => order.claimed_by == null)
+    .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
 
-  const claimedOrders = orders.filter(order => order.claimedBy !== null)
-    // Sort claimed orders in reverse chronological order (newest first)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const claimedOrders = orders
+    .filter(order => order.claimed_by != null)
+    .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
 
-  // When an employee claims an order, update that order's claimedBy and status.
-  // (In a real app, you’d send this update to the backend.)
+  // When an employee claims an order, update that order's claimed_by and status.
   const handleClaimOrder = async (orderId) => {
     try {
-      // Simulate updating the order via API
       const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/claim`, {
-        method: "PUT",
+        method: "POST", // Ensure this matches the backend expectation
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ employeeId: currentEmployee })
+        body: JSON.stringify({ user_id: currentEmployeeId }) // Pass the employee's id
       });
       if (!response.ok) {
         throw new Error("Failed to claim order");
@@ -57,12 +54,10 @@ const EmployeeDashboard = () => {
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId
-            ? { ...order, claimedBy: currentEmployee, status: "Claimed" }
+            ? { ...order, claimed_by: currentEmployeeId, status: "Claimed" }
             : order
         )
       );
-      // Optionally, navigate to the employee's profile
-      // navigate("/employee-profile", { state: { claimedOrderId: orderId } });
     } catch (error) {
       console.error("Error claiming order:", error);
       alert("Error claiming order. Please try again.");
@@ -83,7 +78,7 @@ const EmployeeDashboard = () => {
       </header>
       <main>
         <h1>Order Dashboard</h1>
-
+  
         {/* Unclaimed Orders Section */}
         <section className="unclaimed-orders">
           <h2>Unclaimed Orders</h2>
@@ -97,11 +92,11 @@ const EmployeeDashboard = () => {
                     <strong>Order #{order.id}</strong>
                     <p>
                       Items:{" "}
-                      {order.items
-                        .map(item => `${item.name} (${item.size})`)
-                        .join(', ')}
+                      {order.items && Array.isArray(order.items) && order.items.length > 0
+                        ? order.items.map(item => `${item.name} (${item.size})`).join(', ')
+                        : "No items listed"}
                     </p>
-                    <p>Created At: {new Date(order.createdAt).toLocaleString()}</p>
+                    <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
                   </div>
                   <button className="claim-order-button" onClick={() => handleClaimOrder(order.id)}>
                     Claim Order
@@ -111,7 +106,7 @@ const EmployeeDashboard = () => {
             </ul>
           )}
         </section>
-
+  
         {/* Claimed Orders Section */}
         <section className="claimed-orders">
           <h2>Claimed Orders</h2>
@@ -125,14 +120,14 @@ const EmployeeDashboard = () => {
                     <strong>Order #{order.id}</strong>
                     <p>
                       Items:{" "}
-                      {order.items
-                        .map(item => `${item.name} (${item.size})`)
-                        .join(', ')}
+                      {order.items && Array.isArray(order.items) && order.items.length > 0
+                        ? order.items.map(item => `${item.name} (${item.size})`).join(', ')
+                        : "No items listed"}
                     </p>
-                    <p>Created At: {new Date(order.createdAt).toLocaleString()}</p>
+                    <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
                   </div>
                   <div className="order-status">
-                    <p>Claimed By: {order.claimedBy}</p>
+                    <p>Claimed By: {order.claimed_by}</p>
                     <p>Status: {order.status}</p>
                   </div>
                 </li>
