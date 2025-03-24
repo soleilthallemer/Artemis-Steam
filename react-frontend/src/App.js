@@ -10,6 +10,8 @@ import Profile from './pages/profile';
 import Soleil from './pages/soleil';
 import Bliss from './pages/bliss';
 import Jocelyn from './pages/jocelyn';
+import EmployeeDashboard from './pages/employee-dashboard';
+import EmployeeProfile from './pages/employee-profile';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path="/soleil" element={<Soleil />} />
         <Route path="/bliss" element={<Bliss />} />
         <Route path="/jocelyn" element={<Jocelyn />} />
+        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        <Route path="/employee-profile" element={<EmployeeProfile />} />
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );

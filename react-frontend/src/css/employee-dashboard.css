@@ -1,0 +1,149 @@
+/* Overall Employee Dashboard styling */
+.employee-dashboard {
+    font-family: 'Poppins', sans-serif;
+    background-color: #718355; 
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header Banner */
+  .employee-dashboard header {
+    background-color: #27030f; 
+    padding: 20px;
+    color: #ebe6e0;
+  }
+  
+  /* Banner (Navigation) */
+  .employee-dashboard .banner {
+    background-color: #718355; 
+    min-height: 80px;
+    position: relative;
+    padding: 0;
+    font-family: "script-medium";
+    text-align: left;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: none;
+  }
+  
+  /* Navigation Bar inside Banner */
+  .employee-dashboard .bar ul {
+    list-style: none;
+    display: flex;
+  }
+  
+  .employee-dashboard .bar ul li {
+    display: inline-block;
+    margin: 0 20px;
+    position: relative;
+  }
+  
+  .employee-dashboard .bar ul li a {
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+  }
+  
+  .employee-dashboard .bar ul li::after {
+    content: '';
+    height: 3px;
+    width: 0;
+    background: white;
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    transition: width 0.5s;
+  }
+  
+  .employee-dashboard .bar ul li:hover::after {
+    width: 100%;
+  }
+  
+  /* Main Content Area */
+  .employee-dashboard main {
+    width: 80%;
+    max-width: 1200px;
+    margin: 30px auto;
+    background-color: #b5c99a; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: #f0ead2;
+  }
+  
+  /* Headings */
+  .employee-dashboard h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Order List Styling */
+  .order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .order-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #7f7b46;
+    margin-bottom: 10px;
+  }
+  
+  .order-summary-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Order Info (Left side) */
+  .order-info {
+    flex: 1;
+    text-align: left;
+    color: #ebe6e0;
+  }
+  
+  /* Order Status (Right side for claimed orders) */
+  .order-status {
+    min-width: 180px;
+    text-align: right;
+    font-size: 0.9em;
+    color: #bfbb79;
+  }
+  
+  /* Claim Order Button Styling */
+  .claim-order-button {
+    background-color: #28a745; 
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    margin-left: 20px;
+  }
+  
+  .claim-order-button:hover {
+    background-color: #218838; 
+  }
+  
+  /* Section Headings for Unclaimed and Claimed Orders */
+  .unclaimed-orders h2,
+  .claimed-orders h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #7f7b46;
+  }
+  
+  /* Footer */
+  .employee-dashboard footer {
+    text-align: center;
+    padding: 10px;
+    color: #ebe6e0;
+    margin-top: 20px;
+  }
+  
