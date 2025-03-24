@@ -35,24 +35,37 @@
   padding: 10px;
 }
 
-/* Navigation Bar in banner (inside left-panel) */
-.login-page .banner .bar {
-  padding: 20px 10px;
-  text-align: left;
+.login-page .banner {
+  background-color: #ebe6e0; 
+  height: auto;
+  min-height: 80px; 
+  display: flex; 
+  justify-content: flex-end;  
+  align-items: center;
+  padding: 30px 0;
+  width: 100%;
+  z-index: 1000;
+  margin: 0;
 }
 
-.login-page .banner .bar ul {
+/* Navigation bar at top of right panel */
+.login-page .banner .bar {
+  background-color: #ebe6e0 !important;
+}
+
+.login-page  .banner .bar ul {
   list-style: none;
   display: flex;
-  justify-content: flex-start;
-  gap: 5px;
-  margin: 0;
-  padding: 0;
-  margin-left: -20px;
-
+  gap: 2px;
+  margin-left: -30px;
+  justify-content: flex-end;  
 }
 
-.login-page .banner .bar ul li a {
+.login-page  .banner .bar ul li {
+  position: relative;
+}
+
+.login-page  .banner .bar ul li a {
   text-decoration: none;
   color: #27030f !important;
   text-transform: uppercase;
@@ -74,7 +87,7 @@
   transition: width 0.3s ease;
 }
 
-.login-page .banner .bar ul li:hover::after {
+.login-page .left-panel .bar ul li:hover::after {
   width: 100%;
 }
 
@@ -244,4 +257,26 @@
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
+}
+
+.login-page .login-container {
+  display: flex;
+  flex-direction: row; 
+}
+
+@media screen and (max-width: 768px) {
+  .login-page .login-container {
+    flex-direction: column;
+  }
+  
+  .login-page .left-panel {
+    order: 1;
+    width: 100%;
+  }
+  
+  .login-page .image-section {
+    order: 2;
+    width: 100%;
+    height: auto;
+  }
 }

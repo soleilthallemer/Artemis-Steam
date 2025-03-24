@@ -69,6 +69,7 @@ const RegistrationPage = () => {
                 <li><Link to="/menu">Menu</Link></li>
                 <li><Link to="/about-us">About Us</Link></li>
                 <li><Link to="/order">Order</Link></li>
+                <li><Link to="/profile">Profile</Link></li>
               </ul>
             </div>
           </div>

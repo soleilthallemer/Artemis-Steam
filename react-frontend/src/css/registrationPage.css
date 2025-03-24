@@ -39,7 +39,13 @@
   background-color: #ebe6e0; 
   height: auto;
   min-height: 80px; 
-  align-items: left;
+  display: flex; 
+  justify-content: flex-end;  
+  align-items: center;
+  padding: 30px 0;
+  width: 100%;
+  z-index: 1000;
+  margin: 0;
 }
 
 /* Navigation bar at top of right panel */
@@ -50,8 +56,9 @@
 .registration-page  .banner .bar ul {
   list-style: none;
   display: flex;
-  gap: 5px;
+  gap: 2px;
   margin-left: -30px;
+  justify-content: flex-end;  
 }
 
 .registration-page  .banner .bar ul li {
@@ -66,7 +73,7 @@
 }
 
 .registration-page .banner .bar ul li a.active {
-  font-weight: 700; /* highlight active link */
+  font-weight: 700;
 }
 
 .registration-page .banner .bar ul li::after {
@@ -89,7 +96,7 @@
   flex: 1; /* fill remaining vertical space in the right panel */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* center form vertically */
+  justify-content: center; 
   padding: 40px 60px;
   color: #27030f !important;
   margin-top: -35px;
@@ -240,4 +247,26 @@
   font-size: 14px;
   margin-top: 10px;
   text-align: center;
+}
+
+.registration-page .registration-container {
+  display: flex;
+  flex-direction: row; 
+}
+
+@media screen and (max-width: 768px) {
+  .registration-page .registration-container {
+    flex-direction: column;
+  }
+  
+  .registration-page .right-panel {
+    order: 1;
+    width: 100%;
+  }
+  
+  .registration-page .image-section {
+    order: 2;
+    width: 100%;
+    height: auto;
+  }
 }
