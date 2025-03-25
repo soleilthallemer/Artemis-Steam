@@ -84,36 +84,36 @@ def update_order(order_id):
         "status": order.status
     }), 200
 
-@main.route('/orders/<int:user_id>', methods=['GET'])
-def get_user_orders(user_id):
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+# @main.route('/orders/<int:user_id>', methods=['GET'])
+# def get_user_orders(user_id):
+#     user = User.query.get(user_id)
+#     if not user:
+#         return jsonify({"error": "User not found"}), 404
 
-    # If the user is an employee or manager, return orders they've claimed;
-    # Otherwise, return orders placed by the user.
-    if user.role in ['employee', 'manager']:
-        orders = Order.query.filter_by(claimed_by=user_id).all()
-    else:
-        orders = Order.query.filter_by(user_id=user_id).all()
+#     # If the user is an employee or manager, return orders they've claimed;
+#     # Otherwise, return orders placed by the user.
+#     if user.role in ['employee', 'manager']:
+#         orders = Order.query.filter_by(claimed_by=user_id).all()
+#     else:
+#         orders = Order.query.filter_by(user_id=user_id).all()
 
-    if not orders:
-        return jsonify({"message": "No orders found for this user"}), 404
+#     if not orders:
+#         return jsonify({"message": "No orders found for this user"}), 404
 
-    return jsonify([{
-        "order_id": order.order_id,
-        "total_amount": order.total_amount,
-        "order_date": order.order_date.strftime('%Y-%m-%d %H:%M:%S') if order.order_date else None,
-        "status": order.status,
-        "claimed_by": order.claimed_by,
-        "items": [{
-            "item_id": item.item_id,
-            "name": item.menu_item.name,
-            "quantity": item.quantity,
-            "price": float(item.price)
-        } for item in order.order_items]
-    } for order in orders]), 200
-
+#     return jsonify([{
+#         "order_id": order.order_id,
+#         "total_amount": order.total_amount,
+#         "order_date": order.order_date.strftime('%Y-%m-%d %H:%M:%S') if order.order_date else None,
+#         "status": order.status,
+#         "claimed_by": order.claimed_by,
+#         "items": [{
+#             "item_id": item.item_id,
+#             "name": item.menu_item.name,
+#             "quantity": item.quantity,
+#             "price": float(item.price)
+#         } for item in order.order_items]
+#     } for order in orders]), 200
+#new
 
 # ✅✅✅ NEW ENDPOINTS — claim order & get claimed_by ✅✅✅
 
@@ -287,3 +287,5 @@ def get_user_orders(user_id):
             "price": float(item.price)
         } for item in order.order_items]
     } for order in orders]), 200
+
+#TESTING FOR MODIFICATION
