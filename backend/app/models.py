@@ -12,8 +12,6 @@ class User(db.Model):
     phone_number = db.Column(db.String(20), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=True)  # 'employee', 'manager', or 'customer'
-    is_employee = db.Column(db.Boolean, default=False)  # True if employee
-    is_manager = db.Column(db.Boolean, default=False)   # True if manager
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     hire_date = db.Column(db.Date, nullable=True)
