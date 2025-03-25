@@ -38,7 +38,7 @@ class Order(db.Model):
     order_items = db.relationship('OrderItem', backref='order', lazy=True)
 
     def __repr__(self):
-        return f'<Order {self.id}, claimed_by: {self.claimed_by}>'
+        return f'<Order {self.order_id}, claimed_by: {self.claimed_by}>'
 
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
