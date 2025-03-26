@@ -47,7 +47,7 @@ const ProfilePage = () => {
               ? new Date(order.order_date).toLocaleDateString()
               : "Unknown Date",
             status: order.status || "Pending",
-            items: order.items || [],
+            order_items: order.items || [],  // Use "order_items" to match your render code
           }));
           setOrderHistory(formatted);
         } else {
@@ -134,9 +134,9 @@ const ProfilePage = () => {
                           <td>{order.order_date}</td>
                           <td>{order.status}</td>
                           <td>
-                            {order.items.length > 0 ? (
+                            {order.order_items.length > 0 ? (
                               <ul>
-                                {order.items.map((item, i) => (
+                                {order.order_items.map((item, i) => (
                                   <li key={i}>
                                     {item.name} (x{item.quantity}) - ${item.price.toFixed(2)}
                                   </li>

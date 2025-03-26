@@ -50,7 +50,7 @@ const LoginPage = () => {
         navigate('/manager-dashboard');
       } else {
         // Default redirection for customers or other roles
-        navigate('/customer-dashboard');
+        navigate('/profile');
       }
     } catch (error) {
       setLoginError(error.message);

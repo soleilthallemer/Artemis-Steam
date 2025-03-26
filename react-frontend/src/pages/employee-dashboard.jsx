@@ -93,7 +93,7 @@ const EmployeeDashboard = () => {
                     <p>
                       Items:{" "}
                       {order.items && Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map(item => `${item.name} (${item.size})`).join(', ')
+                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
                         : "No items listed"}
                     </p>
                     <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
@@ -121,7 +121,7 @@ const EmployeeDashboard = () => {
                     <p>
                       Items:{" "}
                       {order.items && Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map(item => `${item.name} (${item.size})`).join(', ')
+                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
                         : "No items listed"}
                     </p>
                     <p>Created At: {new Date(order.order_date).toLocaleString()}</p>

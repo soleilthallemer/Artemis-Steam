@@ -16,13 +16,18 @@ def home():
 def get_orders():
     orders = Order.query.all()
     return jsonify([{
-        'order_id': o.order_id,
-        'customer_id': o.user_id,
-        'order_date': o.order_date.strftime('%Y-%m-%d %H:%M:%S'),
-        'total_amount': o.total_amount,
-        'status': o.status if o.status else "submitted",
-        'claimed_by': o.claimed_by  # Will be None if unclaimed
-    } for o in orders])
+        "order_id": order.order_id,
+        "total_amount": order.total_amount,
+        "order_date": order.order_date.strftime('%Y-%m-%d %H:%M:%S'),
+        "status": order.status,
+        "claimed_by": order.claimed_by,
+        "items": [{
+            "item_id": item.item_id,
+            "name": item.menu_item.name,
+            "quantity": item.quantity,
+            "price": float(item.price)
+        } for item in order.order_items]
+    } for order in orders]), 200
 
 
 @main.route('/orders', methods=['POST'])
