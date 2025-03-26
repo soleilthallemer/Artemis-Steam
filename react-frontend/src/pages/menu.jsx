@@ -200,21 +200,30 @@ const CatalogMenuPage = () => {
       const response = await fetch("http://157.245.80.36:5000/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, total_amount: totalPrice }),
+        body: JSON.stringify({
+          user_id: userId,
+          total_amount: totalPrice,
+        }),
       });
   
       if (!response.ok) throw new Error("Failed to create order");
   
       const orderData = await response.json();
       const orderId = orderData.id.toString();
-      localStorage.setItem("order_id", orderId);
+      localStorage.setItem("order_id", orderId); // Optional: if needed in /order
   
-      navigate("/order", { state: { cartItems } });
+      navigate("/order", {
+        state: {
+          orderId,
+          cartItems,
+        },
+      });
     } catch (error) {
       console.error("Checkout Error:", error);
       alert("Failed to place the order. Try again.");
     }
   };
+  
   
   
   // Sample DRINKS data (using public folder images)
