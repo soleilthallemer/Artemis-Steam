@@ -57,50 +57,62 @@ def create_order():
 
 @main.route('/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
-    data = request.json
-    order = Order.query.get(order_id)
-    if not order:
-        return jsonify({"error": "Order not found"}), 404
+    try:
+        data = request.json
+        order = Order.query.get(order_id)
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
 
-    order.user_id = data.get('user_id', order.user_id)
-    order.total_amount = data.get('total_amount', order.total_amount)
-    order.order_date = data.get('order_date', order.order_date)
-    # Optionally update status if provided
-    order.status = data.get('status', order.status)
+        order.user_id = data.get('user_id', order.user_id)
+        order.total_amount = data.get('total_amount', order.total_amount)
+        order.order_date = data.get('order_date', order.order_date)
+        order.status = data.get('status', order.status)
 
-    # Delete old items
-    OrderItem.query.filter_by(order_id=order.order_id).delete()
+        # Delete existing items for this order
+        OrderItem.query.filter_by(order_id=order.order_id).delete()
 
-    # Add new items
-    items = data.get('items', [])
-    for item_data in items:
-        item_id = item_data.get('item_id')
-        quantity = item_data.get('quantity')
-        price = item_data.get('price')
+        items = data.get('items', [])
+        if not items:
+            return jsonify({"error": "No items provided"}), 400
 
-        order_item = OrderItem(
-            order_id=order.order_id,
-            item_id=item_id,
-            quantity=quantity,
-            price=price
-        )
-        db.session.add(order_item)
+        for item_data in items:
+            item_id = item_data.get('item_id')
+            quantity = item_data.get('quantity')
+            price = item_data.get('price')
 
-    db.session.commit()
+            if item_id is None or quantity is None or price is None:
+                return jsonify({"error": "Invalid item data: item_id, quantity, and price are required"}), 400
 
-    # Refresh from DB
-    updated_items = OrderItem.query.filter_by(order_id=order.order_id).all()
+            menu_item = MenuItem.query.get(item_id)
+            if not menu_item:
+                return jsonify({"error": f"Menu item {item_id} not found"}), 404
 
-    return jsonify({
-        "message": "Order updated successfully",
-        "order_id": order.order_id,
-        "order_items": [{
-            "item_id": item.item_id,
-            "quantity": item.quantity,
-            "price": float(item.price)
-        } for item in updated_items],
-        "status": order.status
-    }), 200
+            order_item = OrderItem(
+                order_id=order.order_id,
+                item_id=item_id,
+                quantity=quantity,
+                price=price
+            )
+            db.session.add(order_item)
+
+        db.session.commit()
+
+        updated_items = OrderItem.query.filter_by(order_id=order.order_id).all()
+        return jsonify({
+            "message": "Order updated successfully",
+            "order_id": order.order_id,
+            "order_items": [{
+                "item_id": item.item_id,
+                "quantity": item.quantity,
+                "price": float(item.price)
+            } for item in updated_items],
+            "status": order.status
+        }), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update order {order_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 # ✅✅✅ NEW ENDPOINTS — claim order & get claimed_by ✅✅✅
 
