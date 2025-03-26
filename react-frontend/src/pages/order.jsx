@@ -63,15 +63,35 @@ const OrderPage = () => {
   // Place Order: update the order with total_amount and order_items
   const handlePlaceOrder = async () => {
     try {
-      console.log("Total Price: ", totalPrice);
-      console.log("Order Items: ", orderItems);
+      // Validate cart items
+      const invalidItems = orderItems.filter(item => !item.id || typeof item.id !== "number");
+  
+      if (invalidItems.length > 0) {
+        console.error("Invalid items detected:", invalidItems);
+        alert("One or more items in your cart are invalid. Please remove them and try again.");
+        return;
+      }
+  
+      const transformedItems = orderItems.map(item => ({
+        item_id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+  
+      console.log("Sending order to backend:", {
+        total_amount: totalPrice,
+        items: transformedItems,
+      });
+  
       const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        // Change 'order_items' to 'items' to match the backend
-        body: JSON.stringify({ total_amount: totalPrice, items: orderItems }),
+        body: JSON.stringify({
+          total_amount: totalPrice,
+          items: transformedItems,
+        }),
       });
   
       if (response.ok) {
@@ -89,6 +109,8 @@ const OrderPage = () => {
       alert("Error placing order. Please try again later.");
     }
   };
+  
+  
   
 
   const closeModal = () => {

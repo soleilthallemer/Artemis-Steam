@@ -33,14 +33,27 @@ def get_orders():
 @main.route('/orders', methods=['POST'])
 def create_order():
     data = request.json
+
+    user_id = data.get('user_id')
+    total_amount = data.get('total_amount', 0)
+
+    if not user_id or total_amount <= 0:
+        return jsonify({"error": "Invalid order. User ID and total amount > 0 are required."}), 400
+
     order = Order(
-        user_id=data['user_id'],
-        total_amount=data['total_amount']
-        # The status column defaults to "submitted" per the model definition
+        user_id=user_id,
+        total_amount=total_amount
+        # status defaults to "submitted"
     )
     db.session.add(order)
     db.session.commit()
-    return jsonify({'message': 'Order created', 'id': order.order_id, 'status': order.status})
+
+    return jsonify({
+        'message': 'Order created',
+        'id': order.order_id,
+        'status': order.status
+    })
+
 
 @main.route('/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):

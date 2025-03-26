@@ -53,12 +53,21 @@ const CatalogMenuPage = () => {
       alert("Please select a size before adding to cart.");
       return;
     }
+  
     const quantity = quantities[itemName] || 1;
+  
     const itemData =
       drinkItems.find((d) => d.name === itemName) ||
       foodItems.find((f) => f.name === itemName);
-    const price = itemData ? parseFloat(itemData.price.replace("$", "")) : 0;
-
+  
+    if (!itemData) {
+      alert("Item not found.");
+      return;
+    }
+  
+    const id = itemData.id;
+    const price = parseFloat(itemData.price.replace("$", ""));
+  
     setCartItems((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (cartItem) => cartItem.name === itemName && cartItem.size === size
@@ -68,11 +77,10 @@ const CatalogMenuPage = () => {
         updatedCart[existingIndex].quantity += quantity;
         return updatedCart;
       } else {
-        return [...prevCart, { name: itemName, size, quantity, price }];
+        return [...prevCart, { id, name: itemName, size, quantity, price }];
       }
     });
-
-    // Show a pop-up notification near the clicked button
+  
     const rect = e.target.getBoundingClientRect();
     setPopupInfo({
       x: rect.left + window.scrollX,
@@ -81,7 +89,7 @@ const CatalogMenuPage = () => {
     });
     setTimeout(() => setPopupInfo(null), 2000);
   };
-
+  
   // Toggle cart modal open/close
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
@@ -160,32 +168,61 @@ const CatalogMenuPage = () => {
       alert("Your cart is empty!");
       return;
     }
+  
+    const totalPrice = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+  
+    if (totalPrice === 0) {
+      alert("Cannot create an order with $0 total.");
+      return;
+    }
+  
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       alert("User not logged in!");
       return;
     }
+  
+    const existingOrderId = localStorage.getItem("order_id");
+    if (existingOrderId) {
+      navigate("/order", { state: { cartItems } });
+      return;
+    }
+  
     try {
       const response = await fetch("http://157.245.80.36:5000/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, total_amount: 0 }),
+        body: JSON.stringify({ user_id: userId, total_amount: 0 }), // shell
       });
+  
       if (!response.ok) throw new Error("Failed to create order");
+  
       const orderData = await response.json();
       const orderId = orderData.id.toString();
       localStorage.setItem("order_id", orderId);
-      // Optionally navigate to order page:
-      // navigate("/order", { state: { orderId, cartItems } });
+  
+      navigate("/order", { state: { cartItems } });
+  
     } catch (error) {
       console.error("Checkout Error:", error);
       alert("Failed to place the order. Try again.");
     }
   };
+  
+  
 
   // Sample DRINKS data (using public folder images)
+  // src/components/CatalogMenuPage.jsx
+
+// ... (existing imports and component setup)
+
+  // Sample DRINKS data (with item IDs)
   const drinkItems = [
     {
+      id: 1,
       name: "Drip Coffee",
       desc: "Classic brewed coffee",
       ingredients: "Coffee, Water",
@@ -194,6 +231,7 @@ const CatalogMenuPage = () => {
       calories: "5 Calories",
     },
     {
+      id: 2,
       name: "Espresso",
       desc: "Strong and bold shot of coffee",
       ingredients: "Espresso",
@@ -202,6 +240,7 @@ const CatalogMenuPage = () => {
       calories: "10 Calories",
     },
     {
+      id: 3,
       name: "Latte",
       desc: "Espresso with steamed milk",
       ingredients: "Espresso, Milk",
@@ -210,6 +249,7 @@ const CatalogMenuPage = () => {
       calories: "150 Calories",
     },
     {
+      id: 4,
       name: "Americano",
       desc: "Espresso diluted with hot water",
       ingredients: "Espresso, Water",
@@ -218,6 +258,7 @@ const CatalogMenuPage = () => {
       calories: "15 Calories",
     },
     {
+      id: 5,
       name: "Mocha",
       desc: "Chocolate-flavored espresso drink",
       ingredients: "Espresso, Milk, Chocolate",
@@ -226,6 +267,7 @@ const CatalogMenuPage = () => {
       calories: "250 Calories",
     },
     {
+      id: 6,
       name: "Matcha",
       desc: "Green tea latte with steamed milk",
       ingredients: "Matcha, Milk",
@@ -235,9 +277,10 @@ const CatalogMenuPage = () => {
     },
   ];
 
-  // Sample FOOD data (using public folder images)
+  // Sample FOOD data (with item IDs)
   const foodItems = [
     {
+      id: 7,
       name: "Butter Croissant",
       desc: "Flaky, buttery French pastry",
       ingredients: "Flour, Butter, Sugar, Yeast",
@@ -246,6 +289,7 @@ const CatalogMenuPage = () => {
       calories: "300 Calories",
     },
     {
+      id: 8,
       name: "Blueberry Muffin",
       desc: "Soft muffin with fresh blueberries",
       ingredients: "Flour, Blueberries, Sugar",
