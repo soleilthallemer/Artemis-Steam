@@ -1,16 +1,13 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models import Order, OrderItem, MenuItem, User
+import traceback
 
-# ✅ Define main Blueprint
 main = Blueprint('main', __name__)
 
-# ✅ Add a home route
 @main.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Welcome to the API!"})
-
-# ----------------------- ORDER ENDPOINTS -----------------------
 
 @main.route('/orders', methods=['GET'])
 def get_orders():
@@ -29,10 +26,10 @@ def get_orders():
         } for item in order.order_items]
     } for order in orders]), 200
 
-
 @main.route('/orders', methods=['POST'])
 def create_order():
     data = request.json
+    print("[DEBUG] Create order payload:", data)
 
     user_id = data.get('user_id')
     total_amount = data.get('total_amount', 0)
@@ -43,7 +40,6 @@ def create_order():
     order = Order(
         user_id=user_id,
         total_amount=total_amount
-        # status defaults to "submitted"
     )
     db.session.add(order)
     db.session.commit()
@@ -54,11 +50,12 @@ def create_order():
         'status': order.status
     })
 
-
 @main.route('/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
     try:
         data = request.json
+        print(f"[DEBUG] Update payload for order {order_id}:", data)
+
         order = Order.query.get(order_id)
         if not order:
             return jsonify({"error": "Order not found"}), 404
@@ -68,7 +65,6 @@ def update_order(order_id):
         order.order_date = data.get('order_date', order.order_date)
         order.status = data.get('status', order.status)
 
-        # Delete existing items for this order
         OrderItem.query.filter_by(order_id=order.order_id).delete()
 
         items = data.get('items', [])
@@ -76,6 +72,7 @@ def update_order(order_id):
             return jsonify({"error": "No items provided"}), 400
 
         for item_data in items:
+            print("[DEBUG] Processing item:", item_data)
             item_id = item_data.get('item_id')
             quantity = item_data.get('quantity')
             price = item_data.get('price')
@@ -111,10 +108,8 @@ def update_order(order_id):
 
     except Exception as e:
         print(f"[ERROR] Failed to update order {order_id}: {e}")
+        traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
-
-
-# ✅✅✅ NEW ENDPOINTS — claim order & get claimed_by ✅✅✅
 
 @main.route('/orders/<int:order_id>/claimed_by', methods=['GET'])
 def get_claimed_by(order_id):
@@ -144,7 +139,7 @@ def claim_order(order_id):
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
-    # Optionally, check if user.role is 'employee' or 'manager'
+
     order.claimed_by = user_id
     db.session.commit()
     return jsonify({
@@ -153,10 +148,6 @@ def claim_order(order_id):
         "claimed_by": order.claimed_by,
         "status": order.status
     }), 200
-
-# --------------------------------------------------------------
-
-# MENU ENDPOINTS
 
 @main.route('/menu', methods=['GET'])
 def get_menu_items():
@@ -195,8 +186,6 @@ def create_menu_item():
     db.session.add(menu_item)
     db.session.commit()
     return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
-
-# --------------------- ORDER ITEMS ---------------------
 
 @main.route('/orders/<int:order_id>/items', methods=['GET'])
 def get_order_items(order_id):
@@ -238,8 +227,6 @@ def add_order_item():
 
     return jsonify({"message": "Order item added", "id": order_item.id}), 201
 
-# --------------------- USERS ---------------------
-
 @main.route("/users/<string:email>", methods=["GET"])
 def get_user_by_email(email):
     user = User.query.filter_by(email=email).first()
@@ -264,7 +251,6 @@ def get_user_orders(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # If the user is an employee or manager, return orders they've claimed
     if user.role in ['employee', 'manager']:
         orders = Order.query.filter_by(claimed_by=user_id).all()
     else:
@@ -286,5 +272,3 @@ def get_user_orders(user_id):
             "price": float(item.price)
         } for item in order.order_items]
     } for order in orders]), 200
-
-#TESTING FOR MODIFICATION
