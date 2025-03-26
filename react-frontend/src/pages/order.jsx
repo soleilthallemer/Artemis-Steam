@@ -70,15 +70,15 @@ const OrderPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ total_amount: totalPrice, order_items: orderItems }),
+        // Change 'order_items' to 'items' to match the backend
+        body: JSON.stringify({ total_amount: totalPrice, items: orderItems }),
       });
-
+  
       if (response.ok) {
         alert("Your order is complete!");
         setShowOrderPlacedModal(true);
         setOrderItems([]);
         setTotalPrice(0);
-        // Clear the saved cart items from localStorage
         localStorage.removeItem("cartItems");
       } else {
         console.error("Error placing order:", response.status);
@@ -89,6 +89,7 @@ const OrderPage = () => {
       alert("Error placing order. Please try again later.");
     }
   };
+  
 
   const closeModal = () => {
     setShowOrderPlacedModal(false);
