@@ -129,7 +129,7 @@ const EmployeeProfile = () => {
                     <tbody>
                       {claimedOrders.map((order, index) => (
                         <tr key={index}>
-                          <td>{order.id}</td>
+                          <td>{order.order_id}</td>
                           <td>
                             {order.order_date
                               ? new Date(order.order_date).toLocaleDateString()

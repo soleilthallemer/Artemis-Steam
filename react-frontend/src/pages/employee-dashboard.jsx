@@ -53,7 +53,7 @@ const EmployeeDashboard = () => {
       // Update local state to reflect the claimed order
       setOrders(prevOrders =>
         prevOrders.map(order =>
-          order.id === orderId
+          order.order_id === orderId
             ? { ...order, claimed_by: currentEmployeeId, status: "Claimed" }
             : order
         )
@@ -87,9 +87,9 @@ const EmployeeDashboard = () => {
           ) : (
             <ul className="order-list">
               {unclaimedOrders.map(order => (
-                <li key={order.id} className="order-summary-item">
+                <li key={order.order_id} className="order-summary-item">
                   <div className="order-info">
-                    <strong>Order #{order.id}</strong>
+                    <strong>Order #{order.order_id}</strong>
                     <p>
                       Items:{" "}
                       {order.items && Array.isArray(order.items) && order.items.length > 0
@@ -98,7 +98,7 @@ const EmployeeDashboard = () => {
                     </p>
                     <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
                   </div>
-                  <button className="claim-order-button" onClick={() => handleClaimOrder(order.id)}>
+                  <button className="claim-order-button" onClick={() => handleClaimOrder(order.order_id)}>
                     Claim Order
                   </button>
                 </li>
@@ -115,9 +115,9 @@ const EmployeeDashboard = () => {
           ) : (
             <ul className="order-list">
               {claimedOrders.map(order => (
-                <li key={order.id} className="order-summary-item">
+                <li key={order.order_id} className="order-summary-item">
                   <div className="order-info">
-                    <strong>Order #{order.id}</strong>
+                    <strong>Order #{order.order_id}</strong>
                     <p>
                       Items:{" "}
                       {order.items && Array.isArray(order.items) && order.items.length > 0
