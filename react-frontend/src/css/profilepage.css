@@ -193,3 +193,7 @@
 .logout-modal-content button:hover {
   background-color: #218838;
 }
+
+.profile-page .order-history td li {
+  color: #27030f !important;
+}
