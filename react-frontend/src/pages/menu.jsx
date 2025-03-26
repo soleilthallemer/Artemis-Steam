@@ -68,6 +68,16 @@ const CatalogMenuPage = () => {
     const id = itemData.id;
     const price = parseFloat(itemData.price.replace("$", ""));
   
+    if (!id) {
+      console.warn("Missing ID for cart item:", itemData);
+      alert("Something went wrong. Item ID is missing.");
+      return;
+    }
+  
+    const newItem = { id, name: itemName, size, quantity, price };
+  
+    console.log("✅ Adding to cart:", newItem);
+  
     setCartItems((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (cartItem) => cartItem.name === itemName && cartItem.size === size
@@ -77,7 +87,7 @@ const CatalogMenuPage = () => {
         updatedCart[existingIndex].quantity += quantity;
         return updatedCart;
       } else {
-        return [...prevCart, { id, name: itemName, size, quantity, price }];
+        return [...prevCart, newItem];
       }
     });
   
@@ -89,6 +99,7 @@ const CatalogMenuPage = () => {
     });
     setTimeout(() => setPopupInfo(null), 2000);
   };
+  
   
   // Toggle cart modal open/close
   const showCart = () => setIsCartOpen(true);
@@ -160,7 +171,7 @@ const CatalogMenuPage = () => {
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
-  );
+  );  
 
   // Checkout function
   const handleCheckout = async () => {
@@ -185,17 +196,11 @@ const CatalogMenuPage = () => {
       return;
     }
   
-    const existingOrderId = localStorage.getItem("order_id");
-    if (existingOrderId) {
-      navigate("/order", { state: { cartItems } });
-      return;
-    }
-  
     try {
       const response = await fetch("http://157.245.80.36:5000/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, total_amount: 0 }), // shell
+        body: JSON.stringify({ user_id: userId, total_amount: totalPrice }),
       });
   
       if (!response.ok) throw new Error("Failed to create order");
@@ -205,7 +210,6 @@ const CatalogMenuPage = () => {
       localStorage.setItem("order_id", orderId);
   
       navigate("/order", { state: { cartItems } });
-  
     } catch (error) {
       console.error("Checkout Error:", error);
       alert("Failed to place the order. Try again.");
@@ -213,7 +217,6 @@ const CatalogMenuPage = () => {
   };
   
   
-
   // Sample DRINKS data (using public folder images)
   // src/components/CatalogMenuPage.jsx
 
