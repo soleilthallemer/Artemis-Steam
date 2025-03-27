@@ -10,7 +10,7 @@ from app.auth_routes import auth, init_jwt
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    
+
     db.init_app(app)
     migrate = Migrate(app, db)  # ✅ Enable Flask-Migrate
     init_jwt(app)  # ✅ Initialize JWT
