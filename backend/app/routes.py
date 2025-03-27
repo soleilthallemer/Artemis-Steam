@@ -272,3 +272,52 @@ def get_user_orders(user_id):
             "price": float(item.price)
         } for item in order.order_items]
     } for order in orders]), 200
+
+# Route to unclaim an order by employee
+@main.route('/orders/<int:order_id>/remove-claim', methods=['PUT'])
+def remove_order_claim(order_id):
+    try:
+        order = Order.query.get(order_id)
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
+
+        order.claimed_by = None
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order claim removed successfully",
+            "order_id": order.order_id
+        }), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to unclaim order {order_id}: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+    
+# Route to PATCH order status
+@main.route('/orders/<int:order_id>/status', methods=['PATCH'])
+def update_order_status(order_id):
+    try:
+        data = request.json
+        new_status = data.get("status")
+        if not new_status:
+            return jsonify({"error": "Missing status"}), 400
+
+        order = Order.query.get(order_id)
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
+
+        order.status = new_status
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order status updated",
+            "order_id": order.order_id,
+            "status": order.status
+        }), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update order status: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+

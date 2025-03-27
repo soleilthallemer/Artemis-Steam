@@ -3,14 +3,17 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
 class User(db.Model):
+    __tablename__ = 'users'  # Avoid reserved keyword 'user'
+
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     phone_number = db.Column(db.String(20), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(50), nullable=True)  # 'employee', 'manager', or 'customer'
+    role = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     hire_date = db.Column(db.Date, nullable=True)
@@ -23,37 +26,45 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     def __repr__(self):
         return f'<User {self.first_name} {self.last_name} ({self.role})>'
 
+
 class Order(db.Model):
-    order_id = db.Column(db.Integer, primary_key=True)  # renamed from id to order_id
+    __tablename__ = 'orders'  # Avoid reserved keyword 'order'
+
+    order_id = db.Column(db.Integer, primary_key=True)
     order_date = db.Column(db.DateTime, default=datetime.utcnow)
     total_amount = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', name='fk_order_user_id'), nullable=False)
-    claimed_by = db.Column(db.Integer, db.ForeignKey('user.user_id', name='fk_order_claimed_by'), nullable=True)
-    status = db.Column(db.String(50), default="submitted")  # if not already added
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id', name='fk_order_user_id'), nullable=False)
+    claimed_by = db.Column(db.Integer, db.ForeignKey('users.user_id', name='fk_order_claimed_by'), nullable=True)
+    status = db.Column(db.String(50), default="submitted")
+
     order_items = db.relationship('OrderItem', backref='order', lazy=True)
 
     def __repr__(self):
         return f'<Order {self.order_id}, claimed_by: {self.claimed_by}>'
 
+
 class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+
     id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('order.order_id'), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), nullable=False)
     item_id = db.Column(db.Integer, db.ForeignKey('menu_items.item_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
 
-    # Relationship to access menu item details (e.g., name, price, etc.)
     menu_item = db.relationship("MenuItem", backref="order_items", lazy="joined")
 
     def __repr__(self):
         return f'<OrderItem {self.id}>'
 
+
 class MenuItem(db.Model):
-    __tablename__ = 'menu_items'  # Ensure table name matches references
+    __tablename__ = 'menu_items'
+
     item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, default="")
