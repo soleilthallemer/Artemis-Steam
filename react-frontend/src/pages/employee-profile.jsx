@@ -102,9 +102,9 @@ const EmployeeProfile = () => {
     }
   };
 
-  // Handler to finalize an order (mark as Completed)
+  // Handler to finalize an order (mark as Completed) and remove it
   const finalizeOrder = async (orderId) => {
-    await updatedOrderstatus(orderId, "Completed"); 
+    await updateOrderStatus(orderId, "Completed"); 
     await removeOrder(orderId);
   };
 
@@ -160,11 +160,11 @@ const EmployeeProfile = () => {
                     <strong>Order #{order.order_id}</strong>
                     {order.items && Array.isArray(order.items) ? (
                       <p>
-                      Items:{" "}
-                      {order.items && Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
-                        : "No items listed"}
-                    </p>
+                        Items:{" "}
+                        {order.items && order.items.length > 0
+                          ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
+                          : "No items listed"}
+                      </p>
                     ) : (
                       <p>Items: (none listed)</p>
                     )}
