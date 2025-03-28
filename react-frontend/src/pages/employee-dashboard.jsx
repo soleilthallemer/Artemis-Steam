@@ -1,4 +1,3 @@
-// src/components/employee-dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/employee-dashboard.css';
@@ -11,10 +10,9 @@ const EmployeeDashboard = () => {
   const currentEmployeeId = localStorage.getItem("user_id");
 
   useEffect(() => {
-    // Fetch orders from backend API dynamically
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://157.245.80.36:5000/orders"); // Replace with your API URL
+        const response = await fetch("http://157.245.80.36:5000/orders");
         if (!response.ok) {
           throw new Error("Failed to fetch orders");
         }
@@ -28,29 +26,28 @@ const EmployeeDashboard = () => {
     fetchOrders();
   }, []);
 
-  // Separate orders into unclaimed and claimed using loose equality to catch null/undefined
+  // Filter orders to only show those that are not "Completed"
   const unclaimedOrders = orders
-    .filter(order => order.claimed_by == null)
+    .filter(order => order.claimed_by == null && order.status !== "Completed")
     .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
 
   const claimedOrders = orders
-    .filter(order => order.claimed_by != null)
+    .filter(order => order.claimed_by != null && order.status !== "Completed")
     .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
 
   // When an employee claims an order, update that order's claimed_by and status.
   const handleClaimOrder = async (orderId) => {
     try {
       const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/claim`, {
-        method: "POST", // Ensure this matches the backend expectation
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ user_id: currentEmployeeId }) // Pass the employee's id
+        body: JSON.stringify({ user_id: currentEmployeeId })
       });
       if (!response.ok) {
         throw new Error("Failed to claim order");
       }
-      // Update local state to reflect the claimed order
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.order_id === orderId

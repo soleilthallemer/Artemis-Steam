@@ -73,7 +73,7 @@ const EmployeeProfile = () => {
         body: JSON.stringify({ status: newStatus })
       });
       if (!response.ok) throw new Error("Failed to update order status");
-  
+
       setClaimedOrders(prev =>
         prev.map(order =>
           order.order_id === orderId ? { ...order, status: newStatus } : order
@@ -104,7 +104,7 @@ const EmployeeProfile = () => {
 
   // Handler to finalize an order (mark as Completed) and remove it
   const finalizeOrder = async (orderId) => {
-    await updateOrderStatus(orderId, "Completed"); 
+    await updateOrderStatus(orderId, "Completed");
     await removeOrder(orderId);
   };
 
@@ -174,7 +174,11 @@ const EmployeeProfile = () => {
                     <div className="status-container">
                       <span className="status-label">Status:</span>
                       <select
-                        value={order.status}
+                        value={
+                          (order.status === "In Progress" || order.status === "Completed")
+                            ? order.status
+                            : "Claimed"
+                        }
                         onChange={(e) => updateOrderStatus(order.order_id, e.target.value)}
                       >
                         <option value="Claimed">Claimed</option>
