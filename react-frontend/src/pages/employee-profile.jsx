@@ -104,9 +104,9 @@ const EmployeeProfile = () => {
 
   // Handler to finalize an order (mark as Completed)
   const finalizeOrder = async (orderId) => {
-    await updateOrderStatus(orderId, "Completed");
+    await updatedOrderstatus(orderId, "Completed"); 
+    await removeOrder(orderId);
   };
-  
 
   // Handler for logging out
   const handleLogout = (e) => {
