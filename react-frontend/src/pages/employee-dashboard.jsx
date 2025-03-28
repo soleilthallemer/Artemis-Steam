@@ -69,7 +69,6 @@ const EmployeeDashboard = () => {
       <header className="banner">
         <div className="bar">
           <ul>
-            <li><Link to="/">Home</Link></li>
             <li><Link to="/employee-dashboard">Dashboard</Link></li>
             <li><Link to="/employee-profile">Profile</Link></li>
             <li><Link to="/login">Log Out</Link></li>

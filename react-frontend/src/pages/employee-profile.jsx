@@ -11,7 +11,7 @@ const EmployeeProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Use stored user_email and user_id (for employees, they are users)
+    // Retrieve stored user_email and user_id (for employees, they are users)
     const email = localStorage.getItem("user_email");
     const userId = localStorage.getItem("user_id");
 
@@ -25,7 +25,7 @@ const EmployeeProfile = () => {
 
     const fetchProfileAndOrders = async () => {
       try {
-        // Fetch user profile using the /users/<email> endpoint
+        // Fetch employee profile using the /users/<email> endpoint
         const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
           headers: { "Content-Type": "application/json" },
         });
@@ -37,16 +37,16 @@ const EmployeeProfile = () => {
           console.error("Failed to fetch user profile.");
         }
 
-        // Fetch all orders and then filter those claimed by this user (employee)
+        // Fetch all orders
         const orderRes = await fetch(`http://157.245.80.36:5000/orders`, {
           headers: { "Content-Type": "application/json" },
         });
 
         if (orderRes.ok) {
           const orderData = await orderRes.json();
-          // Filter orders where claimed_by equals the current user's id.
+          // Filter orders claimed by the current user (employee)
           const filteredOrders = orderData.filter(
-            order => order.claimed_by == userId
+            order => String(order.claimed_by) === String(userId)
           );
           // Sort orders by newest first using order_date
           filteredOrders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
@@ -62,8 +62,53 @@ const EmployeeProfile = () => {
     };
 
     fetchProfileAndOrders();
-  }, []);
+  }, [navigate]);
 
+  // Handler to update an order's status
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!response.ok) throw new Error("Failed to update order status");
+  
+      setClaimedOrders(prev =>
+        prev.map(order =>
+          order.order_id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert("Failed to update order status.");
+    }
+  };
+
+  // Handler to remove an order claim (unclaim)
+  const removeOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/remove-claim`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!response.ok) {
+        throw new Error("Failed to remove order claim");
+      }
+      setClaimedOrders(prev => prev.filter(order => order.order_id !== orderId));
+    } catch (error) {
+      console.error("Error removing order claim:", error);
+      alert("Failed to remove order.");
+    }
+  };
+
+  // Handler to finalize an order (mark as Completed)
+  const finalizeOrder = async (orderId) => {
+    await updateOrderStatus(orderId, "Completed");
+  };
+  
+
+  // Handler for logging out
   const handleLogout = (e) => {
     e.preventDefault();
     setUser(null);
@@ -80,105 +125,89 @@ const EmployeeProfile = () => {
   }
 
   return (
-    <div className="profile-page">
-      <div className="banner">
+    <div className="employee-profile">
+      <header className="banner">
         <div className="bar">
           <ul>
-            <li><Link to="/">Home</Link></li>
             <li><Link to="/employee-dashboard">Dashboard</Link></li>
             <li><Link to="/employee-profile">Profile</Link></li>
             <li><Link to="/login">Log Out</Link></li>
           </ul>
         </div>
-      </div>
+      </header>
 
-      <div className="container">
-        <section className="profile-card">
-          {isAuthenticated && user ? (
+      <main>
+        <div className="profile-info">
+          {user ? (
             <>
-              <div className="profile-info">
-                <img
-                  className="profile-picture"
-                  src={user.profilePicture || "/images/profilepicture.jpg"}
-                  alt={fullName}
-                />
-                <div className="user-details">
-                  <h2 className="username">{fullName}</h2>
-                  <p className="email">{user.email || "No email"}</p>
-                </div>
-                <button className="logout-button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </div>
-
-              <div className="order-history">
-                <h3>Order History</h3>
-                {claimedOrders.length === 0 ? (
-                  <p>No orders claimed yet.</p>
-                ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Order #</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Items</th>
-                        <th>Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {claimedOrders.map((order, index) => (
-                        <tr key={index}>
-                          <td>{order.order_id}</td>
-                          <td>
-                            {order.order_date
-                              ? new Date(order.order_date).toLocaleDateString()
-                              : "Unknown Date"}
-                          </td>
-                          <td>{order.status || "Pending"}</td>
-                          <td>
-                            {order.items && order.items.length > 0 ? (
-                              <ul>
-                                {order.items.map((item, i) => (
-                                  <li key={i}>
-                                    {item.name} (x{item.quantity}) - ${item.price.toFixed(2)}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              "No items"
-                            )}
-                          </td>
-                          <td>${order.total_amount ? order.total_amount.toFixed(2) : "0.00"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+              <h1>{user.name || `${user.first_name} ${user.last_name}`}</h1>
+              <p>{user.email}</p>
             </>
           ) : (
-            <div className="profile-info" style={{ textAlign: "center", marginTop: "2rem" }}>
-              <p style={{ fontSize: "1.5rem", color: "black", fontWeight: "bold" }}>
-                No user is logged in.
-              </p>
-              <Link
-                to="/login"
-                className="login-button"
-                style={{
-                  display: "inline-block",
-                  fontSize: "1.2rem",
-                  color: "black",
-                  textDecoration: "underline",
-                  marginTop: "1rem"
-                }}
-              >
-                Go to Login
-              </Link>
-            </div>
+            <p>Loading employee data...</p>
+          )}
+        </div>
+        
+        <section className="claimed-orders">
+          <h2>Claimed Orders</h2>
+          {claimedOrders.length === 0 ? (
+            <p>No orders claimed yet.</p>
+          ) : (
+            <ul className="order-list">
+              {claimedOrders.map(order => (
+                <li key={order.order_id} className="order-summary-item">
+                  <div className="order-info">
+                    <strong>Order #{order.order_id}</strong>
+                    {order.items && Array.isArray(order.items) ? (
+                      <p>
+                      Items:{" "}
+                      {order.items && Array.isArray(order.items) && order.items.length > 0
+                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
+                        : "No items listed"}
+                    </p>
+                    ) : (
+                      <p>Items: (none listed)</p>
+                    )}
+                  </div>
+
+                  <div className="status-and-actions-column">
+                    <div className="status-container">
+                      <span className="status-label">Status:</span>
+                      <select
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus(order.order_id, e.target.value)}
+                      >
+                        <option value="Claimed">Claimed</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    </div>
+
+                    <div className="order-actions">
+                      <button
+                        className="action-btn remove-btn"
+                        onClick={() => removeOrder(order.order_id)}
+                      >
+                        Remove
+                      </button>
+                      <button
+                        className="action-btn finalize-btn"
+                        onClick={() => finalizeOrder(order.order_id)}
+                      >
+                        Finalize
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </section>
-      </div>
+      </main>
+
+      <footer>
+        <p>© 2025 Artemis &amp; Steam. All rights reserved.</p>
+      </footer>
     </div>
   );
 };
