@@ -1,0 +1,373 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #EBE6E0;
+}
+
+.product-management-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 80px; 
+  background-color: #3f6e42;
+  color: #fff;
+  padding: 0.75rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.15);
+  transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar.open {
+  width: 260px; 
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sidebar:not(.open) .sidebar-header {
+  justify-content: center;
+}
+
+.sidebar-header h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-right: 1rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  transition: background-color 0.1s ease;
+  padding: 0.5rem 0;
+}
+
+.nav-item:hover {
+  background-color: #2e4d2f;
+}
+
+.nav-item.active {
+  background-color: #2e4d2f;
+}
+
+.nav-item.label {
+  justify-content: flex-start;
+  padding-left: 1rem;
+  gap: 0.75rem;
+}
+
+.nav-item span.material-icons {
+  font-size: 1.2rem;
+}
+
+.sidebar-bottom {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.main-content {
+  margin-left: 80px; 
+  padding: 2rem;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar.open ~ .main-content {
+  margin-left: 260px; 
+}
+
+.main-content.full-width {
+  margin-left: 80px;
+}
+
+.product-management-header {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 2rem 1rem;
+  color: #27030f !important;
+  text-align: left;
+}
+
+.product-management-header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #27030f !important;
+}
+
+.product-management-header p {
+  font-size: 1rem;
+  color: #35131e !important;
+  margin: 0;
+}
+
+.add-product-btn {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  background-color: #5b7754;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+}
+
+.add-product-btn:hover {
+  background-color: #4f694a;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: #fdfcf7; 
+  color: #27030f !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px; 
+  overflow: hidden; 
+}
+
+.product-table th,
+.product-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: #27030f !important;
+}
+
+.product-table th {
+  background-color: #f5f4f2;
+  font-weight: 600;
+}
+
+.product-table th.small-id,
+.product-table td.small-id {
+  font-size: 0.8rem;
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  color: #27030f !important;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: #f0efed;
+}
+
+.delete-btn:hover {
+  background-color: #fceaea;
+}
+
+.material-icons {
+  font-size: 1.2rem;
+}
+
+.edit-btn span.material-icons {
+  color: #3a7d44 !important;  
+}
+
+.delete-btn span.material-icons {
+  color: #ef4444 !important;  
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.stock-badge.in-stock {
+  background-color: #edf7ed;
+  color: #2e7d32 !important;
+}
+
+.stock-badge.out-of-stock {
+  background-color: #ffe5e5;
+  color: #cc0000 !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
+  color: #27030f !important;
+}
+
+.modal-content form label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: #27030f !important;
+  text-align: left;
+}
+
+.modal-content form input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #27030f !important;
+  text-align: left;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #5b7754;
+  color: #fff !important;
+}
+
+.modal-actions button[type="submit"]:hover {
+  background-color: #4f694a;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #ccc;
+  color: #27030f !important;
+}
+
+.modal-actions button[type="button"]:hover {
+  background-color: #b3b3b3;
+}
+
+.modal-error-message {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #cc0000 !important;
+  background-color: #ffe5e5;
+  border: 1px solid #cc0000;
+  border-radius: 4px;
+}
+
+.product-table td img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.modal-content input[type="file"] {
+  margin-top: 0.5rem;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-content img[alt="Preview"] {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-top: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.image-edit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+}
+
+.image-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
