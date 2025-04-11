@@ -645,3 +645,44 @@
 .size-edit-panel button:hover {
   background-color: #5a5e40;
 }
+
+.bar ul li.dropdown {
+  position: relative;
+}
+
+.bar ul li.dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;         
+  left: 0;         
+  min-width: 150px;     
+  background-color: transparent; 
+  list-style: none;
+  padding: 1rem 0;    
+  z-index: 1000;
+  text-align: left;     
+}
+
+.bar ul li.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.bar ul li.dropdown .dropdown-menu li {
+  margin: 0.25rem 0;   
+  padding: 0 1rem;
+}
+
+.bar ul li.dropdown .dropdown-menu::after{
+  content:'';
+  height: 3px;
+  width: 0;
+  background: white;
+  position: absolute;
+  left: 0;
+  bottom: 3px;
+  transition: 0.5s;
+}
+
+.bar ul li.dropdown .dropdown-menu:hover::after{
+  width: 75%;
+}

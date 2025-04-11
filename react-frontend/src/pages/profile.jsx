@@ -87,7 +87,14 @@ const ProfilePage = () => {
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order" className="active">Order</Link></li>
-            <li><Link to="/login">Log In</Link></li>
+            <li className="dropdown">
+            <Link to="/login" className="nav-link">
+              Log In
+            </Link>
+              <ul className="dropdown-menu">
+              <Link to="/admin-login">Admin Log In</Link>
+              </ul>
+              </li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
@@ -171,6 +178,19 @@ const ProfilePage = () => {
                 }}
               >
                 Go to Login
+              </Link>
+
+              <Link
+                to="/admin-login"
+                style={{
+                  display: "inline-block",
+                  fontSize: "1.2rem",
+                  color: "black",
+                  textDecoration: "underline",
+                  marginTop: "1rem"
+                }}
+              >
+                or Log in as Admin
               </Link>
             </div>
           )}

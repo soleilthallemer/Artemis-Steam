@@ -321,7 +321,14 @@ const CatalogMenuPage = () => {
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order">Order</Link></li>
-            <li><Link to="/login">Log In</Link></li>
+            <li className="dropdown">
+            <Link to="/login" className="nav-link">
+              Log In
+            </Link>
+              <ul className="dropdown-menu">
+            <Link to="/admin-login">Admin Log In</Link>
+              </ul>
+            </li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
