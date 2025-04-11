@@ -251,7 +251,7 @@ def get_user_orders(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if user.role in ['employee', 'manager']:
+    if user.role in ['employee', 'administrator']:
         orders = Order.query.filter_by(claimed_by=user_id).all()
     else:
         orders = Order.query.filter_by(user_id=user_id).all()

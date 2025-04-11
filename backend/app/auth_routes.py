@@ -32,7 +32,7 @@ def register():
         last_name=data["last_name"],
         email=data["email"],
         phone_number=data.get("phone_number"),
-        role=data.get("role", "user"),  # Default role is 'user'
+        role=data.get("role", "customer"),  # Default role is 'customer'
         hire_date=data.get("hire_date", None),
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
@@ -47,7 +47,7 @@ def register():
 # ✅ Login Endpoint
 @auth.route('/login', methods=['POST'])
 def login():
-    """Logs in a user and returns a JWT."""
+    """Logs in a user and returns a JWT and role information."""
     data = request.json
 
     if not data.get("email") or not data.get("password"):
@@ -58,10 +58,18 @@ def login():
     if user is None or not user.check_password(data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    # ✅ Convert `user.user_id` to a string when generating the JWT token
     access_token = create_access_token(identity=str(user.user_id))
 
-    return jsonify({"access_token": access_token}), 200
+    return jsonify({
+        "access_token": access_token,
+        "user": {
+            "email": user.email,
+            "role": user.role,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+    }), 200
+
 
 
 # ✅ Protected Route Example
