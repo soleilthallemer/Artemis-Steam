@@ -22,12 +22,18 @@ const AdminDashboard = () => {
     const userId = localStorage.getItem("user_id");
     const role = localStorage.getItem("role");
 
-    if (!email || !userId || role !== "administrator") {
+    if (!email || !userId || !role) {
+      // Wait for next render when localStorage is populated
+      return;
+    }
+    
+    if (role !== "administrator") {
       setLoading(false);
       alert("Access denied. Administrator only.");
       navigate("/login");
       return;
     }
+    
 
     const fetchDashboardData = async () => {
       try {
@@ -39,31 +45,32 @@ const AdminDashboard = () => {
         } else {
           setUser(userData);
         }
-
-        const [summaryRes, usersRes, employeesRes, ordersRes] = await Promise.all([
-          fetch("http://157.245.80.36:5000/dashboard/summary"),
-          fetch("http://157.245.80.36:5000/users/recent"),
-          fetch("http://157.245.80.36:5000/employees/active"),
-          fetch("http://157.245.80.36:5000/orders/recent"),
-        ]);
-
-        const [summaryData, usersData, employeesData, ordersData] = await Promise.all([
-          summaryRes.json(),
-          usersRes.json(),
-          employeesRes.json(),
-          ordersRes.json(),
-        ]);
-
-        setSummaryStats(summaryData);
-        setRecentUsers(usersData);
-        setRecentEmployees(employeesData);
-        setRecentOrders(ordersData);
+    
+        const summaryRes = await fetch("http://157.245.80.36:5000/dashboard/summary");
+        const summaryData = await summaryRes.json();
+    
+        const {
+          totalUsers,
+          totalProducts,
+          totalOrders,
+          revenue,
+          recentUsers,
+          recentEmployees,
+          recentOrders
+        } = summaryData;
+    
+        setSummaryStats({ totalUsers, totalProducts, totalOrders, revenue });
+        setRecentUsers(recentUsers);
+        setRecentEmployees(recentEmployees);
+        setRecentOrders(recentOrders);
+    
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       } finally {
         setLoading(false);
       }
     };
+    
 
     fetchDashboardData();
   }, [navigate]);
@@ -235,20 +242,23 @@ const AdminDashboard = () => {
           <div className="recent-orders-section">
             <h3 className="section-title">Recently Placed Orders</h3>
             <ul className="order-list">
-              {recentOrders.map((order) => (
-                <li key={order.id}>
-                  <span>Order {order.orderNumber}</span> - Status: {order.status}
-                  {order.claimedBy && (
-                    <em> (Claimed by {order.claimedBy})</em>
-                  )}
-                  <div className="order-actions">
-                    {!order.claimedBy && (
-                      <button onClick={() => claimOrder(order.id)}>Claim</button>
-                    )}
-                    <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
-                  </div>
-                </li>
-              ))}
+            {recentOrders
+  .filter((order) => order.status.toLowerCase() !== "completed")
+  .map((order) => (
+    <li key={order.id}>
+      <span>Order {order.orderNumber}</span> - Status: {order.status}
+      {order.claimedBy && (
+        <em> (Claimed by {order.claimedBy})</em>
+      )}
+      <div className="order-actions">
+        {!order.claimedBy && (
+          <button onClick={() => claimOrder(order.id)}>Claim</button>
+        )}
+        <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
+      </div>
+    </li>
+))}
+
             </ul>
           </div>
         </div>
