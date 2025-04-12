@@ -12,6 +12,10 @@ import Bliss from './pages/bliss';
 import Jocelyn from './pages/jocelyn';
 import EmployeeDashboard from './pages/employee-dashboard';
 import EmployeeProfile from './pages/employee-profile';
+import AdminLogin from './pages/admin-login';
+import AdminDashboard from './pages/admin-dashboard';
+import AdminProductManagement from './pages/admin-product-management';
+
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
@@ -30,6 +34,9 @@ function App() {
         <Route path="/jocelyn" element={<Jocelyn />} />
         <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
         <Route path="/employee-profile" element={<EmployeeProfile />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-product-management" element={<AdminProductManagement />} />
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );

@@ -45,9 +45,7 @@ const LoginPage = () => {
       // Check the user's role and navigate accordingly
       const role = localStorage.getItem('role');
       if (role === 'employee') {
-        navigate('/employee-dashboard');
-      } else if (role === 'manager') {
-        navigate('/manager-dashboard');
+        navigate('/employee-profile');
       } else {
         // Default redirection for customers or other roles
         navigate('/profile');

@@ -251,7 +251,7 @@ def get_user_orders(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if user.role in ['employee', 'manager']:
+    if user.role in ['employee', 'administrator']:
         orders = Order.query.filter_by(claimed_by=user_id).all()
     else:
         orders = Order.query.filter_by(user_id=user_id).all()
@@ -320,4 +320,58 @@ def update_order_status(order_id):
         print(f"[ERROR] Failed to update order status: {e}")
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
+    
+# Dashboard summary endpoint
+@main.route('/dashboard/summary', methods=['GET'])
+def get_dashboard_summary():
+    try:
+        # Totals
+        total_users = User.query.count()
+        total_products = MenuItem.query.count()
+        total_orders = Order.query.count()
+        total_revenue = db.session.query(db.func.sum(Order.total_amount)).scalar() or 0
+
+        # 3 most recently registered users
+        recent_users = User.query.order_by(User.created_at.desc()).limit(3).all()
+        recent_users_data = [{
+            "id": u.user_id,
+            "name": f"{u.first_name} {u.last_name}",
+            "email": u.email,
+            "registered": u.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for u in recent_users]
+
+        # 2 most recently active employees (using updated_at)
+        recent_employees = User.query.filter_by(role='employee') \
+            .order_by(User.updated_at.desc()) \
+            .limit(2).all()
+        recent_employees_data = [{
+            "id": e.user_id,
+            "name": f"{e.first_name} {e.last_name}",
+            "lastActive": e.updated_at.strftime('%Y-%m-%d %H:%M:%S') if e.updated_at else "N/A"
+        } for e in recent_employees]
+
+        # 5 most recent orders
+        recent_orders = Order.query.order_by(Order.order_date.desc()).limit(5).all()
+        recent_orders_data = [{
+            "id": o.order_id,
+            "orderNumber": o.order_id,
+            "status": o.status,
+            "claimedBy": o.claimed_by  # optionally join User for name
+        } for o in recent_orders]
+
+        return jsonify({
+            "totalUsers": total_users,
+            "totalProducts": total_products,
+            "totalOrders": total_orders,
+            "revenue": round(total_revenue, 2),
+            "recentUsers": recent_users_data,
+            "recentEmployees": recent_employees_data,
+            "recentOrders": recent_orders_data
+        }), 200
+
+    except Exception as e:
+        print("[ERROR] Failed to load dashboard summary:", e)
+        traceback.print_exc()  # <- this is critical for debugging
+        return jsonify({"error": "Failed to load dashboard summary"}), 500
+
 
