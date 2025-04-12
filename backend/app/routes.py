@@ -164,9 +164,11 @@ def get_menu_items():
         'availability_status': m.availability_status,
         'calories': m.calories,
         'preparation_time': m.preparation_time,
+        'quantity': m.quantity,  # ✅ NEW FIELD
         'created_at': m.created_at.strftime('%Y-%m-%d %H:%M:%S'),
         'updated_at': m.updated_at.strftime('%Y-%m-%d %H:%M:%S') if m.updated_at else None
     } for m in menu_items])
+
 
 @main.route('/menu', methods=['POST'])
 def create_menu_item():
@@ -181,11 +183,13 @@ def create_menu_item():
         image_url=data.get('image_url'),
         availability_status=data.get('availability_status', True),
         calories=data.get('calories'),
-        preparation_time=data.get('preparation_time')
+        preparation_time=data.get('preparation_time'),
+        quantity=data.get('quantity', 0)  # ✅ NEW FIELD DEFAULTING TO 0
     )
     db.session.add(menu_item)
     db.session.commit()
     return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
+
 
 @main.route('/orders/<int:order_id>/items', methods=['GET'])
 def get_order_items(order_id):
@@ -373,5 +377,108 @@ def get_dashboard_summary():
         print("[ERROR] Failed to load dashboard summary:", e)
         traceback.print_exc()  # <- this is critical for debugging
         return jsonify({"error": "Failed to load dashboard summary"}), 500
+    
+# endpoint to update an existing product
+@main.route('/menu/<int:item_id>', methods=['PUT'])
+def update_menu_item(item_id):
+    try:
+        data = request.json
+        item = MenuItem.query.get(item_id)
+        if not item:
+            return jsonify({"error": "Menu item not found"}), 404
+
+        item.name = data.get('name', item.name)
+        item.description = data.get('description', item.description)
+        item.category = data.get('category', item.category)
+        item.price = data.get('price', item.price)
+        item.size_options = data.get('size_options', item.size_options)
+        item.ingredients = data.get('ingredients', item.ingredients)
+        item.image_url = data.get('image_url', item.image_url)
+        item.availability_status = data.get('availability_status', item.availability_status)
+        item.quantity = data.get('quantity', item.quantity)
+        item.calories = data.get('calories', item.calories)
+        item.preparation_time = data.get('preparation_time', item.preparation_time)
+
+        db.session.commit()
+
+        return jsonify({"message": "Menu item updated successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update menu item {item_id}: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+
+# endpoint to delete an existing product
+@main.route('/menu/<int:item_id>', methods=['DELETE'])
+def delete_menu_item(item_id):
+    try:
+        item = MenuItem.query.get(item_id)
+        if not item:
+            return jsonify({"error": "Menu item not found"}), 404
+
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({"message": "Menu item deleted successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to delete menu item {item_id}: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+    
+# endpoint to fetch 3 recent users
+@main.route('/users/recent', methods=['GET'])
+def get_recent_users():
+    users = User.query.order_by(User.created_at.desc()).limit(3).all()
+    return jsonify([
+        {
+            "id": u.user_id,
+            "name": f"{u.first_name} {u.last_name}",
+            "email": u.email,
+            "registered": u.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for u in users
+    ])
+
+# endpoint to fetch last 2 active employees
+@main.route('/employees/active', methods=['GET'])
+def get_recent_employees():
+    employees = User.query.filter_by(role="employee").order_by(User.updated_at.desc()).limit(2).all()
+    return jsonify([
+        {
+            "id": e.user_id,
+            "name": f"{e.first_name} {e.last_name}",
+            "lastActive": e.updated_at.strftime('%Y-%m-%d %H:%M:%S') if e.updated_at else "N/A"
+        }
+        for e in employees
+    ])
+
+# endpoint to fetch 5 recent uncompleted orders
+@main.route('/orders/recent', methods=['GET'])
+def get_recent_uncompleted_orders():
+    try:
+        orders = (
+            Order.query
+            .filter(Order.status != "Completed")
+            .order_by(Order.order_date.desc())
+            .limit(5)
+            .all()
+        )
+
+        return jsonify([
+            {
+                "id": o.order_id,
+                "orderNumber": o.order_id,
+                "status": o.status,
+                "claimedBy": f"{o.claimer_user.first_name} {o.claimer_user.last_name}" if o.claimer_user else None
+            }
+            for o in orders
+        ]), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch recent uncompleted orders: {e}")
+        return jsonify({"error": "Failed to retrieve recent orders"}), 500
+
+
+
 
 
