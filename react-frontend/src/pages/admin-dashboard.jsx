@@ -186,7 +186,7 @@ const AdminDashboard = () => {
           <div className="stats-card">
             <div className="stats-card-icon"><span className="material-icons">show_chart</span></div>
             <h4>Revenue</h4>
-            <p>${summaryStats.revenue}</p>
+            <p>${Number(summaryStats.revenue).toFixed(2)}</p>
           </div>
 
           {/* Admin Profile */}
@@ -194,9 +194,9 @@ const AdminDashboard = () => {
             <h3 className="profile-title">Admin Profile</h3>
             {user ? (
               <div className="profile-info">
-                <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> {user.role}</p>
+                <p className="admin-profile-info"><strong className="admin-profile-info">Name:</strong> {user.first_name} {user.last_name}</p>
+                <p className="admin-profile-info"><strong className="admin-profile-info">Email:</strong> {user.email}</p>
+                <p className="admin-profile-info"><strong className="admin-profile-info">Role:</strong> {user.role.toUpperCase()}</p>
               </div>
             ) : (
               <p>Unable to load admin info.</p>
@@ -218,8 +218,8 @@ const AdminDashboard = () => {
             <ul className="employee-list">
               {recentEmployees.map((employee) => (
                 <li key={employee.id}>
-                  <strong>{employee.name}</strong><br />
-                  <small>Last active: {employee.lastActive}</small>
+                  <strong className="employee-name">{employee.name}</strong><br />
+                  <small className="employee-active">Last active: {employee.lastActive}</small>
                 </li>
               ))}
             </ul>
@@ -231,8 +231,8 @@ const AdminDashboard = () => {
             <ul className="user-list">
               {recentUsers.map((user) => (
                 <li key={user.id}>
-                  <strong>{user.name}</strong> - <span>{user.email}</span><br />
-                  <small>Registered on: {user.registered}</small>
+                  <strong className="user-name">{user.name}</strong> <span className="user-email"> - {user.email}</span><br />
+                  <small className="user-registered">Registered on: {user.registered}</small>
                 </li>
               ))}
             </ul>
@@ -246,13 +246,14 @@ const AdminDashboard = () => {
   .filter((order) => order.status.toLowerCase() !== "completed")
   .map((order) => (
     <li key={order.id}>
-      <span>Order {order.orderNumber}</span> - Status: {order.status}
+      <span className="order-label">Order {order.orderNumber}</span>
+      <span className="order-label"> - Status: {order.status}</span>
       {order.claimedBy && (
-        <em> (Claimed by {order.claimedBy})</em>
+        <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
       )}
       <div className="order-actions">
         {!order.claimedBy && (
-          <button onClick={() => claimOrder(order.id)}>Claim</button>
+          <button onClick={() => claimOrder(order.id)}>Claim </button>
         )}
         <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
       </div>
@@ -268,3 +269,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
