@@ -83,7 +83,7 @@ const OrderPage = () => {
         items: transformedItems,
       });
   
-      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

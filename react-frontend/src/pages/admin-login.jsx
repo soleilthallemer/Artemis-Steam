@@ -20,7 +20,7 @@ const AdminLogin = () => {
     setLoginError(null);
 
     try {
-      const response = await fetch('http://157.245.80.36:5000/auth/login', {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const AdminLogin = () => {
   const handleGetUser = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

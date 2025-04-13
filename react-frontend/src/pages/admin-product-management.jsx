@@ -11,7 +11,7 @@ const AdminProductManagement = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://157.245.80.36:5000/menu");
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu`);
       const data = await response.json();
       const formatted = data.map((item) => ({
         id: item.item_id,
@@ -81,7 +81,7 @@ const AdminProductManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const response = await fetch(`http://157.245.80.36:5000/menu/${id}`, {
+        const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu/${id}`, {
           method: "DELETE",
         });
         if (response.ok) {
@@ -142,7 +142,7 @@ const AdminProductManagement = () => {
 
     try {
       if (editingProduct) {
-        const response = await fetch(`http://157.245.80.36:5000/menu/${editingProduct.id}`, {
+        const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu/${editingProduct.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -166,7 +166,7 @@ const AdminProductManagement = () => {
           console.error("Update failed");
         }
       } else {
-        const response = await fetch("http://157.245.80.36:5000/menu", {
+        const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
