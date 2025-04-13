@@ -23,7 +23,7 @@ const ProfilePage = () => {
 
     const fetchProfileAndOrders = async () => {
       try {
-        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -34,7 +34,7 @@ const ProfilePage = () => {
           console.error("Failed to fetch user profile.");
         }
 
-        const orderRes = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
+        const orderRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${userId}`, {
           headers: { "Content-Type": "application/json" },
         });
 

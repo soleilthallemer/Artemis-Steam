@@ -21,7 +21,7 @@ const LoginPage = () => {
     setLoginError(null);
 
     try {
-      const response = await fetch('http://157.245.80.36:5000/auth/login', {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const LoginPage = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+      const response = await fetch(`http://${process.env.API_IP}:5000/users/${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

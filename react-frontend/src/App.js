@@ -40,6 +40,7 @@ function App() {
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );
+  console.log('API IP: ', process.env.REACT_APP_API_IP);
 }
 
 export default App;
