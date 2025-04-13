@@ -49,7 +49,7 @@ const EmployeeProfile = () => {
             order => String(order.claimed_by) === String(userId)
           );
           // Sort orders by newest first using order_date
-          filteredOrders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
+          filteredOrders.sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
           setClaimedOrders(filteredOrders);
         } else {
           console.error("Failed to fetch order history.");

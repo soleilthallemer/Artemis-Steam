@@ -34,7 +34,7 @@ const CatalogMenuPage = () => {
     fetchMenuItems();
   }, []);
 
-  const isDrinkItem = (item) => item.category?.toLowerCase() === "beverages";
+  const isDrinkItem = (item) => item.category?.toLowerCase() === "drink";
 
   const selectSize = (id, size) => {
     setSelectedSizes((prev) => ({ ...prev, [id]: size }));
@@ -47,6 +47,20 @@ const CatalogMenuPage = () => {
 
   const addToCart = (e, item) => {
     e.stopPropagation();
+
+    // Check if the item is out of stock
+    if (!item.in_stock) {
+      const rect = e.target.getBoundingClientRect();
+      console.log("Item is out of stock, popup at:", rect);
+      setPopupInfo({
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        message: "Cannot add to cart, item is out of stock."
+      });
+      setTimeout(() => setPopupInfo(null), 2000);
+      return;
+    }
+
     const size = selectedSizes[item.item_id];
     if (isDrinkItem(item) && !size) {
       alert("Please select a size before adding to cart.");
@@ -75,7 +89,11 @@ const CatalogMenuPage = () => {
     });
 
     const rect = e.target.getBoundingClientRect();
-    setPopupInfo({ x: rect.left + window.scrollX, y: rect.top + window.scrollY, message: "Added to cart!" });
+    setPopupInfo({
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY,
+      message: "Added to cart!"
+    });
     setTimeout(() => setPopupInfo(null), 2000);
   };
 
@@ -139,7 +157,6 @@ const CatalogMenuPage = () => {
   const foodItems = menuItems.filter((item) =>
     item.category?.toLowerCase() === "food"
   );
-  
 
   return (
     <div className="catalog">
@@ -153,7 +170,9 @@ const CatalogMenuPage = () => {
             <li className="dropdown">
               <Link to="/login" className="nav-link">Log In</Link>
               <ul className="dropdown-menu">
-                <Link to="/admin-login">Admin Log In</Link>
+                <li>
+                  <Link to="/admin-login">Admin Log In</Link>
+                </li>
               </ul>
             </li>
             <li><Link to="/profile">Profile</Link></li>
@@ -163,7 +182,9 @@ const CatalogMenuPage = () => {
 
       <div className="container">
         <h1 className="menu-title">OUR MENU</h1>
-        <button className="cart-button" onClick={showCart}>Cart ({cartItems.reduce((sum, i) => sum + i.quantity, 0)})</button>
+        <button className="cart-button" onClick={showCart}>
+          Cart ({cartItems.reduce((sum, i) => sum + i.quantity, 0)})
+        </button>
 
         {isCartOpen && (
           <div className="cart-overlay" onClick={closeCart}>
@@ -200,7 +221,9 @@ const CatalogMenuPage = () => {
                       </li>
                     ))}
                   </ul>
-                ) : <p>Nothing has been added to the cart.</p>}
+                ) : (
+                  <p>Nothing has been added to the cart.</p>
+                )}
               </div>
               <div className="cart-modal-footer">
                 <div className="cart-total">Total: ${totalPrice.toFixed(2)}</div>
@@ -212,8 +235,18 @@ const CatalogMenuPage = () => {
         )}
 
         <div className="tab-buttons">
-          <button className={`tab-button ${tabState === "drinks" ? "active" : ""}`} onClick={() => setTabState("drinks")}>DRINKS</button>
-          <button className={`tab-button ${tabState === "food" ? "active" : ""}`} onClick={() => setTabState("food")}>FOOD</button>
+          <button
+            className={`tab-button ${tabState === "drinks" ? "active" : ""}`}
+            onClick={() => setTabState("drinks")}
+          >
+            DRINKS
+          </button>
+          <button
+            className={`tab-button ${tabState === "food" ? "active" : ""}`}
+            onClick={() => setTabState("food")}
+          >
+            FOOD
+          </button>
         </div>
 
         <div className="menu-category">
@@ -231,12 +264,22 @@ const CatalogMenuPage = () => {
                 </div>
                 <span className="dots"></span>
                 <div className="item-right">
-                  <span className="item-price">${item.price}</span>
+                  <span className="item-price">${Number(item.price).toFixed(2)}</span>
                   <span className="item-calories">{item.calories} Calories</span>
+                  {/* Stock Info */}
+                  {item.in_stock ? (
+                    <span className="stock-status in-stock">In Stock</span>
+                  ) : (
+                    <span className="stock-status out-of-stock">Out of Stock</span>
+                  )}
                   {tabState === "drinks" && (
                     <div className="size-options">
                       {["Small", "Medium", "Large"].map((size) => (
-                        <button key={size} className={`size-btn ${selectedSizes[item.item_id] === size ? "selected" : ""}`} onClick={() => selectSize(item.item_id, size)}>
+                        <button
+                          key={size}
+                          className={`size-btn ${selectedSizes[item.item_id] === size ? "selected" : ""}`}
+                          onClick={() => selectSize(item.item_id, size)}
+                        >
                           {size}
                         </button>
                       ))}
@@ -249,7 +292,10 @@ const CatalogMenuPage = () => {
                     value={quantities[item.item_id] || 1}
                     onChange={(e) => handleQuantityChange(item.item_id, e.target.value)}
                   />
-                  <button className="add-to-cart" onClick={(e) => addToCart(e, item)}>Add to Cart</button>
+                  {/* Disable and notify if item is out of stock */}
+                  <button className="add-to-cart" onClick={(e) => addToCart(e, item)}>
+                    Add to Cart
+                  </button>
                 </div>
               </li>
             ))}
@@ -258,7 +304,7 @@ const CatalogMenuPage = () => {
       </div>
 
       {popupInfo && (
-        <div className="cart-popup" style={{ top: popupInfo.y, left: popupInfo.x, position: "absolute" }}>
+        <div className="stock-cart-popup" style={{ top: popupInfo.y, left: popupInfo.x, position: "absolute" }}>
           {popupInfo.message}
         </div>
       )}

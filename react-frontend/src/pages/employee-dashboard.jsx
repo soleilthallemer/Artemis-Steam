@@ -33,7 +33,7 @@ const EmployeeDashboard = () => {
 
   const claimedOrders = orders
     .filter(order => order.claimed_by != null && order.status !== "Completed")
-    .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
+    .sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
 
   // When an employee claims an order, update that order's claimed_by and status.
   const handleClaimOrder = async (orderId) => {
