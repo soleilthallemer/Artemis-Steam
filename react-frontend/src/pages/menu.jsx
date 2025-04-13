@@ -133,8 +133,13 @@ const CatalogMenuPage = () => {
     }
   };
 
-  const drinkItems = menuItems.filter((item) => item.category?.toLowerCase() === "beverages");
-  const foodItems = menuItems.filter((item) => item.category?.toLowerCase() === "pastries");
+  const drinkItems = menuItems.filter((item) =>
+    item.category?.toLowerCase() === "drink"
+  );
+  const foodItems = menuItems.filter((item) =>
+    item.category?.toLowerCase() === "food"
+  );
+  
 
   return (
     <div className="catalog">
