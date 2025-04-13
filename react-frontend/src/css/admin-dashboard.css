@@ -184,6 +184,9 @@
   color: #27030f !important;
 }
 
+.admin-dashboard .profile-info .admin-profile-info{
+  color: #27030f !important;
+}
 /* Recently Registered Users Section */
 .admin-dashboard .recent-users-section {
   background-color: #fdfcf7;
@@ -292,6 +295,10 @@
 }
 
 .admin-dashboard .complete-btn{
+  color: #27030f !important;
+}
+
+.admin-dashboard .claimed-by{
   color: #27030f !important;
 }
 
