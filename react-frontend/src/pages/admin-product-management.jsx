@@ -127,17 +127,18 @@ const AdminProductManagement = () => {
 
     const payload = {
       name,
-      description: "",
+      description: "",                    // ✅ If unused, send as empty string
       category,
       price: parseFloat(price),
-      size_options: "",
-      ingredients: "",
+      size_options: "",                   // ✅ Optional: or remove from backend
+      ingredients: "",                    // ✅ Optional: or remove from backend
       image_url: image,
       availability_status: parseInt(stock, 10) > 0,
       quantity: parseInt(stock, 10),
-      calories: 0,
-      preparation_time: 0
+      calories: 0,                        // ✅ Optional: hardcoded for now
+      preparation_time: 0                // ✅ Optional
     };
+    
 
     try {
       if (editingProduct) {
@@ -150,10 +151,17 @@ const AdminProductManagement = () => {
           setProducts((prev) =>
             prev.map((item) =>
               item.id === editingProduct.id
-                ? { ...payload, id: editingProduct.id, stock, status: parseInt(stock, 10) > 0 ? "In Stock" : "Out of Stock" }
+                ? {
+                    ...item,             // <- preserve old values
+                    ...payload,          // <- overwrite with updated values
+                    id: editingProduct.id,
+                    stock,
+                    status: parseInt(stock, 10) > 0 ? "In Stock" : "Out of Stock",
+                    image: image         // <-- make sure image is set!
+                  }
                 : item
             )
-          );
+          );          
         } else {
           console.error("Update failed");
         }
