@@ -1,0 +1,132 @@
+/* Reset and Base Styles */
+.admin-user-management * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .admin-user-management {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #EBE6E0;
+    padding: 2rem;
+    color: #27030f;
+  }
+  
+  /* Headings */
+  .admin-user-management h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #27030f !important;
+  }
+  
+  .admin-user-management h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: #3f6e42;
+  }
+  
+  /* Form Styling */
+  .create-user-form {
+    background-color: #fdfcf7;
+    border: 1px solid #e0dfdb;
+    padding: 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .create-user-form input,
+  .create-user-form select,
+  .admin-user-management input,
+  .admin-user-management select {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: #27030f;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+  }
+  
+  .create-user-form input:focus,
+  .create-user-form select:focus {
+    outline: none;
+    border-color: #1e511b;
+    box-shadow: 0 0 0 2px rgba(30, 81, 27, 0.2);
+  }
+  
+  .create-user-form select option[hidden] {
+    color: #888;
+  }
+  
+  .create-user-form button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #1e511b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .create-user-form button:hover {
+    background-color: #3f6e42;
+  }
+  
+  /* User List */
+  .user-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  .user-item {
+    background-color: #fdfcf7;
+    border: 1px solid #e0dfdb;
+    padding: 1rem;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+  
+  .user-item p {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  .delete-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    background-color: #a82525;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .delete-button:hover {
+    background-color: #e95454;
+  }
+  
+  .admin-user-management input,
+  .admin-user-management select,
+  .admin-user-management textarea {
+    color: #27030f !important;
+  }
+  
+  /* Title Class (optional, for flexibility) */
+  .page-title {
+    color: #27030f;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
