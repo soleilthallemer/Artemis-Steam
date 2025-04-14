@@ -6,17 +6,14 @@ const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState('all');
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
-
   const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
   useEffect(() => {
@@ -110,8 +107,7 @@ const AdminUserManagement = () => {
           </Link>
           <Link
             to="/admin-user-management"
-            className={`nav-item ${sidebarOpen ? "label" : ""} active`}
-          >
+            className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
             <span className="material-icons">groups</span>
             {sidebarOpen && <span>User Management</span>}
           </Link>
