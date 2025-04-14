@@ -441,3 +441,13 @@
 .admin-dashboard .stats-card-icon .material-icons {
   color: #27030f !important;
 }
+
+.order-status-dropdown {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-left: 4px;
+  background-color: #fff;  /* Ensure white background */
+  color: #27030f;          /* Set dark readable text color */
+}

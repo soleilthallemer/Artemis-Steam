@@ -15,6 +15,7 @@ const AdminDashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const statusOptions = ["Pending", "Claimed", "In Progress", "Completed"];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -242,35 +243,39 @@ const AdminDashboard = () => {
           <div className="recent-orders-section">
             <h3 className="section-title">Recently Placed Orders</h3>
             <ul className="order-list">
-            {recentOrders
-  .filter((order) => order.status.toLowerCase() !== "completed")
-  .map((order) => (
-    <li key={order.id}>
-      <span className="order-label">Order {order.orderNumber}</span>
-      <span className="order-label"> - Status: {order.status}</span>
-      {order.claimedBy && (
-        <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
-      )}
-      <div className="order-actions">
-        {!order.claimedBy && (
-          <button onClick={() => claimOrder(order.id)}>Claim </button>
+                {recentOrders
+    .filter((order) => order.status.toLowerCase() !== "completed")
+    .map((order) => (
+      <li key={order.id}>
+        <span className="order-label">Order {order.orderNumber}</span>
+        <span className="order-label">
+          - Status:&nbsp;
+          <select
+            value={order.status}
+            onChange={(e) => editOrderStatus(order.id, e.target.value)}
+            className="order-status-dropdown"
+          >
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </span>
+        {order.claimedBy ? (
+          <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
+        ) : (
+          <em className="claimed-by unclaimed"> (Unclaimed)</em>
         )}
-        {order.claimedBy === `${user.first_name} ${user.last_name}` && (
-  <>
-    {order.status === "Claimed" && (
-      <button onClick={() => editOrderStatus(order.id, "In Progress")}>Start</button>
-    )}
-    {order.status === "In Progress" && (
-      <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
-    )}
-  </>
-)}
+        <div className="order-actions">
+          {!order.claimedBy && (
+            <button onClick={() => claimOrder(order.id)}>Claim</button>
+          )}
+        </div>
+      </li>
+    ))}
+</ul>
 
-      </div>
-    </li>
-))}
-
-            </ul>
           </div>
         </div>
       </div>
