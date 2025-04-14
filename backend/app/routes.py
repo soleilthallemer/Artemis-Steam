@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models import Order, OrderItem, MenuItem, User
+from app.models import Order, OrderItem, MenuItem, User, Review
 import traceback
 
 main = Blueprint('main', __name__)
