@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
+
 import "../css/admin-login.css";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loginError, setLoginError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -82,18 +85,24 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-login-wrapper">
+
       {/* Logo */}
+
       <div className="admin-login-logo">
         <img src="/images/profilepicture.jpg" alt="Artemis Café Logo" />
       </div>
 
+
       {/* Header */}
+
       <div className="admin-login-header">
         <h1>Artemis & Steam</h1>
         <p>Admin Login</p>
       </div>
 
+
       {/* Login Card */}
+
       <div className="admin-login-card">
         <form onSubmit={handleLogin} className="admin-login-form">
           {/* Email */}
@@ -104,13 +113,17 @@ const AdminLogin = () => {
             <span className="admin-login-icon material-icons">person</span>
             <input
               id="email"
+
               type="email"
+
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="admin-login-input"
               disabled={isLoading}
+
               required
+
             />
           </div>
 
@@ -128,7 +141,9 @@ const AdminLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="admin-login-input"
               disabled={isLoading}
+
               required
+
             />
             <span
               className="toggle-password material-icons"
@@ -138,8 +153,10 @@ const AdminLogin = () => {
             </span>
           </div>
 
+
           {/* Error Message */}
           {loginError && <p className="admin-login-error">{loginError}</p>}
+
 
           {/* Submit Button */}
           <button
@@ -151,11 +168,13 @@ const AdminLogin = () => {
           </button>
 
           {/* Forgot Password */}
+
           <a
             href="#"
             onClick={(e) => e.preventDefault()}
             className="admin-login-forgot"
           >
+
             Forgot password?
           </a>
         </form>

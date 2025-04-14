@@ -6,6 +6,7 @@ const AdminProductManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
+
   const [products, setProducts] = useState([]);
   const [nextId, setNextId] = useState(1);
 
@@ -36,23 +37,31 @@ const AdminProductManagement = () => {
     fetchProducts();
   }, []);
 
+
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
+
   const [image, setImage] = useState("");
   const [nameError, setNameError] = useState("");
   const [imageError, setImageError] = useState("");
+
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
 
+
+
   const handleLogout = () => {
     navigate("/admin-login");
   };
+
+
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -66,22 +75,26 @@ const AdminProductManagement = () => {
     setShowForm(true);
   };
 
+
   const handleEdit = (product) => {
     setEditingProduct(product);
     setName(product.name);
     setCategory(product.category);
     setPrice(product.price);
     setStock(product.stock);
+
     setImage(product.image);
     setNameError("");
     setImageError("");
     setShowForm(true);
   };
 
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu/${id}`, {
+
           method: "DELETE",
         });
         if (response.ok) {
@@ -95,6 +108,7 @@ const AdminProductManagement = () => {
     }
   };
 
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -106,11 +120,13 @@ const AdminProductManagement = () => {
     }
   };
 
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     setNameError("");
     setImageError("");
+
 
     const nameTaken = products.some(
       (p) => p.name === name && (!editingProduct || editingProduct.id !== p.id)
@@ -120,10 +136,12 @@ const AdminProductManagement = () => {
       return;
     }
 
+
     if (!editingProduct && !image) {
       setImageError("An image is required for a new product!");
       return;
     }
+
 
     const payload = {
       name,
@@ -146,10 +164,13 @@ const AdminProductManagement = () => {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+
+          
         });
         if (response.ok) {
           setProducts((prev) =>
             prev.map((item) =>
+
               item.id === editingProduct.id
                 ? {
                     ...item,             // <- preserve old values
@@ -162,10 +183,12 @@ const AdminProductManagement = () => {
                 : item
             )
           );          
+
         } else {
           console.error("Update failed");
         }
       } else {
+
         const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -180,6 +203,7 @@ const AdminProductManagement = () => {
             status: parseInt(stock, 10) > 0 ? "In Stock" : "Out of Stock"
           };
           setProducts((prev) => [...prev, newProduct]);
+
           setNextId((prevId) => prevId + 1);
         } else {
           console.error("Add product failed");
@@ -191,6 +215,7 @@ const AdminProductManagement = () => {
 
     setShowForm(false);
   };
+
 
   const closeForm = () => {
     setShowForm(false);
@@ -207,6 +232,7 @@ const AdminProductManagement = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
+
           <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
@@ -216,6 +242,7 @@ const AdminProductManagement = () => {
             {sidebarOpen && <span>User Management</span>}
           </Link>
           <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
+
             <span className="material-icons">inventory_2</span>
             {sidebarOpen && <span>Product Management</span>}
           </Link>
@@ -272,15 +299,19 @@ const AdminProductManagement = () => {
                 <td>${prod.price.toFixed(2)}</td>
                 <td>{prod.stock}</td>
                 <td>
+
                   <span className={`stock-badge ${prod.status === "In Stock" ? "in-stock" : "out-of-stock"}`}>
+
                     {prod.status}
                   </span>
                 </td>
                 <td className="actions-cell">
+
                   <button className="edit-btn" onClick={() => handleEdit(prod)} title="Edit">
                     <span className="material-icons">edit</span>
                   </button>
                   <button className="delete-btn" onClick={() => handleDelete(prod.id)} title="Delete">
+
                     <span className="material-icons">delete</span>
                   </button>
                 </td>
@@ -288,7 +319,9 @@ const AdminProductManagement = () => {
             ))}
             {products.length === 0 && (
               <tr>
+
                 <td colSpan="8" style={{ textAlign: "center", color: "#777" }}>
+
                   No products found.
                 </td>
               </tr>
@@ -297,13 +330,16 @@ const AdminProductManagement = () => {
         </table>
       </div>
 
+
       {/* Modal Form */}
+
       {showForm && (
         <div className="modal-overlay" onClick={closeForm}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>{editingProduct ? "Edit Product" : "Add Product"}</h2>
             <form onSubmit={handleFormSubmit}>
               <label htmlFor="name">Product Name</label>
+
               <input type="text" name="name" id="name" value={name} onChange={(e) => { setNameError(""); setName(e.target.value); }} required />
               {nameError && <span className="modal-error-message">{nameError}</span>}
 
