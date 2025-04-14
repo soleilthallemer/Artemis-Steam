@@ -242,24 +242,40 @@ const AdminDashboard = () => {
           <div className="recent-orders-section">
             <h3 className="section-title">Recently Placed Orders</h3>
             <ul className="order-list">
-            {recentOrders
-  .filter((order) => order.status.toLowerCase() !== "completed")
-  .map((order) => (
-    <li key={order.id}>
-      <span className="order-label">Order {order.orderNumber}</span>
-      <span className="order-label"> - Status: {order.status}</span>
-      {order.claimedBy && (
-        <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
-      )}
-      <div className="order-actions">
-        {!order.claimedBy && (
-          <button onClick={() => claimOrder(order.id)}>Claim </button>
-        )}
-        <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
-      </div>
-    </li>
-))}
-
+              {recentOrders
+                .filter((order) => order.status.toLowerCase() !== "completed")
+                .map((order) => (
+                  <li key={order.order_id} className="order-summary-item">
+                    <div className="order-info">
+                      <strong className="order-label">Order #{order.orderNumber}</strong>
+                      <p>
+                        Items:{" "}
+                        {order.items && Array.isArray(order.items) && order.items.length > 0
+                          ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
+                          : "No items listed"}
+                      </p>
+                      <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
+                    </div>
+                    <div className="order-actions">
+                      {order.claimedBy ? (
+                        <>
+                          <select
+                            value={order.status}
+                            onChange={(e) => editOrderStatus(order.order_id, e.target.value)}
+                          >
+                            <option value="Claimed">Claimed</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                          </select>
+                          <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
+                        </>
+                      ) : (
+                        <button onClick={() => claimOrder(order.order_id)}>Claim</button>
+                      )}
+                      <button onClick={() => editOrderStatus(order.order_id, "Completed")}>Mark as Completed</button>
+                    </div>
+                  </li>
+            ))}
             </ul>
           </div>
         </div>
@@ -269,4 +285,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
