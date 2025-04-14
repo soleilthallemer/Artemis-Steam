@@ -1,3 +1,4 @@
+// src/pages/CatalogMenuPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/menu.css";
@@ -48,8 +49,8 @@ const CatalogMenuPage = () => {
   const addToCart = (e, item) => {
     e.stopPropagation();
 
-    // Check if the item is out of stock
-    if (!item.in_stock) {
+    // Use quantity field from the backend to determine stock status.
+    if (!item.quantity || Number(item.quantity) <= 0) {
       const rect = e.target.getBoundingClientRect();
       console.log("Item is out of stock, popup at:", rect);
       setPopupInfo({
@@ -168,11 +169,11 @@ const CatalogMenuPage = () => {
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order">Order</Link></li>
             <li className="dropdown">
-              <Link to="/login" className="nav-link">Log In</Link>
+              <Link to="/login" className="nav-link">
+                Log In
+              </Link>
               <ul className="dropdown-menu">
-                <li>
-                  <Link to="/admin-login">Admin Log In</Link>
-                </li>
+                <Link to="/admin-login">Admin Log In</Link>
               </ul>
             </li>
             <li><Link to="/profile">Profile</Link></li>
@@ -266,8 +267,8 @@ const CatalogMenuPage = () => {
                 <div className="item-right">
                   <span className="item-price">${Number(item.price).toFixed(2)}</span>
                   <span className="item-calories">{item.calories} Calories</span>
-                  {/* Stock Info */}
-                  {item.in_stock ? (
+                  {/* Stock Info: based on quantity from backend */}
+                  {item.quantity > 0 ? (
                     <span className="stock-status in-stock">In Stock</span>
                   ) : (
                     <span className="stock-status out-of-stock">Out of Stock</span>
