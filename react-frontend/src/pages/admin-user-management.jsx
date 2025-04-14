@@ -8,6 +8,7 @@ const AdminUserManagement = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
@@ -34,7 +35,7 @@ const AdminUserManagement = () => {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete user');
-      setUsers(prev => prev.filter(user => user.id !== userId));
+      setUsers(prev => prev.filter(user => user.user_id !== userId));
     } catch (error) {
       console.error('Error deleting user:', error);
       alert('Could not delete user.');
@@ -47,7 +48,7 @@ const AdminUserManagement = () => {
       first_name: firstName,
       last_name: lastName,
       email,
-      phone_number: '', // Optional: Add phone input if needed
+      phone_number: phoneNumber,
       role,
       password
     };
@@ -60,11 +61,11 @@ const AdminUserManagement = () => {
       });
       if (!response.ok) throw new Error('Failed to create user');
 
-      const data = await response.json();
       await fetchUsers(); // Refresh user list
       setFirstName('');
       setLastName('');
       setEmail('');
+      setPhoneNumber('');
       setPassword('');
       setRole('');
     } catch (error) {
@@ -102,6 +103,12 @@ const AdminUserManagement = () => {
           required
         />
         <input
+        type="tel"
+        placeholder="Phone Number (optional)"
+        value={phoneNumber}
+        onChange={e => setPhoneNumber(e.target.value)}
+      />
+        <input
           type="password"
           placeholder="Password"
           value={password}
@@ -120,13 +127,14 @@ const AdminUserManagement = () => {
       {/* User List */}
       <ul className="user-list">
         {users.map(user => (
-          <li key={user.id} className="user-item">
+          <li key={user.user_id} className="user-item">
             <div>
-              <strong>{user.name}</strong> ({user.role})
+              <strong>{`${user.first_name} ${user.last_name}`}</strong> ({user.role})
               <p>Email: {user.email}</p>
+              <p>Phone: {user.phone_number || 'N/A'}</p>
               <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
             </div>
-            <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
+            <button onClick={() => handleDeleteUser(user.user_id)} className="delete-button">Delete</button>
           </li>
         ))}
       </ul>

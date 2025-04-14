@@ -490,6 +490,7 @@ def get_all_users():
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "email": user.email,
+                 "phone_number": user.phone_number,
                 "role": user.role,
                 "created_at": user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                 "updated_at": user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
@@ -524,7 +525,8 @@ def create_user():
     try:
         data = request.get_json()
 
-        required_fields = ['first_name', 'last_name', 'email', 'phone_number', 'role', 'password']
+        # 🔄 Removed 'phone_number' from required fields
+        required_fields = ['first_name', 'last_name', 'email', 'role', 'password']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"error": f"Missing required field: {field}"}), 400
@@ -537,10 +539,10 @@ def create_user():
             first_name=data['first_name'],
             last_name=data['last_name'],
             email=data['email'],
-            phone_number=data.get('phone_number'),
+            phone_number=data.get('phone_number'),  # ✅ Optional
             role=data['role']
         )
-        user.set_password(data['password'])  # ✅ Now this is correct!
+        user.set_password(data['password'])
 
         db.session.add(user)
         db.session.commit()
