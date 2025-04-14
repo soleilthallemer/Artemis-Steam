@@ -1,14 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../css/employee-dashboard.css';
+// src/pages/EmployeeDashboard.jsx
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../css/employee-dashboard.css";
 
 const EmployeeDashboard = () => {
   const [orders, setOrders] = useState([]);
+  const [employee, setEmployee] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Use employee id stored in localStorage after login
+  // Use employee id & email stored in localStorage after login
   const currentEmployeeId = localStorage.getItem("user_id");
+  const email = localStorage.getItem("user_email")?.toLowerCase();
 
+  // Fetch employee profile to get full name
+  useEffect(() => {
+    if (!email) return;
+    const fetchEmployee = async () => {
+      try {
+        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`);
+        const data = await res.json();
+        if (!data.error) {
+          setEmployee(data);
+        } else {
+          console.error("Employee profile fetch error:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching employee profile:", err);
+      }
+    };
+    fetchEmployee();
+  }, [email]);
+
+  // Fetch orders on component mount
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -20,13 +44,15 @@ const EmployeeDashboard = () => {
         setOrders(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOrders();
   }, []);
 
-  // Filter orders to only show those that are not "Completed"
+  // Filter orders for display
   const unclaimedOrders = orders
     .filter(order => order.claimed_by == null && order.status !== "Completed")
     .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
@@ -36,6 +62,7 @@ const EmployeeDashboard = () => {
     .sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
 
   // When an employee claims an order, update that order's claimed_by and status.
+  // The order's claimed_by will be updated to the employee's full name.
   const handleClaimOrder = async (orderId) => {
     try {
       const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`, {
@@ -51,7 +78,7 @@ const EmployeeDashboard = () => {
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.order_id === orderId
-            ? { ...order, claimed_by: currentEmployeeId, status: "Claimed" }
+            ? { ...order, claimed_by: employee ? `${employee.first_name} ${employee.last_name}` : currentEmployeeId, status: "Claimed" }
             : order
         )
       );
@@ -60,6 +87,14 @@ const EmployeeDashboard = () => {
       alert("Error claiming order. Please try again.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="employee-dashboard">
+        <p>Loading employee dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="employee-dashboard">
