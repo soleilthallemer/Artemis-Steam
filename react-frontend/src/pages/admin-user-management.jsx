@@ -3,12 +3,13 @@ import '../css/adminUserManagement.css';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [filterRole, setFilterRole] = useState('all'); // 1. Role filter state
 
   // Form input states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   useEffect(() => {
@@ -17,7 +18,7 @@ const AdminUserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://157.245.80.36:5000/users');
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       const sortedUsers = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -30,7 +31,7 @@ const AdminUserManagement = () => {
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      const response = await fetch(`http://157.245.80.36:5000/users/${userId}`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${userId}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete user');
@@ -44,26 +45,29 @@ const AdminUserManagement = () => {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     const newUser = {
-      id: userId,
-      name: `${firstName} ${lastName}`,
+      first_name: firstName,
+      last_name: lastName,
       email,
+      phone_number: '', // Optional: Add phone input if needed
       role,
+      password
     };
 
     try {
-      const response = await fetch('http://157.245.80.36:5000/users', {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
       });
       if (!response.ok) throw new Error('Failed to create user');
 
-      setUsers(prev => [newUser, ...prev]);
+      const data = await response.json();
+      await fetchUsers(); // Refresh user list
       setFirstName('');
       setLastName('');
       setEmail('');
-      setUserId('');
-      setRole('customer');
+      setPassword('');
+      setRole('');
     } catch (error) {
       console.error('Error creating user:', error);
       alert('Could not create user.');
@@ -73,6 +77,21 @@ const AdminUserManagement = () => {
   return (
     <div className="admin-user-management">
       <h1 className="page-title">User Management Portal</h1>
+
+      {/* 2. Role Filter Dropdown */}
+      <div className="filter-container">
+        <label htmlFor="role-filter" className="filter-label">Filter by Role: </label>
+        <select
+          id="role-filter"
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="customer">Customer</option>
+          <option value="employee">Employee</option>
+          <option value="administrator">Administrator</option>
+        </select>
+      </div>
 
       {/* Create User Form */}
       <form className="create-user-form" onSubmit={handleCreateUser}>
@@ -99,10 +118,10 @@ const AdminUserManagement = () => {
           required
         />
         <input
-          type="text"
-          placeholder="User ID"
-          value={userId}
-          onChange={e => setUserId(e.target.value)}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
           required
         />
         <select value={role} onChange={e => setRole(e.target.value)} required>
@@ -116,15 +135,17 @@ const AdminUserManagement = () => {
 
       {/* User List */}
       <ul className="user-list">
-        {users.map(user => (
-          <li key={user.id} className="user-item">
-            <div>
-              <strong>{user.name}</strong> ({user.role})
-              <p>Email: {user.email}</p>
-              <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
-            </div>
-            <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
-          </li>
+        {users
+          .filter(user => filterRole === 'all' || user.role === filterRole) // 3. Filter logic
+          .map(user => (
+            <li key={user.id} className="user-item">
+              <div>
+                <strong>{user.name}</strong> ({user.role})
+                <p>Email: {user.email}</p>
+                <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
+              </div>
+              <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
+            </li>
         ))}
       </ul>
     </div>

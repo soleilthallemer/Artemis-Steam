@@ -78,7 +78,7 @@ export default function ReviewPage() {
                 </div>
                 <div className="star-rating">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`star ${i < review.rating ? 'filled' : ''}`}>★</span>
+                    <span key={i} className={`star ${i < (review.rating) ? 'filled' : ''}`}>★</span>
                   ))}
                 </div>
                 <p className="review-text">{review.comment}</p>

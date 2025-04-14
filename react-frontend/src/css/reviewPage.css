@@ -1,6 +1,6 @@
 .review-page {
     font-family: 'Helvetica Neue', sans-serif;
-    background-color: #F3F4F6;
+    background-color: #EBE6E0;
     color: #1F2937;
     min-height: 100vh;
     padding: 2rem;
@@ -85,7 +85,7 @@
 }
 
 .star-rating .star.filled {
-  color: #fbbf24;
+  color: #fbbf24 !important;
   text-shadow: 0 0 1px #27030f, 0 0 1px #27030f;
 }
   
