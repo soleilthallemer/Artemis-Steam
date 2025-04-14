@@ -62,44 +62,47 @@ const LoginPage = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-
+  
       const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}`, // Uncomment if your backend requires authorization
+          // 'Authorization': `Bearer ${token}`, // Uncomment if needed
         },
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch user data');
       }
-
+  
       const userData = await response.json();
-
-      // Explicitly store key user properties in localStorage
+  
+      // Store key user info
       if (userData.user_id) {
         localStorage.setItem('user_id', userData.user_id.toString());
       }
+  
       if (userData.role) {
         localStorage.setItem('role', userData.role);
       }
-      // Optionally store other properties if needed
-      Object.keys(userData).forEach((key) => {
-        const value = userData[key];
-        if (value !== null && value !== undefined) {
-          localStorage.setItem(key, value.toString());
-        } else {
-          localStorage.setItem(key, '');
-        }
+  
+      // Optionally store other fields
+      Object.entries(userData).forEach(([key, value]) => {
+        localStorage.setItem(key, value !== null && value !== undefined ? value.toString() : '');
       });
-
-      console.log('User Data Retrieved:', userData);
+  
+      console.log('User data retrieved:', userData);
+  
+      // Return role explicitly for further logic
+      return userData.role;
+  
     } catch (error) {
       console.error('Error fetching user data:', error);
+      return null;
     }
   };
+  
 
   return (
     <div className="login-page">
