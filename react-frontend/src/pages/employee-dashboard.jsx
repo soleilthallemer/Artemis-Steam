@@ -12,7 +12,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("http://157.245.80.36:5000/orders");
+        const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`);
         if (!response.ok) {
           throw new Error("Failed to fetch orders");
         }
@@ -33,12 +33,12 @@ const EmployeeDashboard = () => {
 
   const claimedOrders = orders
     .filter(order => order.claimed_by != null && order.status !== "Completed")
-    .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
+    .sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
 
   // When an employee claims an order, update that order's claimed_by and status.
   const handleClaimOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/claim`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

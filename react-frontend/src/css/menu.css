@@ -456,7 +456,7 @@
 
 .catalog .size-btn:hover {
   background-color: #7a7a56;
-  color: white;
+  color: white !important;
 }
 
 .catalog .size-btn.selected {
@@ -644,4 +644,74 @@
 
 .size-edit-panel button:hover {
   background-color: #5a5e40;
+}
+
+.catalog .bar ul li.dropdown {
+  position: relative;
+}
+
+.catalog .bar ul li.dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;         
+  left: 0;         
+  min-width: 150px;     
+  background-color: transparent; 
+  list-style: none;
+  padding: 1rem 0;    
+  z-index: 1000;
+  text-align: left;     
+}
+
+.catalog .bar ul li.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.catalog .bar ul li.dropdown .dropdown-menu li {
+  margin: 0.25rem 0;   
+  padding: 0 1rem;
+}
+
+.catalog .bar ul li.dropdown .dropdown-menu::after{
+  content:'';
+  height: 3px;
+  width: 0;
+  background: white;
+  position: absolute;
+  left: 0;
+  bottom: 3px;
+  transition: 0.5s;
+}
+
+.catalog .bar ul li.dropdown .dropdown-menu:hover::after{
+  width: 75%;
+}
+
+.catalog .stock-status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.catalog .stock-status.in-stock {
+  color: #2e7d32 !important;
+}
+
+.catalog .stock-status.out-of-stock {
+  color: #8a1717 !important;
+}
+
+.stock-cart-popup {
+  position: absolute;
+  background-color: darkred !important; /* semi-transparent black */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.9em;
+  z-index: 10000;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);  
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
 }

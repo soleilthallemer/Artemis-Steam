@@ -184,6 +184,10 @@
   color: #27030f !important;
 }
 
+.admin-dashboard .profile-info .admin-profile-info{
+  color: #27030f !important;
+}
+
 /* Recently Registered Users Section */
 .admin-dashboard .recent-users-section {
   background-color: #fdfcf7;
@@ -294,6 +298,12 @@
 .admin-dashboard .complete-btn{
   color: #27030f !important;
 }
+
+
+.admin-dashboard .claimed-by{
+  color: #27030f !important;
+}
+
 
 .admin-dashboard .recent-orders-section .order-list {
   list-style: none;
@@ -433,4 +443,18 @@
 .admin-dashboard .stats-card-icon,
 .admin-dashboard .stats-card-icon .material-icons {
   color: #27030f !important;
+
 }
+
+}
+
+.order-status-dropdown {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-left: 4px;
+  background-color: #fff;  /* Ensure white background */
+  color: #27030f;          /* Set dark readable text color */
+}
+

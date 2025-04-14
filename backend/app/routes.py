@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app import db
 from app.models import Order, OrderItem, MenuItem, User, Review
 import traceback
+from datetime import datetime
 
 main = Blueprint('main', __name__)
 
@@ -164,9 +165,11 @@ def get_menu_items():
         'availability_status': m.availability_status,
         'calories': m.calories,
         'preparation_time': m.preparation_time,
+        'quantity': m.quantity,  # ✅ NEW FIELD
         'created_at': m.created_at.strftime('%Y-%m-%d %H:%M:%S'),
         'updated_at': m.updated_at.strftime('%Y-%m-%d %H:%M:%S') if m.updated_at else None
     } for m in menu_items])
+
 
 @main.route('/menu', methods=['POST'])
 def create_menu_item():
@@ -181,11 +184,13 @@ def create_menu_item():
         image_url=data.get('image_url'),
         availability_status=data.get('availability_status', True),
         calories=data.get('calories'),
-        preparation_time=data.get('preparation_time')
+        preparation_time=data.get('preparation_time'),
+        quantity=data.get('quantity', 0)  # ✅ NEW FIELD DEFAULTING TO 0
     )
     db.session.add(menu_item)
     db.session.commit()
     return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
+
 
 @main.route('/orders/<int:order_id>/items', methods=['GET'])
 def get_order_items(order_id):
@@ -251,7 +256,7 @@ def get_user_orders(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if user.role in ['employee', 'manager']:
+    if user.role in ['employee', 'administrator']:
         orders = Order.query.filter_by(claimed_by=user_id).all()
     else:
         orders = Order.query.filter_by(user_id=user_id).all()
@@ -321,6 +326,7 @@ def update_order_status(order_id):
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
     
+
     # Get all reviews
 @main.route('/reviews', methods=['GET'])
 def get_reviews():
@@ -357,4 +363,267 @@ def create_review():
     except Exception as e:
         print(f"[ERROR] Failed to submit review: {e}")
         return jsonify({"error": "Internal server error"}), 500
+      
+# Dashboard summary endpoint
+@main.route('/dashboard/summary', methods=['GET'])
+def get_dashboard_summary():
+    try:
+        # Totals
+        total_users = User.query.count()
+        total_products = MenuItem.query.count()
+        total_orders = Order.query.count()
+        total_revenue = db.session.query(db.func.sum(Order.total_amount)).scalar() or 0
 
+        # 3 most recently registered users
+        recent_users = User.query.order_by(User.created_at.desc()).limit(3).all()
+        recent_users_data = [{
+            "id": u.user_id,
+            "name": f"{u.first_name} {u.last_name}",
+            "email": u.email,
+            "registered": u.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for u in recent_users]
+
+        # 2 most recently active employees (using updated_at)
+        recent_employees = User.query.filter_by(role='employee') \
+            .order_by(User.updated_at.desc()) \
+            .limit(2).all()
+        recent_employees_data = [{
+            "id": e.user_id,
+            "name": f"{e.first_name} {e.last_name}",
+            "lastActive": e.updated_at.strftime('%Y-%m-%d %H:%M:%S') if e.updated_at else "N/A"
+        } for e in recent_employees]
+
+        # 5 most recent orders
+        recent_orders = Order.query.order_by(Order.order_date.desc()).limit(5).all()
+        recent_orders_data = [{
+            "id": o.order_id,
+            "orderNumber": o.order_id,
+            "status": o.status,
+            "claimedBy": o.claimed_by  # optionally join User for name
+        } for o in recent_orders]
+
+        return jsonify({
+            "totalUsers": total_users,
+            "totalProducts": total_products,
+            "totalOrders": total_orders,
+            "revenue": round(total_revenue, 2),
+            "recentUsers": recent_users_data,
+            "recentEmployees": recent_employees_data,
+            "recentOrders": recent_orders_data
+        }), 200
+
+    except Exception as e:
+        print("[ERROR] Failed to load dashboard summary:", e)
+        traceback.print_exc()  # <- this is critical for debugging
+        return jsonify({"error": "Failed to load dashboard summary"}), 500
+    
+# endpoint to update an existing product
+@main.route('/menu/<int:item_id>', methods=['PUT'])
+def update_menu_item(item_id):
+    try:
+        data = request.json
+        item = MenuItem.query.get(item_id)
+        if not item:
+            return jsonify({"error": "Menu item not found"}), 404
+
+        item.name = data.get('name', item.name)
+        item.description = data.get('description', item.description)
+        item.category = data.get('category', item.category)
+        item.price = data.get('price', item.price)
+        item.size_options = data.get('size_options', item.size_options)
+        item.ingredients = data.get('ingredients', item.ingredients)
+        item.image_url = data.get('image_url', item.image_url)
+        item.availability_status = data.get('availability_status', item.availability_status)
+        item.quantity = data.get('quantity', item.quantity)
+        item.calories = data.get('calories', item.calories)
+        item.preparation_time = data.get('preparation_time', item.preparation_time)
+
+        db.session.commit()
+
+        return jsonify({"message": "Menu item updated successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update menu item {item_id}: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+
+# endpoint to delete an existing product
+@main.route('/menu/<int:item_id>', methods=['DELETE'])
+def delete_menu_item(item_id):
+    try:
+        item = MenuItem.query.get(item_id)
+        if not item:
+            return jsonify({"error": "Menu item not found"}), 404
+
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({"message": "Menu item deleted successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to delete menu item {item_id}: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+    
+# endpoint to fetch 3 recent users
+@main.route('/users/recent', methods=['GET'])
+def get_recent_users():
+    users = User.query.order_by(User.created_at.desc()).limit(3).all()
+    return jsonify([
+        {
+            "id": u.user_id,
+            "name": f"{u.first_name} {u.last_name}",
+            "email": u.email,
+            "registered": u.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for u in users
+    ])
+
+# endpoint to fetch last 2 active employees
+@main.route('/employees/active', methods=['GET'])
+def get_recent_employees():
+    employees = User.query.filter_by(role="employee").order_by(User.updated_at.desc()).limit(2).all()
+    return jsonify([
+        {
+            "id": e.user_id,
+            "name": f"{e.first_name} {e.last_name}",
+            "lastActive": e.updated_at.strftime('%Y-%m-%d %H:%M:%S') if e.updated_at else "N/A"
+        }
+        for e in employees
+    ])
+
+# endpoint to fetch 5 recent uncompleted orders
+@main.route('/orders/recent', methods=['GET'])
+def get_recent_uncompleted_orders():
+    try:
+        orders = (
+            Order.query
+            .filter(Order.status != "Completed")
+            .order_by(Order.order_date.desc())
+            .limit(5)
+            .all()
+        )
+
+        return jsonify([
+            {
+                "id": o.order_id,
+                "orderNumber": o.order_id,
+                "status": o.status,
+                "claimedBy": f"{o.claimer_user.first_name} {o.claimer_user.last_name}" if o.claimer_user else None
+            }
+            for o in orders
+        ]), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch recent uncompleted orders: {e}")
+        return jsonify({"error": "Failed to retrieve recent orders"}), 500
+    
+# endpoint to get all users
+@main.route('/users', methods=['GET'])
+def get_all_users():
+    try:
+        users = User.query.all()
+        return jsonify([
+            {
+                "user_id": user.user_id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                 "phone_number": user.phone_number,
+                "role": user.role,
+                "created_at": user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                "updated_at": user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
+            }
+            for user in users
+        ]), 200
+    except Exception as e:
+        print("[ERROR] Failed to fetch users:", e)
+        traceback.print_exc()
+        return jsonify({"error": "Failed to fetch users"}), 500
+
+#endpoint to delete a user
+@main.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return jsonify({"message": f"User {user_id} deleted successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to delete user {user_id}:", e)
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+    
+# endpoint for an admin to manually create a new user
+@main.route('/users', methods=['POST'])
+def create_user():
+    try:
+        data = request.get_json()
+
+        # 🔄 Removed 'phone_number' from required fields
+        required_fields = ['first_name', 'last_name', 'email', 'role', 'password']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return jsonify({"error": "A user with this email already exists."}), 409
+
+        user = User(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            email=data['email'],
+            phone_number=data.get('phone_number'),  # ✅ Optional
+            role=data['role']
+        )
+        user.set_password(data['password'])
+
+        db.session.add(user)
+        db.session.commit()
+
+        return jsonify({
+            "message": "User created successfully",
+            "user_id": user.user_id
+        }), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to create user: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+
+
+# endpoint to edit an existing users profile
+@main.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        data = request.json
+        user = User.query.get(user_id)
+
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Update only the provided fields
+        user.first_name = data.get("first_name", user.first_name)
+        user.last_name = data.get("last_name", user.last_name)
+        user.email = data.get("email", user.email)
+        user.phone_number = data.get("phone_number", user.phone_number)
+        user.role = data.get("role", user.role)
+        user.hire_date = data.get("hire_date", user.hire_date)
+
+        # Optional: if password is provided, hash it
+        if data.get("password"):
+            user.set_password(data["password"])
+
+        user.updated_at = datetime.utcnow()
+        db.session.commit()
+
+        return jsonify({"message": "User updated successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update user {user_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500

@@ -3,76 +3,133 @@ import { Link, useNavigate } from "react-router-dom";
 import "../css/admin-dashboard.css";
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate();
 
-  // Dynamic state variables
-  const [adminInfo, setAdminInfo] = useState({ name: "", email: "", role: "" });
-  const [recentUsers, setRecentUsers] = useState([]);
-  const [recentEmployees, setRecentEmployees] = useState([]);
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [user, setUser] = useState(null);
   const [summaryStats, setSummaryStats] = useState({
     totalUsers: 0,
     totalProducts: 0,
     totalOrders: 0,
-    revenue: 0
+    revenue: 0,
   });
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [recentEmployees, setRecentEmployees] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const statusOptions = ["Pending", "Claimed", "In Progress", "Completed"];
+  const navigate = useNavigate();
 
-  // Fetch all dynamic dashboard data
   useEffect(() => {
-    const fetchData = async () => {
+    const email = localStorage.getItem("user_email")?.toLowerCase();
+    const userId = localStorage.getItem("user_id");
+    const role = localStorage.getItem("role");
+
+    if (!email || !userId || !role) {
+      // Wait for next render when localStorage is populated
+      return;
+    }
+    
+    if (role !== "administrator") {
+      setLoading(false);
+      alert("Access denied. Administrator only.");
+      navigate("/login");
+      return;
+    }
+    
+
+    const fetchDashboardData = async () => {
       try {
-        const [summaryRes, profileRes, usersRes, employeesRes, ordersRes] = await Promise.all([
-          fetch("/api/dashboard/summary"),
-          fetch("/api/admin/profile"),
-          fetch("/api/users/recent"),
-          fetch("/api/employees/active"),
-          fetch("/api/orders/recent")
-        ]);
-
-        const [summaryData, profileData, usersData, employeesData, ordersData] = await Promise.all([
-          summaryRes.json(),
-          profileRes.json(),
-          usersRes.json(),
-          employeesRes.json(),
-          ordersRes.json()
-        ]);
-
-        setSummaryStats(summaryData);
-        setAdminInfo(profileData);
-        setRecentUsers(usersData);
-        setRecentEmployees(employeesData);
-        setRecentOrders(ordersData);
-      } catch (error) {
-        console.error("Error loading dashboard data:", error);
+        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`);
+        const userData = await userRes.json();
+        if (userData.error) {
+          console.error("User fetch error:", userData.error);
+          setUser(null);
+        } else {
+          setUser(userData);
+        }
+    
+        const summaryRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/dashboard/summary`);
+        const summaryData = await summaryRes.json();
+    
+        const {
+          totalUsers,
+          totalProducts,
+          totalOrders,
+          revenue,
+          recentUsers = [],
+          recentEmployees = [],
+          recentOrders = []
+        } = summaryData;
+    
+        setSummaryStats({ totalUsers, totalProducts, totalOrders, revenue });
+        setRecentUsers(recentUsers);
+        setRecentEmployees(recentEmployees);
+        setRecentOrders(recentOrders);
+    
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      } finally {
+        setLoading(false);
       }
     };
+    
 
-    fetchData();
-  }, []);
+    fetchDashboardData();
+  }, [navigate]);
 
-  // Sidebar toggle & logout
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
-  const handleLogout = () => navigate("/admin-login");
 
-  // Order actions
-  const claimOrder = (orderId) => {
-    setRecentOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? { ...order, claimedBy: adminInfo.name, status: "Claimed" }
-          : order
-      )
-    );
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/admin-login");
   };
 
-  const editOrderStatus = (orderId, newStatus) => {
-    setRecentOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      )
-    );
+  const claimOrder = async (orderId) => {
+    try {
+      const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: localStorage.getItem("user_id") }),
+      });
+      if (res.ok) {
+        setRecentOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId ? { ...order, claimedBy: `${user.first_name} ${user.last_name}`, status: "Claimed" } : order
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error claiming order:", err);
+    }
   };
+
+  const editOrderStatus = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        setRecentOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error updating order status:", err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard">
+        <p>Loading admin dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard dashboard-container">
@@ -85,15 +142,16 @@ const AdminDashboard = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
-          <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
+
+          <Link to="/admin-dashboard" className="nav-item active">
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
           </Link>
-          <Link to="/admin-user-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+          <Link to="/admin-user-management" className="nav-item">
             <span className="material-icons">groups</span>
             {sidebarOpen && <span>User Management</span>}
           </Link>
-          <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+          <Link to="/admin-product-management" className="nav-item">
             <span className="material-icons">inventory_2</span>
             {sidebarOpen && <span>Product Management</span>}
           </Link>
@@ -106,141 +164,128 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+
+      {/* Main */}
+
       <div className="main-content">
         <h2 className="admin-dashboard-title">Dashboard</h2>
         <p className="admin-dashboard-subtitle">Welcome to your admin dashboard.</p>
 
-        {/* 3x3 Grid Container */}
+
         <div className="cards-grid">
-          {/* Card 1: Total Users */}
+          {/* Summary Stats */}
           <div className="stats-card">
-            <div className="stats-card-icon">
-              <span className="material-icons">groups</span>
-            </div>
+            <div className="stats-card-icon"><span className="material-icons">groups</span></div>
             <h4>Total Users</h4>
             <p>{summaryStats.totalUsers}</p>
           </div>
-
-          {/* Card 2: Products */}
           <div className="stats-card">
-            <div className="stats-card-icon">
-              <span className="material-icons">inventory_2</span>
-            </div>
+            <div className="stats-card-icon"><span className="material-icons">inventory_2</span></div>
             <h4>Products</h4>
             <p>{summaryStats.totalProducts}</p>
           </div>
-
-          {/* Card 3: Orders */}
           <div className="stats-card">
-            <div className="stats-card-icon">
-              <span className="material-icons">shopping_cart</span>
-            </div>
+            <div className="stats-card-icon"><span className="material-icons">shopping_cart</span></div>
             <h4>Orders</h4>
             <p>{summaryStats.totalOrders}</p>
           </div>
-
-          {/* Card 4: Revenue */}
           <div className="stats-card">
-            <div className="stats-card-icon">
-              <span className="material-icons">show_chart</span>
-            </div>
+            <div className="stats-card-icon"><span className="material-icons">show_chart</span></div>
             <h4>Revenue</h4>
-            <p>${summaryStats.revenue}</p>
+            <p>${Number(summaryStats.revenue).toFixed(2)}</p>
           </div>
 
-          {/* Card 5: Admin Profile */}
+          {/* Admin Profile */}
           <div className="profile-section">
             <h3 className="profile-title">Admin Profile</h3>
-            <div className="profile-info">
-              <p className="profile-line">
-                <span className="profile-label">Name:</span> {adminInfo.name}
-              </p>
-              <p className="profile-line">
-                <span className="profile-label">Email:</span> {adminInfo.email}
-              </p>
-              <p className="profile-line">
-                <span className="profile-label">Role:</span> {adminInfo.role}
-              </p>
-            </div>
+            {user ? (
+              <div className="profile-info">
+                <p className="admin-profile-info"><strong className="admin-profile-info">Name:</strong> {user.first_name} {user.last_name}</p>
+                <p className="admin-profile-info"><strong className="admin-profile-info">Email:</strong> {user.email}</p>
+                <p className="admin-profile-info"><strong className="admin-profile-info">Role:</strong> {user.role.toUpperCase()}</p>
+              </div>
+            ) : (
+              <p>Unable to load admin info.</p>
+            )}
           </div>
 
-          {/* Card 6: Quick Actions */}
+          {/* Quick Actions */}
           <div className="quick-actions">
             <h3>Quick Actions</h3>
-            <p>Commonly used functions</p>
             <div className="actions-list">
-              <Link to="/admin-user-management">
-                <button>Add New User</button>
-              </Link>
-              <Link to="/admin-product-management">
-                <button>Create Product</button>
-              </Link>
+              <Link to="/admin-user-management"><button>Add New User</button></Link>
+              <Link to="/admin-product-management"><button>Create Product</button></Link>
             </div>
           </div>
 
-          {/* Card 7: Recently Active Employees */}
+          {/* Recently Active Employees */}
           <div className="recent-employees-section">
             <h3 className="section-title">Recently Active Employees</h3>
             <ul className="employee-list">
               {recentEmployees.map((employee) => (
-                <li className="employee-item" key={employee.id}>
-                  <strong className="employee-name">{employee.name}</strong>
-                  <br />
-                  <small className="employee-active">
-                    Last active: {employee.lastActive}
-                  </small>
+
+                <li key={employee.id}>
+                  <strong className="employee-name">{employee.name}</strong><br />
+                  <small className="employee-active">Last active: {employee.lastActive}</small>
+
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Card 8: Recently Registered Users */}
+
+          {/* Recently Registered Users */}
           <div className="recent-users-section">
             <h3 className="section-title">Recently Registered Users</h3>
             <ul className="user-list">
               {recentUsers.map((user) => (
-                <li className="user-item" key={user.id}>
-                  <strong className="user-name">{user.name}</strong> - 
-                  <span className="user-email"> {user.email}</span>
-                  <br />
-                  <small className="user-registered">
-                    Registered on: {user.registered}
-                  </small>
+                <li key={user.id}>
+                  <strong className="user-name">{user.name}</strong> <span className="user-email"> - {user.email}</span><br />
+                  <small className="user-registered">Registered on: {user.registered}</small>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Card 9: Recently Placed Orders */}
+
+          {/* Recently Placed Orders */}
           <div className="recent-orders-section">
             <h3 className="section-title">Recently Placed Orders</h3>
             <ul className="order-list">
-              {recentOrders.map((order) => (
-                <li className="order-item" key={order.id}>
-                  <span className="order-label">Order {order.orderNumber}</span> 
-                  <span className="order-status"> - Status: {order.status}</span>{" "}
-                  {order.claimedBy && (
-                    <em className="order-claimed">
-                      (Claimed by {order.claimedBy})
-                    </em>
-                  )}
-                  <div className="order-actions">
-                    {!order.claimedBy && (
-                      <button className="claim-btn" onClick={() => claimOrder(order.id)}>
-                        Claim Order
-                      </button>
-                    )}
-                    <button
-                      className="complete-btn"
-                      onClick={() => editOrderStatus(order.id, "Completed")}
-                    >
-                      Mark as Completed
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                {recentOrders
+    .filter((order) => order.status.toLowerCase() !== "completed")
+    .map((order) => (
+      <li key={order.id}>
+        <span className="order-label">Order {order.orderNumber}</span>
+        <span className="order-label">
+          - Status:&nbsp;
+          <select
+            value={order.status}
+            onChange={(e) => editOrderStatus(order.id, e.target.value)}
+            className="order-status-dropdown"
+          >
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </span>
+        {order.claimedBy ? (
+          <em className="claimed-by"> (Claimed by {order.claimedBy})</em>
+        ) : (
+          <em className="claimed-by unclaimed"> (Unclaimed)</em>
+        )}
+        <div className="order-actions">
+          {!order.claimedBy && (
+            <button onClick={() => claimOrder(order.id)}>Claim</button>
+          )}
+        </div>
+      </li>
+    ))}
+</ul>
+
+
           </div>
         </div>
       </div>
@@ -248,4 +293,6 @@ const AdminDashboard = () => {
   );
 };
 
+
 export default AdminDashboard;
+

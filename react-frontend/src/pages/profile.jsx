@@ -23,7 +23,7 @@ const ProfilePage = () => {
 
     const fetchProfileAndOrders = async () => {
       try {
-        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -34,7 +34,7 @@ const ProfilePage = () => {
           console.error("Failed to fetch user profile.");
         }
 
-        const orderRes = await fetch(`http://157.245.80.36:5000/orders/${userId}`, {
+        const orderRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${userId}`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -87,7 +87,14 @@ const ProfilePage = () => {
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order" className="active">Order</Link></li>
-            <li><Link to="/login">Log In</Link></li>
+            <li className="dropdown">
+            <Link to="/login" className="nav-link">
+              Log In
+            </Link>
+              <ul className="dropdown-menu">
+              <Link to="/admin-login">Admin Log In</Link>
+              </ul>
+              </li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
@@ -171,6 +178,19 @@ const ProfilePage = () => {
                 }}
               >
                 Go to Login
+              </Link>
+
+              <Link
+                to="/admin-login"
+                style={{
+                  display: "inline-block",
+                  fontSize: "1.2rem",
+                  color: "black",
+                  textDecoration: "underline",
+                  marginTop: "1rem"
+                }}
+              >
+                or Log in as Admin
               </Link>
             </div>
           )}

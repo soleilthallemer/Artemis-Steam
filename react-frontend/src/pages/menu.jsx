@@ -1,319 +1,166 @@
-// src/components/CatalogMenuPage.jsx
+// src/pages/CatalogMenuPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/menu.css";
 
 const CatalogMenuPage = () => {
-  // State for tab selection (drinks vs. food)
   const [tabState, setTabState] = useState("drinks");
-
-  // Cart state: initialize from localStorage if available, otherwise empty array
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
     return savedCart ? JSON.parse(savedCart) : [];
   });
-
+  const [menuItems, setMenuItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  // For items being added (temporary selections)
   const [selectedSizes, setSelectedSizes] = useState({});
   const [quantities, setQuantities] = useState({});
-  // Popup notification state
   const [popupInfo, setPopupInfo] = useState(null);
-  // Track which cart item (index) is being edited for size (drinks only)
   const [editingSizeIndex, setEditingSizeIndex] = useState(null);
-
   const cartModalRef = useRef(null);
   const navigate = useNavigate();
 
-  // Persist cartItems in localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Check if an item is a drink
-  const isDrinkItem = (itemName) =>
-    drinkItems.some((drink) => drink.name === itemName);
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu`);
+        const data = await res.json();
+        setMenuItems(data);
+      } catch (error) {
+        console.error("Error loading menu:", error);
+      }
+    };
+    fetchMenuItems();
+  }, []);
 
-  // For adding items: select size
-  const selectSize = (itemName, size) => {
-    setSelectedSizes((prev) => ({ ...prev, [itemName]: size }));
+  const isDrinkItem = (item) => item.category?.toLowerCase() === "drink";
+
+  const selectSize = (id, size) => {
+    setSelectedSizes((prev) => ({ ...prev, [id]: size }));
   };
 
-  // For adding items: handle quantity input
-  const handleQuantityChange = (itemName, newQty) => {
-    const qty = Math.max(Number(newQty), 1);
-    setQuantities((prev) => ({ ...prev, [itemName]: qty }));
+  const handleQuantityChange = (id, value) => {
+    const qty = Math.max(Number(value), 1);
+    setQuantities((prev) => ({ ...prev, [id]: qty }));
   };
 
-  // Add item to cart
-  const addToCart = (e, itemName) => {
+  const addToCart = (e, item) => {
     e.stopPropagation();
-    const size = selectedSizes[itemName];
-    if (!size && isDrinkItem(itemName)) {
+
+    // Use quantity field from the backend to determine stock status.
+    if (!item.quantity || Number(item.quantity) <= 0) {
+      const rect = e.target.getBoundingClientRect();
+      console.log("Item is out of stock, popup at:", rect);
+      setPopupInfo({
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        message: "Cannot add to cart, item is out of stock."
+      });
+      setTimeout(() => setPopupInfo(null), 2000);
+      return;
+    }
+
+    const size = selectedSizes[item.item_id];
+    if (isDrinkItem(item) && !size) {
       alert("Please select a size before adding to cart.");
       return;
     }
-  
-    const quantity = quantities[itemName] || 1;
-  
-    const itemData =
-      drinkItems.find((d) => d.name === itemName) ||
-      foodItems.find((f) => f.name === itemName);
-  
-    if (!itemData) {
-      alert("Item not found.");
-      return;
-    }
-  
-    const id = itemData.id;
-    const price = parseFloat(itemData.price.replace("$", ""));
-  
-    if (!id) {
-      console.warn("Missing ID for cart item:", itemData);
-      alert("Something went wrong. Item ID is missing.");
-      return;
-    }
-  
-    const newItem = { id, name: itemName, size, quantity, price };
-  
-    console.log("✅ Adding to cart:", newItem);
-  
-    setCartItems((prevCart) => {
-      const existingIndex = prevCart.findIndex(
-        (cartItem) => cartItem.name === itemName && cartItem.size === size
+
+    const quantity = quantities[item.item_id] || 1;
+    const newItem = {
+      id: item.item_id,
+      name: item.name,
+      size,
+      quantity,
+      price: item.price,
+    };
+
+    setCartItems((prev) => {
+      const index = prev.findIndex(
+        (i) => i.name === newItem.name && i.size === newItem.size
       );
-      if (existingIndex >= 0) {
-        const updatedCart = [...prevCart];
-        updatedCart[existingIndex].quantity += quantity;
-        return updatedCart;
-      } else {
-        return [...prevCart, newItem];
+      if (index >= 0) {
+        const updated = [...prev];
+        updated[index].quantity += quantity;
+        return updated;
       }
+      return [...prev, newItem];
     });
-  
+
     const rect = e.target.getBoundingClientRect();
     setPopupInfo({
       x: rect.left + window.scrollX,
       y: rect.top + window.scrollY,
-      message: "Added to cart!",
+      message: "Added to cart!"
     });
     setTimeout(() => setPopupInfo(null), 2000);
   };
-  
-  
-  // Toggle cart modal open/close
+
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
-
-  // Handle editing size: toggle slide-in panel for the selected cart item (drinks only)
-  const handleEditSize = (index) => {
-    setEditingSizeIndex((prev) => (prev === index ? null : index));
-  };
-
-  // When a new size is selected from the panel, update the cart item and close panel
-  const handleSizeChangeInCart = (index, newSize) => {
-    setCartItems((prev) => {
-      const updated = [...prev];
-      updated[index].size = newSize;
-      return updated;
-    });
+  const handleEditSize = (i) => setEditingSizeIndex(i === editingSizeIndex ? null : i);
+  const handleSizeChangeInCart = (i, newSize) => {
+    const updated = [...cartItems];
+    updated[i].size = newSize;
+    setCartItems(updated);
     setEditingSizeIndex(null);
   };
 
-  // Increment quantity in cart
-  const handleIncrement = (index) => {
-    setCartItems((prev) => {
-      const updated = [...prev];
-      updated[index].quantity += 1;
-      return updated;
-    });
+  const handleIncrement = (i) => {
+    const updated = [...cartItems];
+    updated[i].quantity += 1;
+    setCartItems(updated);
   };
 
-  // Decrement quantity in cart
-  const handleDecrement = (index) => {
-    setCartItems((prev) => {
-      const updated = [...prev];
-      if (updated[index].quantity > 1) {
-        updated[index].quantity -= 1;
-      } else {
-        updated.splice(index, 1);
-      }
-      return updated;
-    });
+  const handleDecrement = (i) => {
+    const updated = [...cartItems];
+    if (updated[i].quantity > 1) {
+      updated[i].quantity -= 1;
+    } else {
+      updated.splice(i, 1);
+    }
+    setCartItems(updated);
   };
 
-  // (Optional) Remove an item entirely from the cart
-  const handleRemove = (index) => {
-    setCartItems((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
+  const handleRemove = (i) => {
+    const updated = [...cartItems];
+    updated.splice(i, 1);
+    setCartItems(updated);
   };
 
-  // Close cart modal if clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        cartModalRef.current &&
-        !cartModalRef.current.contains(event.target) &&
-        isCartOpen
-      ) {
-        setIsCartOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, [isCartOpen]);
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Compute total price
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );  
-
-  // Checkout function
   const handleCheckout = async () => {
-    if (cartItems.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-  
-    const totalPrice = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-  
-    if (totalPrice === 0) {
-      alert("Cannot create an order with $0 total.");
-      return;
-    }
-  
+    if (!cartItems.length) return alert("Cart is empty.");
     const userId = localStorage.getItem("user_id");
-    if (!userId) {
-      alert("User not logged in!");
-      return;
-    }
-  
+    if (!userId) return alert("User not logged in!");
+
     try {
-      const response = await fetch("http://157.245.80.36:5000/orders", {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userId,
-          total_amount: totalPrice,
-        }),
+        body: JSON.stringify({ user_id: userId, total_amount: totalPrice }),
       });
-  
-      if (!response.ok) throw new Error("Failed to create order");
-  
-      const orderData = await response.json();
-      const orderId = orderData.id.toString();
-      localStorage.setItem("order_id", orderId); // Optional: if needed in /order
-  
-      navigate("/order", {
-        state: {
-          orderId,
-          cartItems,
-        },
-      });
+
+      const data = await response.json();
+      localStorage.setItem("order_id", data.id);
+      navigate("/order", { state: { orderId: data.id, cartItems } });
     } catch (error) {
-      console.error("Checkout Error:", error);
-      alert("Failed to place the order. Try again.");
+      console.error("Checkout failed:", error);
     }
   };
-  
-  
-  
-  // Sample DRINKS data (using public folder images)
-  // src/components/CatalogMenuPage.jsx
 
-// ... (existing imports and component setup)
-
-  // Sample DRINKS data (with item IDs)
-  const drinkItems = [
-    {
-      id: 1,
-      name: "Drip Coffee",
-      desc: "Classic brewed coffee",
-      ingredients: "Coffee, Water",
-      img: "/images/drip_coffee.webp",
-      price: "$2.50",
-      calories: "5 Calories",
-    },
-    {
-      id: 2,
-      name: "Espresso",
-      desc: "Strong and bold shot of coffee",
-      ingredients: "Espresso",
-      img: "/images/espresso.webp",
-      price: "$3.00",
-      calories: "10 Calories",
-    },
-    {
-      id: 3,
-      name: "Latte",
-      desc: "Espresso with steamed milk",
-      ingredients: "Espresso, Milk",
-      img: "/images/latte.webp",
-      price: "$4.00",
-      calories: "150 Calories",
-    },
-    {
-      id: 4,
-      name: "Americano",
-      desc: "Espresso diluted with hot water",
-      ingredients: "Espresso, Water",
-      img: "/images/americano.webp",
-      price: "$3.50",
-      calories: "15 Calories",
-    },
-    {
-      id: 5,
-      name: "Mocha",
-      desc: "Chocolate-flavored espresso drink",
-      ingredients: "Espresso, Milk, Chocolate",
-      img: "/images/mocha.webp",
-      price: "$4.50",
-      calories: "250 Calories",
-    },
-    {
-      id: 6,
-      name: "Matcha",
-      desc: "Green tea latte with steamed milk",
-      ingredients: "Matcha, Milk",
-      img: "/images/matcha.webp",
-      price: "$4.50",
-      calories: "180 Calories",
-    },
-  ];
-
-  // Sample FOOD data (with item IDs)
-  const foodItems = [
-    {
-      id: 7,
-      name: "Butter Croissant",
-      desc: "Flaky, buttery French pastry",
-      ingredients: "Flour, Butter, Sugar, Yeast",
-      img: "/images/butter_croissant.webp",
-      price: "$3.00",
-      calories: "300 Calories",
-    },
-    {
-      id: 8,
-      name: "Blueberry Muffin",
-      desc: "Soft muffin with fresh blueberries",
-      ingredients: "Flour, Blueberries, Sugar",
-      img: "/images/blueberry_muffin.webp",
-      price: "$3.50",
-      calories: "350 Calories",
-    },
-  ];
+  const drinkItems = menuItems.filter((item) =>
+    item.category?.toLowerCase() === "drink"
+  );
+  const foodItems = menuItems.filter((item) =>
+    item.category?.toLowerCase() === "food"
+  );
 
   return (
     <div className="catalog">
-      {/* Banner / Navigation */}
       <div className="banner">
         <div className="bar">
           <ul>
@@ -321,77 +168,59 @@ const CatalogMenuPage = () => {
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order">Order</Link></li>
-            <li><Link to="/login">Log In</Link></li>
+            <li className="dropdown">
+              <Link to="/login" className="nav-link">
+                Log In
+              </Link>
+              <ul className="dropdown-menu">
+                <Link to="/admin-login">Admin Log In</Link>
+              </ul>
+            </li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>
       </div>
 
-      {/* Main Container */}
       <div className="container">
         <h1 className="menu-title">OUR MENU</h1>
         <button className="cart-button" onClick={showCart}>
-          Cart (<span className="cart-count">{cartItems.reduce((sum, i) => sum + i.quantity, 0)}</span>)
+          Cart ({cartItems.reduce((sum, i) => sum + i.quantity, 0)})
         </button>
 
-        {/* Cart Overlay */}
         {isCartOpen && (
           <div className="cart-overlay" onClick={closeCart}>
             <div className="cart-modal-content" ref={cartModalRef} onClick={(e) => e.stopPropagation()}>
               <div className="cart-modal-header">Your Cart</div>
               <div className="cart-modal-body">
-                {cartItems.length > 0 ? (
+                {cartItems.length ? (
                   <ul>
-                    {cartItems.map((item, index) => {
-                      const isDrink = isDrinkItem(item.name);
-                      return (
-                        <li key={index} className="cart-item">
-                          {/* Left Section: Product name and, if drink, size with edit */}
-                          <div className="cart-item-left">
-                            <div className="cart-item-name">{item.name}</div>
-                            {isDrink && (
-                              <div className="cart-item-size">
-                                {item.size}
-                                <button
-                                  className="edit-size-btn"
-                                  onClick={() => handleEditSize(index)}
-                                  title="Edit size"
-                                >
-                                  ✎
-                                </button>
-                              </div>
-                            )}
-                            {isDrink && editingSizeIndex === index && (
-                              <div className="size-edit-panel slide-in">
-                                {["Small", "Medium", "Large"].map((sz) => (
-                                  <button key={sz} onClick={() => handleSizeChangeInCart(index, sz)}>
-                                    {sz}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          {/* Middle Section: Quantity Controls */}
-                          <div className="quantity-controls">
-                            <button className="quantity-btn" onClick={() => handleDecrement(index)}>
-                              –
-                            </button>
-                            <span className="item-quantity">{item.quantity}</span>
-                            <button className="quantity-btn" onClick={() => handleIncrement(index)}>
-                              +
-                            </button>
-                          </div>
-                          {/* Right Section: Price */}
-                          <div className="item-price">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </div>
-                          {/* Remove Button (if needed) */}
-                          <button className="remove-button" onClick={() => handleRemove(index)}>
-                            Remove
-                          </button>
-                        </li>
-                      );
-                    })}
+                    {cartItems.map((item, i) => (
+                      <li key={i} className="cart-item">
+                        <div className="cart-item-left">
+                          <div className="cart-item-name">{item.name}</div>
+                          {item.size && (
+                            <div className="cart-item-size">
+                              {item.size}
+                              <button className="edit-size-btn" onClick={() => handleEditSize(i)}>✎</button>
+                            </div>
+                          )}
+                          {editingSizeIndex === i && (
+                            <div className="size-edit-panel slide-in">
+                              {["Small", "Medium", "Large"].map((sz) => (
+                                <button key={sz} onClick={() => handleSizeChangeInCart(i, sz)}>{sz}</button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="quantity-controls">
+                          <button onClick={() => handleDecrement(i)}>–</button>
+                          <span>{item.quantity}</span>
+                          <button onClick={() => handleIncrement(i)}>+</button>
+                        </div>
+                        <div className="item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                        <button onClick={() => handleRemove(i)}>Remove</button>
+                      </li>
+                    ))}
                   </ul>
                 ) : (
                   <p>Nothing has been added to the cart.</p>
@@ -399,23 +228,13 @@ const CatalogMenuPage = () => {
               </div>
               <div className="cart-modal-footer">
                 <div className="cart-total">Total: ${totalPrice.toFixed(2)}</div>
-                <Link
-                  to="/order"
-                  className="checkout-button"
-                  state={{ cartItems }}
-                  onClick={handleCheckout}
-                >
-                  Checkout
-                </Link>
-                <button className="cart-modal-close" onClick={closeCart}>
-                  Close
-                </button>
+                <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
+                <button className="cart-modal-close" onClick={closeCart}>Close</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Tab Buttons */}
         <div className="tab-buttons">
           <button
             className={`tab-button ${tabState === "drinks" ? "active" : ""}`}
@@ -431,110 +250,62 @@ const CatalogMenuPage = () => {
           </button>
         </div>
 
-        {/* DRINKS Section */}
-        {tabState === "drinks" && (
-          <div className="menu-category">
-            <ul className="menu-list">
-              {drinkItems.map((drink, idx) => {
-                const { name, desc, ingredients, img, price, calories } = drink;
-                return (
-                  <li key={idx}>
-                    <div className="item-left">
-                      <img src={img} alt={name} className="item-image" />
-                      <div className="item-text">
-                        <span className="item-name">{name}</span>
-                        <br />
-                        <span className="item-description">{desc}</span>
-                        <div className="extra-details">
-                          Ingredients: {ingredients}
-                        </div>
-                      </div>
+        <div className="menu-category">
+          <ul className="menu-list">
+            {(tabState === "drinks" ? drinkItems : foodItems).map((item, idx) => (
+              <li key={idx}>
+                <div className="item-left">
+                  <img src={item.image_url} alt={item.name} className="item-image" />
+                  <div className="item-text">
+                    <span className="item-name">{item.name}</span>
+                    <br />
+                    <span className="item-description">{item.description}</span>
+                    <div className="extra-details">Ingredients: {item.ingredients}</div>
+                  </div>
+                </div>
+                <span className="dots"></span>
+                <div className="item-right">
+                  <span className="item-price">${Number(item.price).toFixed(2)}</span>
+                  <span className="item-calories">{item.calories} Calories</span>
+                  {/* Stock Info: based on quantity from backend */}
+                  {item.quantity > 0 ? (
+                    <span className="stock-status in-stock">In Stock</span>
+                  ) : (
+                    <span className="stock-status out-of-stock">Out of Stock</span>
+                  )}
+                  {tabState === "drinks" && (
+                    <div className="size-options">
+                      {["Small", "Medium", "Large"].map((size) => (
+                        <button
+                          key={size}
+                          className={`size-btn ${selectedSizes[item.item_id] === size ? "selected" : ""}`}
+                          onClick={() => selectSize(item.item_id, size)}
+                        >
+                          {size}
+                        </button>
+                      ))}
                     </div>
-                    <span className="dots"></span>
-                    <div className="item-right">
-                      <span className="item-price">{price}</span>
-                      <span className="item-calories">{calories}</span>
-                      <div className="size-options">
-                        {["Small", "Medium", "Large"].map((sizeOption) => (
-                          <button
-                            key={sizeOption}
-                            className={`size-btn ${selectedSizes[name] === sizeOption ? "selected" : ""}`}
-                            onClick={() => selectSize(name, sizeOption)}
-                          >
-                            {sizeOption}
-                          </button>
-                        ))}
-                      </div>
-                      <input
-                        type="number"
-                        className="quantity-input"
-                        min="1"
-                        value={quantities[name] || 1}
-                        onChange={(e) => handleQuantityChange(name, e.target.value)}
-                      />
-                      <button className="add-to-cart" onClick={(e) => addToCart(e, name)}>
-                        Add to Cart
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-
-        {/* FOOD Section */}
-        {tabState === "food" && (
-          <div className="menu-category">
-            <ul className="menu-list">
-              {foodItems.map((food, idx) => {
-                const { name, desc, ingredients, img, price, calories } = food;
-                return (
-                  <li key={idx}>
-                    <div className="item-left">
-                      <img src={img} alt={name} className="item-image" />
-                      <div className="item-text">
-                        <span className="item-name">{name}</span>
-                        <br />
-                        <span className="item-description">{desc}</span>
-                        <div className="extra-details">
-                          Ingredients: {ingredients}
-                        </div>
-                      </div>
-                    </div>
-                    <span className="dots"></span>
-                    <div className="item-right">
-                      <span className="item-price">{price}</span>
-                      <span className="item-calories">{calories}</span>
-                      <input
-                        type="number"
-                        className="quantity-input"
-                        min="1"
-                        value={quantities[name] || 1}
-                        onChange={(e) => handleQuantityChange(name, e.target.value)}
-                      />
-                      <button className="add-to-cart" onClick={(e) => addToCart(e, name)}>
-                        Add to Cart
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
+                  )}
+                  <input
+                    type="number"
+                    min="1"
+                    className="quantity-input"
+                    value={quantities[item.item_id] || 1}
+                    onChange={(e) => handleQuantityChange(item.item_id, e.target.value)}
+                  />
+                  {/* Disable and notify if item is out of stock */}
+                  <button className="add-to-cart" onClick={(e) => addToCart(e, item)}>
+                    Add to Cart
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      {/* Pop-Up Notification */}
       {popupInfo && (
-        <div
-          className="cart-popup"
-          style={{
-            position: "absolute",
-            top: popupInfo.y,
-            left: popupInfo.x,
-          }}
-        >
+        <div className="stock-cart-popup" style={{ top: popupInfo.y, left: popupInfo.x, position: "absolute" }}>
           {popupInfo.message}
         </div>
       )}

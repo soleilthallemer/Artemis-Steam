@@ -9,7 +9,9 @@
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #EBE6E0;
   padding: 2rem;
+
   color: #27030f;
+
 }
 
 /* Headings */
@@ -48,6 +50,7 @@
   font-size: 0.95rem;
   background-color: #fff;
   color: #27030f;
+
   transition: border 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 }
@@ -126,10 +129,14 @@
 
 /* Title Class (optional, for flexibility) */
 .page-title {
-  color: #27030f;
+
+  color: #27030f !important;
   font-size: 2rem;
   margin-bottom: 1rem;
 }
+
+/* 🔽 Newly added filter styling */
+
 .filter-container {
   position: absolute;
   top: 1rem;
@@ -150,7 +157,8 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: #fff;
-  color: #27030f;
+
+  color: #27030f !important;
   font-weight: 500;
   min-width: 80px;
   height: 2.2rem;

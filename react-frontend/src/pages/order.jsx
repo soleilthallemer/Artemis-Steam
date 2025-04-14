@@ -83,7 +83,7 @@ const OrderPage = () => {
         items: transformedItems,
       });
   
-      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +131,14 @@ const OrderPage = () => {
             <li><Link to="/menu">Menu</Link></li>
             <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/order">Order</Link></li>
-            <li><Link to="/login">Log In</Link></li>
+            <li className="dropdown">
+            <Link to="/login" className="nav-link">
+              Log In
+            </Link>
+            <ul className="dropdown-menu">
+            <Link to="/admin-login">Admin Log In</Link>
+            </ul>
+            </li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </div>

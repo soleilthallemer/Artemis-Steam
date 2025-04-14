@@ -3,18 +3,33 @@ import '../css/adminUserManagement.css';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [filterRole, setFilterRole] = useState('all'); // 1. Role filter state
+
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('all');
+
 
   // Form input states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+
+  const [phoneNumber, setPhoneNumber] = useState('');
+
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+
+  useEffect(() => {
+    if (selectedRole === 'all') {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(users.filter(user => user.role === selectedRole));
+    }
+  }, [users, selectedRole]);
 
   const fetchUsers = async () => {
     try {
@@ -35,7 +50,9 @@ const AdminUserManagement = () => {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete user');
-      setUsers(prev => prev.filter(user => user.id !== userId));
+
+      setUsers(prev => prev.filter(user => user.user_id !== userId));
+
     } catch (error) {
       console.error('Error deleting user:', error);
       alert('Could not delete user.');
@@ -48,7 +65,9 @@ const AdminUserManagement = () => {
       first_name: firstName,
       last_name: lastName,
       email,
-      phone_number: '', // Optional: Add phone input if needed
+
+      phone_number: phoneNumber || undefined,
+
       role,
       password
     };
@@ -61,11 +80,15 @@ const AdminUserManagement = () => {
       });
       if (!response.ok) throw new Error('Failed to create user');
 
-      const data = await response.json();
+
+
       await fetchUsers(); // Refresh user list
       setFirstName('');
       setLastName('');
       setEmail('');
+
+      setPhoneNumber('');
+
       setPassword('');
       setRole('');
     } catch (error) {
@@ -78,13 +101,15 @@ const AdminUserManagement = () => {
     <div className="admin-user-management">
       <h1 className="page-title">User Management Portal</h1>
 
-      {/* 2. Role Filter Dropdown */}
+
+      {/* Role Filter Dropdown */}
       <div className="filter-container">
-        <label htmlFor="role-filter" className="filter-label">Filter by Role: </label>
+        <label htmlFor="role-filter" className="filter-label">Filter by role:</label>
         <select
           id="role-filter"
-          value={filterRole}
-          onChange={(e) => setFilterRole(e.target.value)}
+          value={selectedRole}
+          onChange={(e) => setSelectedRole(e.target.value)}
+
         >
           <option value="all">All</option>
           <option value="customer">Customer</option>
@@ -118,6 +143,14 @@ const AdminUserManagement = () => {
           required
         />
         <input
+
+          type="tel"
+          placeholder="Phone Number (optional)"
+          value={phoneNumber}
+          onChange={e => setPhoneNumber(e.target.value)}
+        />
+        <input
+
           type="password"
           placeholder="Password"
           value={password}
@@ -135,17 +168,18 @@ const AdminUserManagement = () => {
 
       {/* User List */}
       <ul className="user-list">
-        {users
-          .filter(user => filterRole === 'all' || user.role === filterRole) // 3. Filter logic
-          .map(user => (
-            <li key={user.id} className="user-item">
-              <div>
-                <strong>{user.name}</strong> ({user.role})
-                <p>Email: {user.email}</p>
-                <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
-              </div>
-              <button onClick={() => handleDeleteUser(user.id)} className="delete-button">Delete</button>
-            </li>
+
+        {filteredUsers.map(user => (
+          <li key={user.user_id} className="user-item">
+            <div>
+              <strong>{`${user.first_name} ${user.last_name}`}</strong> ({user.role.charAt(0).toUpperCase() + user.role.slice(1)})
+              <p>Email: {user.email}</p>
+              <p>Phone: {user.phone_number || 'N/A'}</p>
+              <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
+            </div>
+            <button onClick={() => handleDeleteUser(user.user_id)} className="delete-button">Delete</button>
+          </li>
+
         ))}
       </ul>
     </div>

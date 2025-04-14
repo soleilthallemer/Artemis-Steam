@@ -17,7 +17,6 @@ import AdminDashboard from './pages/admin-dashboard';
 import AdminProductManagement from './pages/admin-product-management';
 import AdminUserManagement from './pages/admin-user-management';
 import ReviewPage from './pages/review-page';
-
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
@@ -44,6 +43,7 @@ function App() {
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );
+  console.log('API IP: ', process.env.REACT_APP_API_IP);
 }
 
 export default App;

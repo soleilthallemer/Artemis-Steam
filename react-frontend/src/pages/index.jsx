@@ -25,8 +25,13 @@ function HomePage() {
             <li>
               <Link to="/order">Order</Link>
             </li>
-            <li>
-              <Link to="/login">Log In</Link>
+            <li className="dropdown">
+              <Link to="/login" className="nav-link">
+                Log In
+              </Link>
+              <ul className="dropdown-menu">
+                <Link to="/admin-login">Admin Log In</Link>
+              </ul>
             </li>
             <li>
               <Link to="/profile">Profile</Link>
@@ -58,9 +63,8 @@ function HomePage() {
       <div className="menu">
         <h2>Menu</h2>
         <p>Explore our delicious offerings.</p>
-        {/* The button here is styled via .homepage button in your CSS */}
         <button type="button" onClick={() => navigate("/menu")}>
-          <span>View Menu </span>
+          <span>View Menu</span>
         </button>
         
         {/* Featured Items */}
@@ -79,7 +83,6 @@ function HomePage() {
             <img src="/images/blueberry_muffin.webp" alt="Blueberry Muffin" />
           </div>
         </div>
-
       </div>
 
       {/* Amenities Section */}
@@ -113,8 +116,7 @@ function HomePage() {
       <div className="policy">
         <h2>Policy</h2>
         <p>
-          We kindly ask all guests to respect our space and enjoy their time
-          responsibly.
+          We kindly ask all guests to respect our space and enjoy their time responsibly.
           <br />
           Please be mindful of other visitors, keep noise levels appropriate, and
           maintain the

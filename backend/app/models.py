@@ -74,6 +74,7 @@ class MenuItem(db.Model):
     ingredients = db.Column(db.Text, default="")
     image_url = db.Column(db.String(255), default="")
     availability_status = db.Column(db.Boolean, default=True)
+    quantity = db.Column(db.Integer, default=0)
     calories = db.Column(db.Integer, default=0)
     preparation_time = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
