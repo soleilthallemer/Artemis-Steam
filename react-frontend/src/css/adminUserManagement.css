@@ -138,8 +138,9 @@
 /* 🔽 Newly added filter styling */
 
 .filter-container {
-  position: absolute;
-  top: 1rem;
+  /*position: absolute;
+  top: 1rem;*/
+  margin-bottom: 2rem;
   left: 1rem;
   display: flex;
   align-items: center;
