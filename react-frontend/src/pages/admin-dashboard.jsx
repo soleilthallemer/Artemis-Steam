@@ -255,7 +255,17 @@ const AdminDashboard = () => {
         {!order.claimedBy && (
           <button onClick={() => claimOrder(order.id)}>Claim </button>
         )}
-        <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
+        {order.claimedBy === `${user.first_name} ${user.last_name}` && (
+  <>
+    {order.status === "Claimed" && (
+      <button onClick={() => editOrderStatus(order.id, "In Progress")}>Start</button>
+    )}
+    {order.status === "In Progress" && (
+      <button onClick={() => editOrderStatus(order.id, "Completed")}>Mark as Completed</button>
+    )}
+  </>
+)}
+
       </div>
     </li>
 ))}
