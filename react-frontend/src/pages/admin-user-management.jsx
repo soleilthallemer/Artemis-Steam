@@ -43,6 +43,10 @@ const AdminUserManagement = () => {
     }
   };
 
+  const handleLogout = () => {
+    navigate("/admin-login");
+  };
+
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
@@ -90,7 +94,7 @@ const AdminUserManagement = () => {
   };
 
   return (
-    <div className="admin-dashboard dashboard-container">
+    <div className="admin-user-management dashboard-container">
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
@@ -100,24 +104,24 @@ const AdminUserManagement = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
-          <Link to="/admin-dashboard" className="nav-item">
+          <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
           </Link>
-          <Link to="/admin-user-management" className="nav-item active">
+          <Link
+            to="/admin-user-management"
+            className={`nav-item ${sidebarOpen ? "label" : ""} active`}
+          >
             <span className="material-icons">groups</span>
             {sidebarOpen && <span>User Management</span>}
           </Link>
-          <Link to="/admin-product-management" className="nav-item">
+          <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">inventory_2</span>
             {sidebarOpen && <span>Product Management</span>}
           </Link>
         </nav>
         <div className="sidebar-bottom">
-          <button className="logout-btn" onClick={() => {
-            localStorage.clear();
-            navigate("/admin-login");
-          }}>
+          <button className="logout-btn" onClick={handleLogout}>
             <span className="material-icons">logout</span>
             {sidebarOpen && <span>Logout</span>}
           </button>
@@ -126,18 +130,20 @@ const AdminUserManagement = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        <h1 className="page-title">User Management Portal</h1>
+        <h2 className="page-title">User Management Portal</h2>
 
         {/* Create User Form */}
         <form className="create-user-form" onSubmit={handleCreateUser}>
-          <h2>Create a New User</h2>
-          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="tel" placeholder="Phone Number (optional)" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+          <h3 className="title-form">Create a New User</h3>
+          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required/>
+          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required/>
+          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required/>
+          <input type="tel" placeholder="Phone Number (optional)" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)}/>
           <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
           <select value={role} onChange={e => setRole(e.target.value)} required>
-            <option value="" disabled hidden>Select Role</option>
+            <option value="" disabled hidden>
+              Select Role
+            </option>
             <option value="customer">Customer</option>
             <option value="employee">Employee</option>
             <option value="administrator">Administrator</option>
@@ -145,9 +151,11 @@ const AdminUserManagement = () => {
           <button type="submit">Add User</button>
         </form>
 
-        {/* Moved Filter Dropdown Here */}
+        {/* Filter Dropdown */}
         <div className="filter-container">
-          <label htmlFor="role-filter" className="filter-label">Filter by role:</label>
+          <label htmlFor="role-filter" className="filter-label">
+            Filter by role:
+          </label>
           <select
             id="role-filter"
             value={selectedRole}
@@ -165,12 +173,17 @@ const AdminUserManagement = () => {
           {filteredUsers.map(user => (
             <li key={user.user_id} className="user-item">
               <div>
-                <strong>{`${user.first_name} ${user.last_name}`}</strong> ({user.role.charAt(0).toUpperCase() + user.role.slice(1)})
-                <p>Email: {user.email}</p>
-                <p>Phone: {user.phone_number || 'N/A'}</p>
-                <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
+                <strong className="user-info">{`${user.first_name} ${user.last_name}`}
+                : {user.role.charAt(0).toUpperCase() + user.role.slice(1)}</strong>
+                <p className="user-info">Email: {user.email}</p>
+                <p className="user-info">Phone: {user.phone_number || "N/A"}</p>
+                <p className="user-info">
+                  Registered on: {new Date(user.created_at).toLocaleString()}
+                </p>
               </div>
-              <button onClick={() => handleDeleteUser(user.user_id)} className="delete-button">Delete</button>
+              <button onClick={() => handleDeleteUser(user.user_id)} className="delete-button">
+                Delete
+              </button>
             </li>
           ))}
         </ul>
