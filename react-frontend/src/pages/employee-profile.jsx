@@ -26,7 +26,7 @@ const EmployeeProfile = () => {
     const fetchProfileAndOrders = async () => {
       try {
         // Fetch employee profile using the /users/<email> endpoint
-        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`, {
+        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -38,7 +38,7 @@ const EmployeeProfile = () => {
         }
 
         // Fetch all orders
-        const orderRes = await fetch(`http://157.245.80.36:5000/orders`, {
+        const orderRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -67,7 +67,7 @@ const EmployeeProfile = () => {
   // Handler to update an order's status
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/status`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
@@ -88,7 +88,7 @@ const EmployeeProfile = () => {
   // Handler to remove an order claim (unclaim)
   const removeOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://157.245.80.36:5000/orders/${orderId}/remove-claim`, {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/remove-claim`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" }
       });

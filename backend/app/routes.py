@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app import db
 from app.models import Order, OrderItem, MenuItem, User
 import traceback
+from datetime import datetime
 
 main = Blueprint('main', __name__)
 
@@ -477,8 +478,113 @@ def get_recent_uncompleted_orders():
     except Exception as e:
         print(f"[ERROR] Failed to fetch recent uncompleted orders: {e}")
         return jsonify({"error": "Failed to retrieve recent orders"}), 500
+    
+# endpoint to get all users
+@main.route('/users', methods=['GET'])
+def get_all_users():
+    try:
+        users = User.query.all()
+        return jsonify([
+            {
+                "user_id": user.user_id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                 "phone_number": user.phone_number,
+                "role": user.role,
+                "created_at": user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                "updated_at": user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
+            }
+            for user in users
+        ]), 200
+    except Exception as e:
+        print("[ERROR] Failed to fetch users:", e)
+        traceback.print_exc()
+        return jsonify({"error": "Failed to fetch users"}), 500
+
+#endpoint to delete a user
+@main.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return jsonify({"message": f"User {user_id} deleted successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to delete user {user_id}:", e)
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+    
+# endpoint for an admin to manually create a new user
+@main.route('/users', methods=['POST'])
+def create_user():
+    try:
+        data = request.get_json()
+
+        # 🔄 Removed 'phone_number' from required fields
+        required_fields = ['first_name', 'last_name', 'email', 'role', 'password']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return jsonify({"error": "A user with this email already exists."}), 409
+
+        user = User(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            email=data['email'],
+            phone_number=data.get('phone_number'),  # ✅ Optional
+            role=data['role']
+        )
+        user.set_password(data['password'])
+
+        db.session.add(user)
+        db.session.commit()
+
+        return jsonify({
+            "message": "User created successfully",
+            "user_id": user.user_id
+        }), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to create user: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
 
 
+# endpoint to edit an existing users profile
+@main.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        data = request.json
+        user = User.query.get(user_id)
 
+        if not user:
+            return jsonify({"error": "User not found"}), 404
 
+        # Update only the provided fields
+        user.first_name = data.get("first_name", user.first_name)
+        user.last_name = data.get("last_name", user.last_name)
+        user.email = data.get("email", user.email)
+        user.phone_number = data.get("phone_number", user.phone_number)
+        user.role = data.get("role", user.role)
+        user.hire_date = data.get("hire_date", user.hire_date)
 
+        # Optional: if password is provided, hash it
+        if data.get("password"):
+            user.set_password(data["password"])
+
+        user.updated_at = datetime.utcnow()
+        db.session.commit()
+
+        return jsonify({"message": "User updated successfully"}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to update user {user_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500

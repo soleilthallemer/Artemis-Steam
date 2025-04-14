@@ -24,7 +24,7 @@ const CatalogMenuPage = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const res = await fetch("http://157.245.80.36:5000/menu");
+        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/menu`);
         const data = await res.json();
         setMenuItems(data);
       } catch (error) {
@@ -137,7 +137,7 @@ const CatalogMenuPage = () => {
     if (!userId) return alert("User not logged in!");
 
     try {
-      const response = await fetch("http://157.245.80.36:5000/orders", {
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, total_amount: totalPrice }),

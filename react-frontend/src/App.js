@@ -15,6 +15,7 @@ import EmployeeProfile from './pages/employee-profile';
 import AdminLogin from './pages/admin-login';
 import AdminDashboard from './pages/admin-dashboard';
 import AdminProductManagement from './pages/admin-product-management';
+import AdminUserManagement from './pages/admin-user-management';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -37,9 +38,11 @@ function App() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-product-management" element={<AdminProductManagement />} />
+        <Route path="/admin-user-management" element={<AdminUserManagement />} />
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );
+  console.log('API IP: ', process.env.REACT_APP_API_IP);
 }
 
 export default App;

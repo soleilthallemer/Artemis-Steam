@@ -37,7 +37,7 @@ const AdminDashboard = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const userRes = await fetch(`http://157.245.80.36:5000/users/${email}`);
+        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`);
         const userData = await userRes.json();
         if (userData.error) {
           console.error("User fetch error:", userData.error);
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
           setUser(userData);
         }
     
-        const summaryRes = await fetch("http://157.245.80.36:5000/dashboard/summary");
+        const summaryRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/dashboard/summary`);
         const summaryData = await summaryRes.json();
     
         const {
@@ -54,9 +54,9 @@ const AdminDashboard = () => {
           totalProducts,
           totalOrders,
           revenue,
-          recentUsers,
-          recentEmployees,
-          recentOrders
+          recentUsers = [],
+          recentEmployees = [],
+          recentOrders = []
         } = summaryData;
     
         setSummaryStats({ totalUsers, totalProducts, totalOrders, revenue });
@@ -84,7 +84,7 @@ const AdminDashboard = () => {
 
   const claimOrder = async (orderId) => {
     try {
-      const res = await fetch(`http://157.245.80.36:5000/orders/${orderId}/claim`, {
+      const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: localStorage.getItem("user_id") }),
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
 
   const editOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`http://157.245.80.36:5000/orders/${orderId}/status`, {
+      const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
