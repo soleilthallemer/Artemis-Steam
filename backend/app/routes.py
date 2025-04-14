@@ -320,4 +320,41 @@ def update_order_status(order_id):
         print(f"[ERROR] Failed to update order status: {e}")
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
+    
+    # Get all reviews
+@main.route('/reviews', methods=['GET'])
+def get_reviews():
+    reviews = Review.query.order_by(Review.created_at.desc()).all()
+    return jsonify([
+        {
+            "review_id": r.review_id,
+            "name": r.name,
+            "rating": r.rating,
+            "comment": r.comment,
+            "created_at": r.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for r in reviews
+    ]), 200
+
+# Create a new review
+@main.route('/reviews', methods=['POST'])
+def create_review():
+    try:
+        data = request.get_json()
+        required = ['name', 'rating', 'comment']
+        if not all(data.get(f) for f in required):
+            return jsonify({"error": "All fields are required."}), 400
+
+        review = Review(
+            name=data['name'],
+            rating=data['rating'],
+            comment=data['comment']
+        )
+        db.session.add(review)
+        db.session.commit()
+
+        return jsonify({"message": "Review submitted successfully"}), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to submit review: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/reviewPage.css';
 
 export default function ReviewPage() {
@@ -7,21 +7,51 @@ export default function ReviewPage() {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
-  const handleSubmit = (e) => {
+  // 🔁 Fetch existing reviews on mount
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/reviews`);
+        if (!res.ok) throw new Error('Failed to fetch reviews');
+        const data = await res.json();
+        setReviews(data);
+      } catch (err) {
+        console.error('Error loading reviews:', err);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  // ✅ Handle submission to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !rating || !comment) return alert("All fields are required.");
 
     const newReview = {
-      id: Date.now(),
       name,
       rating,
-      comment,
+      comment
     };
 
-    setReviews([newReview, ...reviews]);
-    setName('');
-    setRating(0);
-    setComment('');
+    try {
+      const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReview)
+      });
+
+      if (!res.ok) throw new Error('Failed to submit review');
+
+      const savedReview = { ...newReview, id: Date.now() };
+      setReviews([savedReview, ...reviews]);
+      setName('');
+      setRating(0);
+      setComment('');
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      alert('Failed to submit review.');
+    }
   };
 
   return (
@@ -67,8 +97,8 @@ export default function ReviewPage() {
           {reviews.length === 0 ? (
             <p className="no-reviews">No reviews yet.</p>
           ) : (
-            reviews.map((review) => (
-              <div key={review.id} className="review-item">
+            reviews.map((review, index) => (
+              <div key={review.review_id || review.id || index} className="review-item">
                 <div className="review-header">
                   <div className="user-avatar">{review.name.charAt(0).toUpperCase()}</div>
                   <div>
@@ -78,7 +108,7 @@ export default function ReviewPage() {
                 </div>
                 <div className="star-rating">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`star ${i < (review.rating) ? 'filled' : ''}`}>★</span>
+                    <span key={i} className={`star ${i < review.rating ? 'filled' : ''}`}>★</span>
                   ))}
                 </div>
                 <p className="review-text">{review.comment}</p>
