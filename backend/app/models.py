@@ -81,3 +81,12 @@ class MenuItem(db.Model):
 
     def __repr__(self):
         return f'<MenuItem {self.name}>'
+    
+class Review(db.Model):
+    __tablename__ = 'reviews'
+
+    review_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
