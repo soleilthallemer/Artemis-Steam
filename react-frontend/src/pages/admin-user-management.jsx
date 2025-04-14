@@ -3,20 +3,25 @@ import '../css/adminUserManagement.css';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
+
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState('all');
+
 
   // Form input states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+
   const [phoneNumber, setPhoneNumber] = useState('');
+
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
 
   useEffect(() => {
     if (selectedRole === 'all') {
@@ -45,7 +50,9 @@ const AdminUserManagement = () => {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to delete user');
+
       setUsers(prev => prev.filter(user => user.user_id !== userId));
+
     } catch (error) {
       console.error('Error deleting user:', error);
       alert('Could not delete user.');
@@ -58,7 +65,9 @@ const AdminUserManagement = () => {
       first_name: firstName,
       last_name: lastName,
       email,
+
       phone_number: phoneNumber || undefined,
+
       role,
       password
     };
@@ -71,11 +80,15 @@ const AdminUserManagement = () => {
       });
       if (!response.ok) throw new Error('Failed to create user');
 
+
+
       await fetchUsers(); // Refresh user list
       setFirstName('');
       setLastName('');
       setEmail('');
+
       setPhoneNumber('');
+
       setPassword('');
       setRole('');
     } catch (error) {
@@ -88,6 +101,7 @@ const AdminUserManagement = () => {
     <div className="admin-user-management">
       <h1 className="page-title">User Management Portal</h1>
 
+
       {/* Role Filter Dropdown */}
       <div className="filter-container">
         <label htmlFor="role-filter" className="filter-label">Filter by role:</label>
@@ -95,6 +109,7 @@ const AdminUserManagement = () => {
           id="role-filter"
           value={selectedRole}
           onChange={(e) => setSelectedRole(e.target.value)}
+
         >
           <option value="all">All</option>
           <option value="customer">Customer</option>
@@ -128,12 +143,14 @@ const AdminUserManagement = () => {
           required
         />
         <input
+
           type="tel"
           placeholder="Phone Number (optional)"
           value={phoneNumber}
           onChange={e => setPhoneNumber(e.target.value)}
         />
         <input
+
           type="password"
           placeholder="Password"
           value={password}
@@ -151,6 +168,7 @@ const AdminUserManagement = () => {
 
       {/* User List */}
       <ul className="user-list">
+
         {filteredUsers.map(user => (
           <li key={user.user_id} className="user-item">
             <div>
@@ -161,6 +179,7 @@ const AdminUserManagement = () => {
             </div>
             <button onClick={() => handleDeleteUser(user.user_id)} className="delete-button">Delete</button>
           </li>
+
         ))}
       </ul>
     </div>

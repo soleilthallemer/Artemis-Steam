@@ -36,6 +36,9 @@ function HomePage() {
             <li>
               <Link to="/profile">Profile</Link>
             </li>
+            <li>
+              <Link to="/review-page">Reviews</Link>
+            </li>
           </ul>
         </div>
         <div className="content">

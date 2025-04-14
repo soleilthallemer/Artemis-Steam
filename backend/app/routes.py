@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models import Order, OrderItem, MenuItem, User
+from app.models import Order, OrderItem, MenuItem, User, Review
 import traceback
 from datetime import datetime
 
@@ -326,6 +326,44 @@ def update_order_status(order_id):
         traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500
     
+
+    # Get all reviews
+@main.route('/reviews', methods=['GET'])
+def get_reviews():
+    reviews = Review.query.order_by(Review.created_at.desc()).all()
+    return jsonify([
+        {
+            "review_id": r.review_id,
+            "name": r.name,
+            "rating": r.rating,
+            "comment": r.comment,
+            "created_at": r.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for r in reviews
+    ]), 200
+#extra comment
+# Create a new review
+@main.route('/reviews', methods=['POST'])
+def create_review():
+    try:
+        data = request.get_json()
+        required = ['name', 'rating', 'comment']
+        if not all(data.get(f) for f in required):
+            return jsonify({"error": "All fields are required."}), 400
+
+        review = Review(
+            name=data['name'],
+            rating=data['rating'],
+            comment=data['comment']
+        )
+        db.session.add(review)
+        db.session.commit()
+
+        return jsonify({"message": "Review submitted successfully"}), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to submit review: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+      
 # Dashboard summary endpoint
 @main.route('/dashboard/summary', methods=['GET'])
 def get_dashboard_summary():
@@ -564,6 +602,7 @@ def update_user(user_id):
     try:
         data = request.json
         user = User.query.get(user_id)
+
 
         if not user:
             return jsonify({"error": "User not found"}), 404

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../css/admin-dashboard.css";
 
 const AdminDashboard = () => {
+
   const [user, setUser] = useState(null);
   const [summaryStats, setSummaryStats] = useState({
     totalUsers: 0,
@@ -141,6 +142,7 @@ const AdminDashboard = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
+
           <Link to="/admin-dashboard" className="nav-item active">
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
@@ -162,10 +164,13 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+
       {/* Main */}
+
       <div className="main-content">
         <h2 className="admin-dashboard-title">Dashboard</h2>
         <p className="admin-dashboard-subtitle">Welcome to your admin dashboard.</p>
+
 
         <div className="cards-grid">
           {/* Summary Stats */}
@@ -218,13 +223,16 @@ const AdminDashboard = () => {
             <h3 className="section-title">Recently Active Employees</h3>
             <ul className="employee-list">
               {recentEmployees.map((employee) => (
+
                 <li key={employee.id}>
                   <strong className="employee-name">{employee.name}</strong><br />
                   <small className="employee-active">Last active: {employee.lastActive}</small>
+
                 </li>
               ))}
             </ul>
           </div>
+
 
           {/* Recently Registered Users */}
           <div className="recent-users-section">
@@ -238,6 +246,7 @@ const AdminDashboard = () => {
               ))}
             </ul>
           </div>
+
 
           {/* Recently Placed Orders */}
           <div className="recent-orders-section">
@@ -276,6 +285,7 @@ const AdminDashboard = () => {
     ))}
 </ul>
 
+
           </div>
         </div>
       </div>
@@ -283,4 +293,6 @@ const AdminDashboard = () => {
   );
 };
 
+
 export default AdminDashboard;
+

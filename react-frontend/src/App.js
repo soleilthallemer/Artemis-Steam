@@ -16,7 +16,7 @@ import AdminLogin from './pages/admin-login';
 import AdminDashboard from './pages/admin-dashboard';
 import AdminProductManagement from './pages/admin-product-management';
 import AdminUserManagement from './pages/admin-user-management';
-
+import ReviewPage from './pages/review-page';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
@@ -39,6 +39,7 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-product-management" element={<AdminProductManagement />} />
         <Route path="/admin-user-management" element={<AdminUserManagement />} />
+        <Route path="review-page" element={<ReviewPage />} />
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );
