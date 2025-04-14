@@ -3,6 +3,8 @@ import '../css/adminUserManagement.css';
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedRole, setSelectedRole] = useState('all');
 
   // Form input states
   const [firstName, setFirstName] = useState('');
@@ -15,6 +17,14 @@ const AdminUserManagement = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (selectedRole === 'all') {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(users.filter(user => user.role === selectedRole));
+    }
+  }, [users, selectedRole]);
 
   const fetchUsers = async () => {
     try {
@@ -48,7 +58,7 @@ const AdminUserManagement = () => {
       first_name: firstName,
       last_name: lastName,
       email,
-      phone_number: phoneNumber,
+      phone_number: phoneNumber || undefined,
       role,
       password
     };
@@ -78,6 +88,21 @@ const AdminUserManagement = () => {
     <div className="admin-user-management">
       <h1 className="page-title">User Management Portal</h1>
 
+      {/* Role Filter Dropdown */}
+      <div className="filter-container">
+        <label htmlFor="role-filter" className="filter-label">Filter by role:</label>
+        <select
+          id="role-filter"
+          value={selectedRole}
+          onChange={(e) => setSelectedRole(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="customer">Customer</option>
+          <option value="employee">Employee</option>
+          <option value="administrator">Administrator</option>
+        </select>
+      </div>
+
       {/* Create User Form */}
       <form className="create-user-form" onSubmit={handleCreateUser}>
         <h2>Create a New User</h2>
@@ -103,11 +128,11 @@ const AdminUserManagement = () => {
           required
         />
         <input
-        type="tel"
-        placeholder="Phone Number (optional)"
-        value={phoneNumber}
-        onChange={e => setPhoneNumber(e.target.value)}
-      />
+          type="tel"
+          placeholder="Phone Number (optional)"
+          value={phoneNumber}
+          onChange={e => setPhoneNumber(e.target.value)}
+        />
         <input
           type="password"
           placeholder="Password"
@@ -126,10 +151,10 @@ const AdminUserManagement = () => {
 
       {/* User List */}
       <ul className="user-list">
-        {users.map(user => (
+        {filteredUsers.map(user => (
           <li key={user.user_id} className="user-item">
             <div>
-              <strong>{`${user.first_name} ${user.last_name}`}</strong> ({user.role})
+              <strong>{`${user.first_name} ${user.last_name}`}</strong> ({user.role.charAt(0).toUpperCase() + user.role.slice(1)})
               <p>Email: {user.email}</p>
               <p>Phone: {user.phone_number || 'N/A'}</p>
               <p>Registered on: {new Date(user.created_at).toLocaleString()}</p>
