@@ -3,6 +3,7 @@ from app import db
 from app.models import Order, OrderItem, MenuItem, User, Review
 import traceback
 from datetime import datetime
+import json
 
 main = Blueprint('main', __name__)
 
@@ -173,23 +174,28 @@ def get_menu_items():
 
 @main.route('/menu', methods=['POST'])
 def create_menu_item():
-    data = request.json
-    menu_item = MenuItem(
-        name=data['name'],
-        description=data.get('description'),
-        category=data.get('category'),
-        price=data['price'],
-        size_options=data.get('size_options'),
-        ingredients=data.get('ingredients'),
-        image_url=data.get('image_url'),
-        availability_status=data.get('availability_status', True),
-        calories=data.get('calories'),
-        preparation_time=data.get('preparation_time'),
-        quantity=data.get('quantity', 0)  # ✅ NEW FIELD DEFAULTING TO 0
-    )
-    db.session.add(menu_item)
-    db.session.commit()
-    return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
+    try:
+        data = request.json
+        menu_item = MenuItem(
+            name=data['name'],
+            description=data.get('description'),
+            category=data.get('category'),
+            price=data['price'],
+            size_options=json.dumps(data.get('size_options', [])),  # ✅ Convert list to string
+            ingredients=json.dumps(data.get('ingredients', [])),    # ✅ Convert list to string
+            image_url=data.get('image_url'),
+            availability_status=data.get('availability_status', True),
+            calories=data['calories'],
+            preparation_time=data['preparation_time'],
+            quantity=data.get('quantity', 0)
+        )
+        db.session.add(menu_item)
+        db.session.commit()
+        return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
 
 
 @main.route('/orders/<int:order_id>/items', methods=['GET'])
