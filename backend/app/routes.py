@@ -175,15 +175,23 @@ def get_menu_items():
 @main.route('/menu', methods=['POST'])
 def create_menu_item():
     try:
-        data = request.json
+        data = request.get_json()
+        print("📦 Incoming data:", data)
+
+        # Validate required fields
+        required = ['name', 'price', 'calories', 'preparation_time']
+        missing = [field for field in required if field not in data]
+        if missing:
+            return jsonify({'error': f'Missing required fields: {', '.join(missing)}'}), 400
+
         menu_item = MenuItem(
             name=data['name'],
-            description=data.get('description'),
-            category=data.get('category'),
+            description=data.get('description', ""),
+            category=data.get('category', "Uncategorized"),
             price=data['price'],
-            size_options=json.dumps(data.get('size_options', [])),  # ✅ Convert list to string
-            ingredients=json.dumps(data.get('ingredients', [])),    # ✅ Convert list to string
-            image_url=data.get('image_url'),
+            size_options=json.dumps(data.get('size_options', [])),
+            ingredients=json.dumps(data.get('ingredients', [])),
+            image_url=data.get('image_url', ""),
             availability_status=data.get('availability_status', True),
             calories=data['calories'],
             preparation_time=data['preparation_time'],
@@ -191,7 +199,9 @@ def create_menu_item():
         )
         db.session.add(menu_item)
         db.session.commit()
+
         return jsonify({'message': 'Menu item created', 'item_id': menu_item.item_id})
+
     except Exception as e:
         import traceback
         traceback.print_exc()
