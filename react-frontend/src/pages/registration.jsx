@@ -29,7 +29,7 @@ const RegistrationPage = () => {
     }
 
     try {
-      const response = await fetch('http://${process.env.API_IP}:5000/auth/register', { // ✅ Correct API URL
+      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/auth/register`, { // ✅ Correct API URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
