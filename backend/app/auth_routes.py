@@ -17,7 +17,7 @@ def register():
     """Registers a new user."""
     data = request.json
 
-    required_fields = ["first_name", "last_name", "role", "email", "password"]
+    required_fields = ["first_name", "last_name", "email", "password"]
     for field in required_fields:
         if not data.get(field):
             return jsonify({"error": f"{field} is required"}), 400
