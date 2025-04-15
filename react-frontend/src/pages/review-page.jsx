@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../css/reviewPage.css';
 
 export default function ReviewPage() {
@@ -56,6 +57,38 @@ export default function ReviewPage() {
 
   return (
     <div className="review-page">
+        <div className="banner">
+        <div className="bar">
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/menu">Menu</Link>
+            </li>
+            <li>
+              <Link to="/about-us">About Us</Link>
+            </li>
+            <li>
+              <Link to="/order">Order</Link>
+            </li>
+            <li className="dropdown">
+              <Link to="/login" className="nav-link">
+                Log In
+              </Link>
+              <ul className="dropdown-menu">
+                <Link to="/admin-login">Admin Log In</Link>
+              </ul>
+            </li>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <Link to="/review-page">Reviews</Link>
+            </li>
+          </ul>
+        </div>
+        </div>
       <h1 className="page-title">User Reviews</h1>
       <div className="review-container">
         {/* Left: Submit Form */}
