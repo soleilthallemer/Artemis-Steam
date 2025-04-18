@@ -105,6 +105,15 @@ const AdminUserManagement = () => {
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
           </Link>
+          <Link to="/admin-analytics" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+            <span className="material-icons">bar_chart</span>
+            {sidebarOpen && <span>Analytics</span>}
+          </Link>
+          <Link to="/admin-message-center" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+            <span className="material-icons">message</span>
+            {sidebarOpen && <span>Messages</span>}
+            <span className="badge"></span>
+          </Link>
           <Link
             to="/admin-user-management"
             className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
@@ -126,7 +135,11 @@ const AdminUserManagement = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        <h2 className="page-title">User Management Portal</h2>
+      <div className="page-header">
+        <h1 className="page-title">User Management Portal</h1>
+        <p className="page-subtitle">Manage your users and create new users.</p>
+      </div>
+
 
         {/* Create User Form */}
         <form className="create-user-form" onSubmit={handleCreateUser}>

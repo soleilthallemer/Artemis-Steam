@@ -1,0 +1,326 @@
+.admin-analytics * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .admin-analytics {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #EBE6E0;
+    color: #27030f;
+  }
+
+  .admin-analytics .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 80px;
+    background-color: #3f6e42;
+    color: #fff;
+    padding: 0.75rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    z-index: 1000;
+  }
+  
+  .admin-analytics .sidebar.open {
+    width: 260px;
+  }
+  
+  .admin-analytics .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-analytics .sidebar-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-right: 1rem;
+  }
+  
+  .admin-analytics .sidebar:not(.open) .sidebar-header {
+    justify-content: center;
+  }
+  
+  .admin-analytics .close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+  
+  .admin-analytics .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex: 1;
+  }
+  
+  .admin-analytics .nav-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    transition: background-color 0.1s ease;
+    padding: 0.5rem 0;
+  }
+  
+  .admin-analytics .nav-item:hover,
+  .admin-analytics .nav-item.active {
+    background-color: #2e4d2f;
+  }
+  
+  .admin-analytics .nav-item.label {
+    justify-content: flex-start;
+    padding-left: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .admin-analytics .nav-item span.material-icons {
+    font-size: 1.2rem;
+  }
+  
+  .admin-analytics .sidebar-bottom {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-analytics .logout-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .admin-analytics .main-content {
+    margin-left: 80px; 
+    padding: 2rem;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .admin-analytics .sidebar.open ~ .main-content {
+    margin-left: 260px; 
+  }
+  
+  .admin-analytics .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 0rem 1rem;
+    background-color: #EBE6E0;
+  }
+
+  .analytics-header .header-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-analytics .analytics-title {
+    color: #27030f !important;
+    font-size: 1.75rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.25rem !important;
+    text-align: left !important;
+    margin-left: -15px;
+  }
+  
+  .admin-analytics .analytics-subtitle {
+    color: #27030f !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: -1rem !important;
+    text-align: left !important;
+    margin-left: -15px;
+  }
+  
+  .admin-analytics .time-range-select select {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #27030f !important;
+    font-weight: 500;
+  }
+  
+  /* ====================================== */
+  /*          Analytics Cards Grid          */
+  /* ====================================== */
+  .admin-analytics .analytics-cards-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .admin-analytics .analytics-card {
+    flex: 1;
+    background-color: #fdfcf7;
+    border: 1px solid #e0dfdb;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+  }
+  
+  /* Card header styling */
+  .admin-analytics .analytics-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .admin-analytics .analytics-card .card-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #27030f !important;
+    text-align: left;
+  }
+  
+  .admin-analytics .analytics-card .card-header span.material-icons {
+    font-size: 1.5rem;
+    color: #27030f !important;
+  }
+  
+  /* Table styling within analytics cards */
+  .admin-analytics .analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .admin-analytics .analytics-table th,
+  .admin-analytics .analytics-table td {
+    padding: 0.5rem;
+    border: 1px solid #e0dfdb;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #27030f !important;
+  }
+  
+  .admin-analytics .analytics-table th {
+    background-color: #fdfcf7;
+    font-weight: 600;
+  }
+  
+  /* ====================================== */
+  /*          Most Popular Items Section    */
+  /* ====================================== */
+  .admin-analytics .popular-items-grid {
+    margin-top: 2rem;
+  }
+
+  .admin-analytics .card-subtitle {
+    color: #27030f !important;
+    text-align: left;
+  }
+  
+  /* Placeholder for bar chart */
+  .admin-analytics .bar-chart {
+    width: 100%;
+    height: 200px;
+    background-color: #fdfcf7;
+    border: 1px solid #e0dfdb;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  .admin-analytics .bar-chart .bar {
+    height: 100%;
+    background-color: #1e511b;
+    opacity: 0.8;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+  }
+  
+  .admin-analytics .bar-chart .bar-tooltip {
+    position: absolute;
+    top: -1.5rem;
+    font-size: 0.8rem;
+    background-color: #fff;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }  
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .status-badge.in-stock {
+    background-color: #edf7ed;
+    color: #2e7d32 !important;
+  }
+  
+  .status-badge.discontinued {
+    background-color: #ffe5e5;
+    color: #cc0000 !important;
+  }
+  
+  .admin-analytics footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #fdfcf7;
+    border-top: 1px solid #e0dfdb;
+    margin-top: 2rem;
+    color: #27030f !important;
+  }
+  
+  .popular-items-list {
+  margin-top: 1rem;
+}
+
+.popular-item {
+  margin-bottom: 1rem;
+}
+
+.item-name {
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.item-sales {
+  color: #1e511b;
+  margin-right: 1rem;
+}
+
+.progress-bar {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  height: 10px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.progress {
+  height: 100%;
+  background-color: #1e511b;
+  border-radius: 4px 0 0 4px;
+}

@@ -8,16 +8,8 @@
 .admin-user-management {
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #EBE6E0;
-  padding: 2rem;
+  padding: 1rem .09rem;
   color: #27030f;
-}
-
-/* Headings */
-.admin-user-management h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #27030f !important;
-  text-align: left;
 }
 
 .admin-user-management h3 {
@@ -140,7 +132,7 @@
   justify-content: center;
 }
 
-.admin-userManagement .sidebar-header h1 {
+.admin-user-management .sidebar-header h1 {
   font-size: 1.2rem;
   font-weight: 600;
   margin-right: 1rem;
@@ -211,7 +203,7 @@
 /* Main Content */
 .admin-user-management .main-content {
   margin-left: 80px;
-  padding: 2rem;
+  padding: 1rem 2rem;
   min-height: 100vh;
   transition: margin-left 0.3s ease;
 }
@@ -267,14 +259,26 @@
   color: #27030f !important;
 }
 
-/* Page Title */
-.page-title {
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
+  margin-top: 0;
+  margin-left: 0;
+}
+
+/* primary title */
+.page-header .page-title {
+  font-size: 1.75rem;
   color: #27030f !important;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem;
   text-align: left;
 }
 
-.admin-user-management .user-info {
+/* secondary subtitle */
+.page-header .page-subtitle {
+  font-size: 1rem;
   color: #27030f !important;
+  margin-bottom: 1.5rem;
+  text-align: left;
 }

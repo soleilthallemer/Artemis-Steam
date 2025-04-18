@@ -224,7 +224,7 @@ const AdminProductManagement = () => {
   return (
     <div className="product-management-container">
       {/* Sidebar */}
-      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""} active`}>
         <div className="sidebar-header">
           {sidebarOpen && <h1>Artemis &amp; Steam</h1>}
           <button className="close-btn" onClick={toggleSidebar}>
@@ -232,17 +232,24 @@ const AdminProductManagement = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
-
           <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
+          </Link>
+          <Link to="/admin-analytics" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+            <span className="material-icons">bar_chart</span>
+            {sidebarOpen && <span>Analytics</span>}
+          </Link>
+          <Link to="/admin-message-center" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
+            <span className="material-icons">message</span>
+            {sidebarOpen && <span>Messages</span>}
+            <span className="badge"></span>
           </Link>
           <Link to="/admin-user-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">groups</span>
             {sidebarOpen && <span>User Management</span>}
           </Link>
-          <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
-
+          <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">inventory_2</span>
             {sidebarOpen && <span>Product Management</span>}
           </Link>
