@@ -86,22 +86,14 @@ const AdminLogin = () => {
   return (
     <div className="admin-login-wrapper">
 
-      {/* Logo */}
-
       <div className="admin-login-logo">
         <img src="/images/profilepicture.jpg" alt="Artemis Café Logo" />
       </div>
-
-
-      {/* Header */}
 
       <div className="admin-login-header">
         <h1>Artemis & Steam</h1>
         <p>Admin Login</p>
       </div>
-
-
-      {/* Login Card */}
 
       <div className="admin-login-card">
         <form onSubmit={handleLogin} className="admin-login-form">
@@ -168,7 +160,6 @@ const AdminLogin = () => {
           </button>
 
           {/* Forgot Password */}
-
           <a
             href="#"
             onClick={(e) => e.preventDefault()}
@@ -176,6 +167,12 @@ const AdminLogin = () => {
           >
 
             Forgot password?
+          </a>
+          <a 
+            href="/"
+            className="admin-login-forgot"
+          >
+            Back to homepage
           </a>
         </form>
       </div>
