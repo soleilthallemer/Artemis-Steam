@@ -1,6 +1,8 @@
 // src/components/OrderPage.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Bar from "./bar";
+import "../css/bar.css";
 import "../css/order.css";
 
 const OrderPage = () => {
@@ -124,25 +126,11 @@ const OrderPage = () => {
   return (
     <div className="order-page">
       {/* Banner / Navigation */}
-      <div className="banner">
-        <div className="bar">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/menu">Menu</Link></li>
-            <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order">Order</Link></li>
-            <li className="dropdown">
-            <Link to="/login" className="nav-link">
-              Log In
-            </Link>
-            <ul className="dropdown-menu">
-            <Link to="/admin-login">Admin Log In</Link>
-            </ul>
-            </li>
-            <li><Link to="/profile">Profile</Link></li>
-          </ul>
-        </div>
-      </div>
+      <Bar />
+
+      <div style={{ paddingTop: "72px" }}>
+      {/* existing container / cart / menu JSX here */}
+    </div>
 
       <main>
         <div className="order-page-container">
@@ -155,24 +143,61 @@ const OrderPage = () => {
                 <li>No items in your order.</li>
               ) : (
                 orderItems.map((orderItem, index) => (
-                  <li key={index} className="order-item">
-                    {/* Column 1: Name (size) x quantity */}
+                <li key={index} className="order-item">
+
+                  {/* ▸ COL‑1  Name and customization */}
+                  <div className="order-item-main">
                     <span className="order-item-info">
-                      {orderItem.name} {orderItem.size ? `(${orderItem.size})` : ""} x {orderItem.quantity}
+                      {orderItem.name}
+                      {orderItem.size && <> (<strong>{orderItem.size}</strong>)</>}
+                      &nbsp;×&nbsp;{orderItem.quantity}
                     </span>
-                    {/* Column 2: Price */}
-                    <span className="order-item-price">
-                      ${ (orderItem.price * orderItem.quantity).toFixed(2) }
-                    </span>
-                    {/* Column 3: Quantity controls */}
-                    <span className="quantity-controls">
-                      <button className="quantity-btn" onClick={() => handleDecrement(index)}>–</button>
-                      <span className="item-quantity">{orderItem.quantity}</span>
-                      <button className="quantity-btn" onClick={() => handleIncrement(index)}>+</button>
-                    </span>
-                    {/* Column 4: Remove button */}
-                    <button className="remove-button" onClick={() => handleRemove(index)}>Remove</button>
-                  </li>
+
+                    {/* custom details */}
+                    {orderItem.custom && (
+                      <span className="order-item-custom">
+                        {/* drinks */}
+                        {orderItem.custom.milk && (
+                          <>
+                            {orderItem.size ? ", " : ""}
+                            {orderItem.custom.milk} milk / {orderItem.custom.syrup}
+                            {orderItem.custom.syrup !== "None" ? " syrup" : ""}
+                          </>
+                        )}
+                        {/* foods */}
+                        {["warmed", "iceCream", "chocolate"]
+                          .filter(k => orderItem.custom[k])
+                          .map((k, i) => (
+                            <React.Fragment key={k}>
+                              {i > 0 || orderItem.custom.milk ? ", " : ""}
+                              {{
+                                warmed:   "warmed",
+                                iceCream: "with ice‑cream",
+                                chocolate:"chocolate drizzle"
+                              }[k]}
+                            </React.Fragment>
+                          ))}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* ▸ COL‑2  Price */}
+                  <span className="order-item-price">
+                    ${(orderItem.price * orderItem.quantity).toFixed(2)}
+                  </span>
+
+                  {/* ▸ COL‑3  Qty controls */}
+                  <span className="quantity-controls">
+                    <button className="quantity-btn" onClick={() => handleDecrement(index)}>–</button>
+                    <span className="item-quantity">{orderItem.quantity}</span>
+                    <button className="quantity-btn" onClick={() => handleIncrement(index)}>+</button>
+                  </span>
+
+                  {/* ▸ COL‑4  Remove */}
+                    <button className="remove-button" onClick={() => handleRemove(index)}>
+                      Remove
+                    </button>
+                </li>
                 ))
               )}
             </ul>

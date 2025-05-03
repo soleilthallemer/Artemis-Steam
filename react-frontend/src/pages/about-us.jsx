@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Bar from "./bar";     
+import "../css/bar.css";     
 import '../css/about-us.css';
 
 const AboutUsPage = () => {
@@ -27,26 +29,10 @@ const AboutUsPage = () => {
   };
 
   return (
-    <div className="aboutus-page">
-      <div className="banner">
-        <div className="bar">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/menu">Menu</Link></li>
-            <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order">Order</Link></li>
-            <li className="dropdown">
-            <Link to="/login" className="nav-link">
-              Log In
-            </Link>
-            <ul className="dropdown-menu">
-            <Link to="/admin-login">Admin Log In</Link>
-            </ul>
-            </li>
-            <li><Link to="/profile">Profile</Link></li>
-          </ul>
-        </div>
-      </div>
+    <div className="aboutus-page" style={{paddingTop:"72px"}}>
+      <Bar />
+ 
+    {/* existing container … */}
 
       <div className="container">
         <h1>About Us</h1>

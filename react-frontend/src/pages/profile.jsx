@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Bar from "./bar";
+import "../css/bar.css";
 import "../css/profilepage.css";
 
 const ProfilePage = () => {
@@ -80,24 +82,10 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      <div className="banner">
-        <div className="bar">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/menu">Menu</Link></li>
-            <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order" className="active">Order</Link></li>
-            <li className="dropdown">
-            <Link to="/login" className="nav-link">
-              Log In
-            </Link>
-              <ul className="dropdown-menu">
-              <Link to="/admin-login">Admin Log In</Link>
-              </ul>
-              </li>
-            <li><Link to="/profile">Profile</Link></li>
-          </ul>
-        </div>
+      <Bar />
+
+      <div style={{ paddingTop: "72px" }}>
+      {/* existing container / cart / menu JSX here */}
       </div>
 
       <div className="container">

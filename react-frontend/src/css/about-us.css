@@ -1,10 +1,4 @@
 /* src/css/about_us_page.css */
-
-.aboutus-page * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
   
   /* Main styling for AboutUsPage container */
   .aboutus-page {
@@ -14,6 +8,7 @@
     text-align: center;
     color: white;
     min-height: 100vh;
+    padding-top:72px;  
   }
   
   /* Keyframes remain global if needed */
@@ -29,18 +24,6 @@
     margin: auto;
     padding: 30px 0;
   }
-  
-  .aboutus-page .banner {
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    margin: 0;
-    padding: 30px 0; 
-    font-family: "script-medium";
-    text-align: left; 
-  }
-  
   
   .aboutus-page .slideshow-container {
     width: 350px;          
@@ -59,32 +42,6 @@
     object-position: center;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  /* Navigation within the banner */
-  .aboutus-page nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: left;
-    padding: 0;
-  }
-  
-  .aboutus-page nav ul li {
-    margin: 0 15px;
-  }
-  
-  .aboutus-page nav ul li a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    transition: 0.3s;
-  }
-  
-  .aboutus-page nav ul li a:hover,
-  .aboutus-page nav ul li a.active {
-    text-decoration: underline;
-    color: #7f7b46;
   }
   
   /* About description box */
@@ -169,15 +126,6 @@
     color: white;
   }
   
-  /* Optional header styling for AboutUsPage */
-  .aboutus-page header {
-    font-family: 'Poppins', sans-serif;
-    background-color: #27030f;
-    padding: 15px 0;
-    text-align: left;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
   /* Slideshow container */
   .aboutus-page .slideshow-container {
     position: relative;
@@ -211,73 +159,3 @@
     right: 10px;
   }
   
-  .aboutus-page .nav-right {
-    display: flex;
-    flex-direction: row; 
-    align-items: center; 
-    gap: 10px;           
-    margin-left: auto;
-    padding-right: 20px;;
-  
-  }
-  
-  .aboutus-page .nav-right .login-btn,
-  .nav-right .profile-btn {
-    display: block;
-    margin: 0; 
-    padding: 10px 20px;
-    color: white;
-    border: 2px solid white;
-    border-radius: 3px;
-    text-transform: uppercase;
-    text-decoration: none;
-    font-family: sans-serif;
-    transition: background-color 0.5s, color 0.5s;
-  }
-  
-  .aboutus-page .nav-right .login-btn:hover,
-  .nav-right .profile-btn:hover {
-    background-color: white;
-    color: #27030f;
-  }
-
-  .bar ul li.dropdown {
-    position: relative;
-  }
-  
-  .bar ul li.dropdown .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;         
-    left: 0;         
-    min-width: 150px;     
-    background-color: transparent; 
-    list-style: none;
-    padding: 1rem 0;    
-    z-index: 1000;
-    text-align: left;     
-  }
-  
-  .bar ul li.dropdown:hover .dropdown-menu {
-    display: block;
-  }
-  
-  .bar ul li.dropdown .dropdown-menu li {
-    margin: 0.25rem 0;   
-    padding: 0 1rem;
-  }
-  
-  .bar ul li.dropdown .dropdown-menu::after{
-    content:'';
-    height: 3px;
-    width: 0;
-    background: white;
-    position: absolute;
-    left: 0;
-    bottom: 3px;
-    transition: 0.5s;
-  }
-  
-  .bar ul li.dropdown .dropdown-menu:hover::after{
-    width: 75%;
-  }

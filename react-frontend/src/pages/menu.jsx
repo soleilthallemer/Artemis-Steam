@@ -1,6 +1,8 @@
 // src/pages/CatalogMenuPage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Bar from "./bar";     
+import "../css/bar.css";      
 import "../css/menu.css";
 
 const CatalogMenuPage = () => {
@@ -9,14 +11,23 @@ const CatalogMenuPage = () => {
     const savedCart = localStorage.getItem("cartItems");
     return savedCart ? JSON.parse(savedCart) : [];
   });
-  const [menuItems, setMenuItems] = useState([]);
+
+  const [menuItems, setMenuItems]   = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
   const [selectedSizes, setSelectedSizes] = useState({});
-  const [quantities, setQuantities] = useState({});
-  const [popupInfo, setPopupInfo] = useState(null);
-  const [editingSizeIndex, setEditingSizeIndex] = useState(null);
+  const [quantities,     setQuantities]   = useState({});
+
+  const [popupInfo,         setPopupInfo]   = useState(null);
+
+  const [customizations, setCustomizations] = useState({});
+  const [customizeFor,   setCustomizeFor]   = useState(null);
+  const [customQuantity, setCustomQuantity] = useState(1);
+  const [editingCartIndex, setEditingCartIndex] = useState(null); 
+
   const cartModalRef = useRef(null);
-  const navigate = useNavigate();
+  const navigate     = useNavigate();
+
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -35,10 +46,34 @@ const CatalogMenuPage = () => {
     fetchMenuItems();
   }, []);
 
-  const isDrinkItem = (item) => item.category?.toLowerCase() === "drink";
+  const isDrinkItem = (obj) => {
+    if (!obj) return false;
+  
+    if (obj.category) {
+      return obj.category.toLowerCase() === "drink";
+    }
+  
+    const cust = customizations[obj.item_id];
+    return !!(cust && (cust.milk || cust.syrup));
+  };
 
-  const selectSize = (id, size) => {
-    setSelectedSizes((prev) => ({ ...prev, [id]: size }));
+  const getCustom = (item, isDrink) => {
+    const k = keyOf(item);
+    if (!customizations[k]) {
+      const def = isDrink
+        ? { milk: "Whole", syrup: "None" }
+        : { warmed:false, iceCream:false, chocolate:false };
+        setCustomizations(p => ({ ...p, [k]: def }));
+      return def;
+    }
+    return customizations[k];
+  };
+
+  const keyOf = (it) => `${it.item_id}-${(it.category || '').toLowerCase()}`;
+
+  const selectSize = (item, size) => {
+    const k = keyOf(item);
+    setSelectedSizes(prev => ({ ...prev, [k]: size }));
   };
 
   const handleQuantityChange = (id, value) => {
@@ -46,10 +81,25 @@ const CatalogMenuPage = () => {
     setQuantities((prev) => ({ ...prev, [id]: qty }));
   };
 
-  const addToCart = (e, item) => {
+  const openCustomize = (item) => {
+    if (!customizations[keyOf(item)]) {
+      setCustomizations((prev) => ({
+        ...prev,
+        [keyOf(item)]:  isDrinkItem(item)
+        ? { milk: "Whole", syrup: "Normal" }
+          : { warmed: false, iceCream: false, chocolate: false },
+      }));
+    }
+    setCustomizeFor(item);
+  };
+
+  const saveCustomization = () => {
+    setCustomizeFor(null);
+  };
+
+  const addToCart = (e, item, opts = {}) => {
     e.stopPropagation();
 
-    // Use quantity field from the backend to determine stock status.
     if (!item.quantity || Number(item.quantity) <= 0) {
       const rect = e.target.getBoundingClientRect();
       console.log("Item is out of stock, popup at:", rect);
@@ -62,19 +112,24 @@ const CatalogMenuPage = () => {
       return;
     }
 
-    const size = selectedSizes[item.item_id];
+    const k    = keyOf(item);
+    const size = selectedSizes[k];
     if (isDrinkItem(item) && !size) {
       alert("Please select a size before adding to cart.");
       return;
     }
 
-    const quantity = quantities[item.item_id] || 1;
+    const quantity      = opts.quantity ?? quantities[item.item_id] ?? 1;
+    const customization = opts.cust ?? getCustom(item, isDrinkItem(item));
     const newItem = {
       id: item.item_id,
+      item_id: item.item_id,
       name: item.name,
       size,
       quantity,
       price: item.price,
+      custom: customization,
+      category: item.category
     };
 
     setCartItems((prev) => {
@@ -98,15 +153,46 @@ const CatalogMenuPage = () => {
     setTimeout(() => setPopupInfo(null), 2000);
   };
 
+  const handleAddToCartFromModal = (e) => {
+    if (editingCartIndex !== null) {
+      setCartItems((prev) => {
+        const updated = [...prev];
+        updated[editingCartIndex] = {
+          ...updated[editingCartIndex],
+          size:     selectedSizes[keyOf(customizeFor)]  || updated[editingCartIndex].size,
+          quantity:   customQuantity,
+          custom:     customizations[keyOf(customizeFor)],
+          category:   updated[editingCartIndex].category           
+        };
+        return updated;
+      });
+    } else {
+      addToCart(e, customizeFor);
+    }
+  
+    setEditingCartIndex(null);
+    saveCustomization();
+  };
+
+  const openCustomizeFromCart = (index) => {
+    const item = cartItems[index];
+  
+    const k = keyOf(item);
+    setSelectedSizes({ [k]: item.size });
+    setCustomQuantity(item.quantity);
+
+    setCustomizations((prev) => ({
+      ...prev,
+      [k]: item.custom || prev[k] || getCustom(item, isDrinkItem(item))
+    }));
+  
+    setEditingCartIndex(index);  
+    setCustomizeFor(item);       
+    setIsCartOpen(true)
+  };  
+
   const showCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
-  const handleEditSize = (i) => setEditingSizeIndex(i === editingSizeIndex ? null : i);
-  const handleSizeChangeInCart = (i, newSize) => {
-    const updated = [...cartItems];
-    updated[i].size = newSize;
-    setCartItems(updated);
-    setEditingSizeIndex(null);
-  };
 
   const handleIncrement = (i) => {
     const updated = [...cartItems];
@@ -159,26 +245,15 @@ const CatalogMenuPage = () => {
     item.category?.toLowerCase() === "food"
   );
 
+  const k = customizeFor ? keyOf(customizeFor) : null;
+
   return (
     <div className="catalog">
-      <div className="banner">
-        <div className="bar">
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/menu">Menu</Link></li>
-            <li><Link to="/about-us">About Us</Link></li>
-            <li><Link to="/order">Order</Link></li>
-            <li className="dropdown">
-              <Link to="/login" className="nav-link">
-                Log In
-              </Link>
-              <ul className="dropdown-menu">
-                <Link to="/admin-login">Admin Log In</Link>
-              </ul>
-            </li>
-            <li><Link to="/profile">Profile</Link></li>
-          </ul>
-        </div>
+
+      <Bar />
+
+        <div style={{ paddingTop: "72px" }}>
+        {/* existing container / cart / menu JSX here */}
       </div>
 
       <div className="container">
@@ -198,16 +273,29 @@ const CatalogMenuPage = () => {
                       <li key={i} className="cart-item">
                         <div className="cart-item-left">
                           <div className="cart-item-name">{item.name}</div>
-                          {item.size && (
-                            <div className="cart-item-size">
-                              {item.size}
-                              <button className="edit-size-btn" onClick={() => handleEditSize(i)}>✎</button>
-                            </div>
-                          )}
-                          {editingSizeIndex === i && (
-                            <div className="size-edit-panel slide-in">
-                              {["Small", "Medium", "Large"].map((sz) => (
-                                <button key={sz} onClick={() => handleSizeChangeInCart(i, sz)}>{sz}</button>
+                          {/* customization details – only if they exist */}
+                          {item.custom && (
+                            <div className="cart-item-custom">
+                              {item.size && <span>{item.size}</span>}
+                              {/* Drinks */}
+                              {item.custom.milk && (
+                                <span>
+                                  {item.size ? ", " : ""}{item.custom.milk} milk /
+                                  {item.custom.syrup} syrup
+                                </span>
+                              )}
+                              {/* Food (boolean flags) */}
+                              {["warmed","iceCream","chocolate"]
+                                .filter(k => item.custom[k])
+                                .map((k,i) => (
+                                    <span key={k}>
+                                      {i>0 || item.size ? ", " : ""}
+                                      {{
+                                        warmed:   "warmed",
+                                        iceCream: "with ice‑cream",
+                                        chocolate:"chocolate drizzle"
+                                      }[k]}
+                                    </span>
                               ))}
                             </div>
                           )}
@@ -218,7 +306,20 @@ const CatalogMenuPage = () => {
                           <button onClick={() => handleIncrement(i)}>+</button>
                         </div>
                         <div className="item-price">${(item.price * item.quantity).toFixed(2)}</div>
-                        <button onClick={() => handleRemove(i)}>Remove</button>
+                        <button
+                            className="edit-cart-btn material-icons"
+                            title="Edit item"
+                            onClick={() => openCustomizeFromCart(i)}
+                          >
+                            edit
+                          </button>
+                        <button 
+                          className="cart-item-remove-btn"
+                          onClick={() => handleRemove(i)}
+                          title="Remove from cart"
+                        >
+                          <span className="material-icons">delete</span>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -253,7 +354,11 @@ const CatalogMenuPage = () => {
         <div className="menu-category">
           <ul className="menu-list">
             {(tabState === "drinks" ? drinkItems : foodItems).map((item, idx) => (
-              <li key={idx}>
+              <li 
+                key={idx}
+                className="menu-item-row"
+                onClick={() => openCustomize(item)}
+              >
                 <div className="item-left">
                   <img src={item.image_url} alt={item.name} className="item-image" />
                   <div className="item-text">
@@ -273,36 +378,131 @@ const CatalogMenuPage = () => {
                   ) : (
                     <span className="stock-status out-of-stock">Out of Stock</span>
                   )}
-                  {tabState === "drinks" && (
-                    <div className="size-options">
-                      {["Small", "Medium", "Large"].map((size) => (
-                        <button
-                          key={size}
-                          className={`size-btn ${selectedSizes[item.item_id] === size ? "selected" : ""}`}
-                          onClick={() => selectSize(item.item_id, size)}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <input
-                    type="number"
-                    min="1"
-                    className="quantity-input"
-                    value={quantities[item.item_id] || 1}
-                    onChange={(e) => handleQuantityChange(item.item_id, e.target.value)}
-                  />
-                  {/* Disable and notify if item is out of stock */}
-                  <button className="add-to-cart" onClick={(e) => addToCart(e, item)}>
-                    Add to Cart
-                  </button>
                 </div>
               </li>
             ))}
           </ul>
         </div>
       </div>
+
+      {customizeFor && (
+        <div className="customize-modal-overlay"
+             onClick={()=>setCustomizeFor(null)}>
+          <div className="customize-modal"
+               onClick={(e)=>e.stopPropagation()}>
+            <h2>Customize {customizeFor.name}</h2>
+
+            {/* DRINK options */}
+            {isDrinkItem(customizeFor) ? (
+              <>
+                <span className="size-title">Size</span>
+                <div className="size-options modal">
+                  {["Small","Medium","Large"].map((sz)=>(
+                    <button 
+                    key={sz}
+                    className={`size-btn ${selectedSizes[k] === sz ? "selected" : ""}`}
+                    onClick={() => selectSize(customizeFor, sz)}
+                  >
+                    {sz}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Milk */}
+                <div className="control-block">
+                  <span className="ctrl-label">Milk</span>
+                  <select
+                    value={getCustom(customizeFor, true).milk}
+                    onChange={e =>
+                      setCustomizations(prev => ({
+                        ...prev,
+                        [keyOf(customizeFor)]: {
+                          ...prev[customizeFor.item_id],
+                          milk: e.target.value,
+                        },
+                      }))
+                    }
+                  >
+                    {["Whole", "Almond", "Oat", "Skim"].map(m => (
+                      <option key={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Syrup */}
+                <div className="control-block">
+                  <span className="ctrl-label">Syrup</span>
+                  <select
+                    value={getCustom(customizeFor, true).syrup}
+                    onChange={e =>
+                      setCustomizations(prev => ({
+                        ...prev,
+                        [keyOf(customizeFor)]: {
+                          ...prev[customizeFor.item_id],
+                          syrup: e.target.value,
+                        },
+                      }))
+                    }
+                  >
+                    {["None", "Vanilla", "Caramel", "Hazelnut"].map(m => (
+                      <option key={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+              </>
+            ) : (
+              /* FOOD options */
+              <>
+                {["warmed","iceCream","chocolate"].map((key)=>(
+                  <label key={key}>
+                    <input type="checkbox"
+                      checked={getCustom(customizeFor, false)[key]}
+                      onChange={(e)=>setCustomizations((p)=>({
+                        ...p,
+                        [keyOf(customizeFor)]:
+                        {...p[customizeFor.item_id], [key]:e.target.checked}
+                      }))}/>
+                    &nbsp;{{
+                      warmed:   "Warm it up",
+                      iceCream: "Add ice cream",
+                      chocolate:"Drizzle chocolate"
+                    }[key]}
+                  </label>
+                ))}
+              </>
+            )}
+
+            {/* quantity row */}
+            <div className="quantity-row">
+              <button className="qty-btn"
+                      onClick={()=>setCustomQuantity((q)=>Math.max(1,q-1))}>–</button>
+              <span className="qty-display">{customQuantity}</span>
+              <button className="qty-btn"
+                      onClick={()=>setCustomQuantity((q)=>q+1)}>+</button>
+            </div>
+
+            <div className="modal-action-row">
+              <button
+                className="customize-modal-btn save"
+                disabled={isDrinkItem(customizeFor) && !selectedSizes[keyOf(customizeFor)]}
+                onClick={handleAddToCartFromModal}
+              >
+                Add&nbsp;to&nbsp;Cart
+              </button>
+
+              <button
+                className="customize-modal-btn cancel"
+                onClick={() => setCustomizeFor(null)}
+              >
+                Cancel
+              </button>
+            </div>
+
+
+          </div>
+        </div>
+      )}
 
       {popupInfo && (
         <div className="stock-cart-popup" style={{ top: popupInfo.y, left: popupInfo.x, position: "absolute" }}>

@@ -1,0 +1,51 @@
+/* ---------- BASICS ---------- */
+.topbar{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px; padding:0 1.5rem;
+    background:#0009;                   /* translucent black */
+    backdrop-filter:blur(4px);
+    transition:box-shadow .25s;
+  }
+  .topbar.shadow{ box-shadow:0 2px 8px rgba(0,0,0,.45); }
+  
+  .brand{ font-size:1.55rem; font-weight:700; color:#fff; text-decoration:none; }
+  
+  .burger{ display:flex; flex-direction:column; gap:6px; background:none; border:0; }
+  .line{
+    width:26px; height:3px; background:#fff; transition:.3s;
+  }
+  .line1.open { transform:translateY(9px) rotate(45deg); }
+  .line2.open { opacity:0; }
+  .line3.open { transform:translateY(-9px) rotate(-45deg); }
+  
+  /* ---------- DROP‑DOWN ---------- */
+  .dropdown{
+    position:absolute;          /* sits right under the bar */
+    top:64px; left:0; right:0;
+    max-height:0;
+    overflow:hidden;
+    background:#000d; backdrop-filter:blur(5px);
+    transition:max-height .35s ease;
+  }
+  .dropdown.open{ max-height:360px; }    /* tall enough to show links */
+  
+  .dropdown ul{
+    list-style:none; margin:0; padding:1.2rem 0;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:1rem 2.5rem;
+  }
+  
+  .dd-link{
+    font-family:"Playfair Display",serif;
+    font-weight:600;
+    font-size:1.25rem;           /* smaller, less overwhelming */
+    letter-spacing:.25px;
+    color:#fff; text-decoration:none;
+    transition:color .25s;
+  }
+  .dd-link:hover{ color:#d9de7e; }
+  
+  @media(max-width:640px){
+    .dropdown ul{ flex-direction:column; align-items:center; }
+  }
+  

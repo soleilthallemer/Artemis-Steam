@@ -1,73 +1,48 @@
 // src/pages/HomePage.jsx
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../css/home.css"; // Your existing CSS file
-import "@fortawesome/fontawesome-free/css/all.min.css"; // FontAwesome Icons
+import { useNavigate } from "react-router-dom";
+import Bar from "./bar";
+import "../css/bar.css";
+import "../css/home.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="homepage">
-      {/* Banner Section with Nav Bar and Background Image */}
-      <div className="banner">
-        <div className="bar">
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/menu">Menu</Link>
-            </li>
-            <li>
-              <Link to="/about-us">About Us</Link>
-            </li>
-            <li>
-              <Link to="/order">Order</Link>
-            </li>
-            <li className="dropdown">
-              <Link to="/login" className="nav-link">
-                Log In
-              </Link>
-              <ul className="dropdown-menu">
-                <Link to="/admin-login">Admin Log In</Link>
-              </ul>
-            </li>
-            <li>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li>
-              <Link to="/review-page">Reviews</Link>
-            </li>
-          </ul>
-        </div>
-        <div className="content">
-          <h1>Artemis &amp; Steam</h1>
-          <p>Where Nature Meets Craft</p>
+    <>
+      {/* ─── fixed navigation bar ─────────────────────────────────────────────── */}
+      <Bar />
+
+      {/* add top‑padding so content isn’t hidden behind the bar */}
+      <div className="homepage pt-[88px] md:pt-[96px]">
+        {/* ─── Banner ─────────────────────────────────────────────────────────── */}
+        <div className="banner">
+          <div className="content">
+            <h1>Artemis &amp; Steam</h1>
+            <p>Where Nature Meets Craft</p>
+          </div>
         </div>
       </div>
 
-      {/* About Section */}
+      {/* ─── About Section ───────────────────────────────────────────────────── */}
       <div className="artemis_steam">
-        <h2>A Little Bit About Artemis & Steam</h2>
+        <h2>A Little Bit About Artemis &amp; Steam</h2>
         <p>
-          Artemis & Steam - where nature meets craft. 
-          Our vision is to blend the artistry of nature with 
-          human ingenuity, creating a space where every detail 
-          is a reflection of our passion for creating memorable 
-          experiences.
+          Artemis &amp; Steam – where nature meets craft. Our vision is to blend
+          the artistry of nature with human ingenuity, creating a space where
+          every detail is a reflection of our passion for memorable experiences.
         </p>
       </div>
 
-      {/* Menu Section with Styled Button */}
+      {/* ─── Menu Section ────────────────────────────────────────────────────── */}
       <div className="menu">
         <h2>Menu</h2>
         <p>Explore our delicious offerings.</p>
-        <button type="button" onClick={() => navigate("/menu")}>
+        <button type="button" className="menu-btn" onClick={() => navigate("/menu")}>
           <span>View Menu</span>
         </button>
-        
-        {/* Featured Items */}
+
         <h3 className="featured-items-title">Featured Items</h3>
         <div className="featured-items">
           <div className="featured-item">
@@ -85,18 +60,18 @@ function HomePage() {
         </div>
       </div>
 
-      {/* Amenities Section */}
+      {/* ─── Amenities Section ──────────────────────────────────────────────── */}
       <div className="amenities">
         <h2>Amenities</h2>
         <div className="amenities-grid">
           <div className="amenity">
             <i className="fas fa-wifi" />
-            <h3>Wi-Fi</h3>
-            <p>Experience fast and reliable Wi-Fi to work or browse.</p>
+            <h3>Wi‑Fi</h3>
+            <p>Fast and reliable to work or browse.</p>
           </div>
           <div className="amenity">
             <i className="fas fa-walking" />
-            <h3>Walk-ins</h3>
+            <h3>Walk‑ins</h3>
             <p>Our doors are always open to spontaneous joy.</p>
           </div>
           <div className="amenity">
@@ -106,123 +81,77 @@ function HomePage() {
           </div>
           <div className="amenity">
             <i className="fas fa-moon" />
-            <h3>Open Late</h3>
+            <h3>Open Late</h3>
             <p>Join us for extended hours—life has no curfew.</p>
           </div>
         </div>
       </div>
 
-      {/* Policy Section */}
+      {/* ─── Policy Section ─────────────────────────────────────────────────── */}
       <div className="policy">
         <h2>Policy</h2>
         <p>
-          We kindly ask all guests to respect our space and enjoy their time responsibly.
-          <br />
-          Please be mindful of other visitors, keep noise levels appropriate, and
-          maintain the
-          <br />
-          cleanliness of our environment. We appreciate your cooperation in
-          creating a warm and inviting atmosphere for everyone.
+          We kindly ask all guests to respect our space and enjoy their time
+          responsibly. Please be mindful of other visitors, keep noise levels
+          appropriate, and maintain the cleanliness of our environment.
         </p>
       </div>
 
-      {/* Gallery Section */}
+      {/* ─── Gallery Section ────────────────────────────────────────────────── */}
       <div className="gallery">
-        <div className="gallery-item">
-          <img src="/images/img1.jpg" alt="Cocktail" />
-        </div>
-        <div className="gallery-item">
-          <img src="/images/img2.jpg" alt="Bar tools" />
-        </div>
-        <div className="gallery-item">
-          <img src="/images/img3.jpg" alt="Hand with drink" />
-        </div>
-        <div className="gallery-item">
-          <img src="/images/img4.jpg" alt="Bar stool" />
-        </div>
+        {["img1.jpg","img2.jpg","img3.jpg","img4.jpg"].map((file,i) => (
+          <div className="gallery-item" key={i}>
+            <img src={`/images/${file}`} alt={`Gallery ${i+1}`} />
+          </div>
+        ))}
       </div>
 
-      {/* Bottom Section */}
+      {/* ─── Bottom Section ─────────────────────────────────────────────────── */}
       <div className="bottom-section">
         <div className="bottom-hours">
           <h3>Hours of Operation</h3>
           <table>
             <tbody>
-              <tr>
-                <td>Monday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Tuesday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Wednesday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Thursday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Friday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Saturday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
-              <tr>
-                <td>Sunday</td>
-                <td>09:00am - 02:00am</td>
-              </tr>
+              {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+                .map(day => (
+                  <tr key={day}>
+                    <td>{day}</td>
+                    <td>09 : 00 am – 02 : 00 am</td>
+                  </tr>
+              ))}
             </tbody>
           </table>
         </div>
+
         <div className="bottom-location">
           <h3>Location</h3>
-          <p>1712 Westheimer Rd, Houston, TX 77098</p>
+          <p>1712 Westheimer Rd, Houston, TX 77098</p>
         </div>
+
         <div className="bottom-contact">
-          <h3>Contact Info</h3>
+          <h3>Contact Info</h3>
           <p>Email: info@artemisandsteam.com</p>
           <div className="social-icons">
-            <a
-              href="https://www.facebook.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-            >
-              <i className="fab fa-facebook-f" />
-            </a>
-            <a
-              href="https://www.instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-            >
-              <i className="fab fa-instagram" />
-            </a>
-            <a
-              href="https://www.snapchat.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Snapchat"
-            >
-              <i className="fab fa-snapchat-ghost" />
-            </a>
-            <a
-              href="https://www.twitter.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Twitter"
-            >
-              <i className="fab fa-twitter" />
-            </a>
+            {[
+              { href:"facebook.com",   icon:"facebook-f",  label:"Facebook"},
+              { href:"instagram.com",  icon:"instagram",   label:"Instagram"},
+              { href:"snapchat.com",   icon:"snapchat-ghost", label:"Snapchat"},
+              { href:"twitter.com",    icon:"twitter",     label:"Twitter"},
+            ].map(s => (
+              <a
+                key={s.icon}
+                href={`https://www.${s.href}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={s.label}
+              >
+                <i className={`fab fa-${s.icon}`} />
+              </a>
+            ))}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

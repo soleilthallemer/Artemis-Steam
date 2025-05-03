@@ -1,6 +1,8 @@
 // src/components/LoginPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Bar from "./bar";
+import "../css/bar.css";
 import '../css/login.css';
 
 const LoginPage = () => {
@@ -116,6 +118,8 @@ const LoginPage = () => {
               <li><Link to="/about-us">About Us</Link></li>
               <li><Link to="/order">Order</Link></li>
               <li><Link to="/profile">Profile</Link></li>
+              <li><Link to="/review-page">Reviews</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>
         </div>

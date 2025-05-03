@@ -70,6 +70,8 @@ const RegistrationPage = () => {
                 <li><Link to="/about-us">About Us</Link></li>
                 <li><Link to="/order">Order</Link></li>
                 <li><Link to="/profile">Profile</Link></li>
+                <li><Link to="/review-page">Reviews</Link></li>
+                <li><Link to="/contact">Contact Us</Link></li>
               </ul>
             </div>
           </div>
