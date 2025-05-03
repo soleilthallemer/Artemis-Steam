@@ -65,7 +65,7 @@
     width: 80%;
     max-width: 1200px;
     margin: 30px auto;
-    background-color: #b5c99a; 
+    background-color: #333d29; 
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -115,7 +115,7 @@
   
   /* Claim Order Button Styling */
   .claim-order-button {
-    background-color: #28a745; 
+    background-color: #6b7843; 
     color: white;
     border: none;
     padding: 10px 20px;
