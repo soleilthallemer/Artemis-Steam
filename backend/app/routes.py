@@ -4,6 +4,9 @@ from app.models import Order, OrderItem, MenuItem, User, Review
 import traceback
 from datetime import datetime
 import json
+from sqlalchemy import func
+from datetime import datetime, timedelta
+from app.models import ContactUs
 
 main = Blueprint('main', __name__)
 
@@ -35,15 +38,44 @@ def create_order():
 
     user_id = data.get('user_id')
     total_amount = data.get('total_amount', 0)
+    items = data.get('items', [])
 
     if not user_id or total_amount <= 0:
         return jsonify({"error": "Invalid order. User ID and total amount > 0 are required."}), 400
+
+    if not items:
+        return jsonify({"error": "Order must include at least one item."}), 400
 
     order = Order(
         user_id=user_id,
         total_amount=total_amount
     )
     db.session.add(order)
+    db.session.flush()  # ensures order.order_id is available
+
+    for item_data in items:
+        item_id = item_data.get('item_id')
+        quantity = item_data.get('quantity')
+        price = item_data.get('price')
+
+        if item_id is None or quantity is None or price is None:
+            return jsonify({"error": "Each item must include item_id, quantity, and price."}), 400
+
+        menu_item = MenuItem.query.get(item_id)
+        if not menu_item:
+            return jsonify({"error": f"Menu item {item_id} not found"}), 404
+
+        order_item = OrderItem(
+            order_id=order.order_id,
+            item_id=item_id,
+            quantity=quantity,
+            price=price,
+            milk_option=item_data.get('milk_option'),
+            syrup=item_data.get('syrup'),
+            customizations=item_data.get('customizations')
+        )
+        db.session.add(order_item)
+
     db.session.commit()
 
     return jsonify({
@@ -51,6 +83,7 @@ def create_order():
         'id': order.order_id,
         'status': order.status
     })
+
 
 @main.route('/orders/<int:order_id>', methods=['PUT'])
 def update_order(order_id):
@@ -90,7 +123,10 @@ def update_order(order_id):
                 order_id=order.order_id,
                 item_id=item_id,
                 quantity=quantity,
-                price=price
+                price=price,
+                milk_option=item_data.get('milk_option'),
+                syrup=item_data.get('syrup'),
+                customizations=item_data.get('customizations')
             )
             db.session.add(order_item)
 
@@ -182,7 +218,7 @@ def create_menu_item():
         required = ['name', 'price', 'calories', 'preparation_time']
         missing = [field for field in required if field not in data]
         if missing:
-            return jsonify({'error': f'Missing required fields: {', '.join(missing)}'}), 400
+            return jsonify({'error': f"Missing required fields: {', '.join(missing)}"}), 400
 
         menu_item = MenuItem(
             name=data['name'],
@@ -240,7 +276,10 @@ def add_order_item():
         order_id=data["order_id"],
         item_id=data["item_id"],
         quantity=data["quantity"],
-        price=data["price"]
+        price=data["price"],
+        milk_option=data.get('milk_option'),
+        syrup=data.get('syrup'),
+        customizations=data.get('customizations')
     )
 
     db.session.add(order_item)
@@ -642,4 +681,130 @@ def update_user(user_id):
 
     except Exception as e:
         print(f"[ERROR] Failed to update user {user_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# analytics route
+@main.route('/admin/analytics', methods=['GET'])
+def admin_analytics():
+    try:
+        # --- Parse query param for time range ---
+        range_param = request.args.get('range', 'all')  # options: '1d', '7d', '30d', 'all'
+        now = datetime.utcnow()
+
+        if range_param.endswith('d'):
+            days = int(range_param[:-1])
+            since = now - timedelta(days=days)
+            order_filter = Order.order_date >= since
+        else:
+            order_filter = True  # all-time
+
+        # --- Get orders in range ---
+        orders = db.session.query(Order).filter(order_filter).all()
+        order_ids = [o.order_id for o in orders]
+
+        # --- 1. Top 3 most active users (by order count) ---
+        active_users = (
+            db.session.query(User.user_id, User.first_name, User.last_name, func.count(Order.order_id).label("orders"))
+            .join(Order, Order.user_id == User.user_id)
+            .filter(order_filter)
+            .group_by(User.user_id)
+            .order_by(func.count(Order.order_id).desc())
+            .limit(3)
+            .all()
+        )
+
+        # --- 2. Top 3 most productive employees (claimed orders) ---
+        top_employees = (
+            db.session.query(User.user_id, User.first_name, User.last_name, func.count(Order.order_id).label("claims"))
+            .join(Order, Order.claimed_by == User.user_id)
+            .filter(order_filter, User.role == 'employee')
+            .group_by(User.user_id)
+            .order_by(func.count(Order.order_id).desc())
+            .limit(3)
+            .all()
+        )
+
+        # --- 3. Top 5 most popular items (from OrderItem) ---
+        popular_items = (
+            db.session.query(
+                MenuItem.item_id,
+                MenuItem.name,
+                func.sum(OrderItem.quantity).label("total_ordered"),
+                MenuItem.availability_status
+            )
+            .join(MenuItem, MenuItem.item_id == OrderItem.item_id)
+            .filter(OrderItem.order_id.in_(order_ids))
+            .group_by(MenuItem.item_id)
+            .order_by(func.sum(OrderItem.quantity).desc())
+            .limit(5)
+            .all()
+        )
+
+        return jsonify({
+            "range": range_param,
+            "top_active_users": [
+                {"user_id": u.user_id, "name": f"{u.first_name} {u.last_name}", "orders": u.orders}
+                for u in active_users
+            ],
+            "top_employees": [
+                {"user_id": e.user_id, "name": f"{e.first_name} {e.last_name}", "claims": e.claims}
+                for e in top_employees
+            ],
+            "popular_items": [
+                {
+                    "item_id": item.item_id,
+                    "name": item.name,
+                    "total_ordered": int(item.total_ordered),
+                    "currently_available": item.availability_status
+                } for item in popular_items
+            ]
+        })
+
+    except Exception as e:
+        print(f"[ERROR] Failed to generate analytics: {e}")
+        return jsonify({"error": "Failed to fetch analytics"}), 500
+
+
+@main.route('/contact', methods=['POST'])
+def submit_contact():
+    try:
+        data = request.get_json()
+        required = ['name', 'email', 'subject', 'message']
+        missing = [field for field in required if not data.get(field)]
+        if missing:
+            return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
+
+        contact = ContactUs(
+            name=data['name'],
+            email=data['email'],
+            subject=data['subject'],
+            message=data['message']
+        )
+        db.session.add(contact)
+        db.session.commit()
+
+        return jsonify({"message": "Contact message submitted successfully"}), 201
+
+    except Exception as e:
+        print(f"[ERROR] Failed to submit contact message: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@main.route('/admin/contact-submissions', methods=['GET'])
+def get_contact_submissions():
+    try:
+        contacts = ContactUs.query.order_by(ContactUs.created_at.desc()).all()
+        return jsonify([{
+            "id": c.id,
+            "name": c.name,
+            "email": c.email,
+            "subject": c.subject,
+            "message": c.message,
+            "created_at": c.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for c in contacts]), 200
+
+    except Exception as e:
+        print(f"[ERROR] Failed to retrieve contact messages: {e}")
+        traceback.print_exc()
         return jsonify({"error": "Internal server error"}), 500

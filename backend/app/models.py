@@ -55,6 +55,10 @@ class OrderItem(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('menu_items.item_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    milk_option = db.Column(db.String(50), nullable=True)
+    syrup = db.Column(db.String(50), nullable=True)
+    customizations = db.Column(db.Text, nullable=True)
+
 
     menu_item = db.relationship("MenuItem", backref="order_items", lazy="joined")
 
@@ -91,3 +95,17 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class ContactUs(db.Model):
+    __tablename__ = 'contact_us'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    subject = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ContactUs {self.email} | {self.subject}>'
