@@ -20,7 +20,7 @@ const ContactUs = () => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://${process.env.REACT_APP_API_IP}:5000/messages`,
+        `http://${process.env.REACT_APP_API_IP}:5000/contact`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

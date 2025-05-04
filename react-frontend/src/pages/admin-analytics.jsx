@@ -23,7 +23,7 @@ const AdminAnalytics = () => {
     const fetchAnalytics = async () => {
       try {
         const res = await fetch(
-          `http://${process.env.REACT_APP_API_IP}:5000/dashboard/analytics?range=${timeRange}`
+          `http://${process.env.REACT_APP_API_IP}:5000/admin/analytics?range=${timeRange}`
         );
         if (!res.ok) throw new Error("Network response was not ok");
         const json = await res.json();

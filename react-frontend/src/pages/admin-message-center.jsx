@@ -21,7 +21,7 @@ const AdminMessageCenter = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/messages`);
+        const res = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/admin/contact-submissions`);
         if (!res.ok) throw new Error("Failed to fetch messages");
         const data = await res.json();
         // expecting an array of { id, subject, from, date, time, body }
