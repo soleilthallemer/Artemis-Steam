@@ -20,7 +20,9 @@ import ReviewPage from './pages/review-page';
 import AdminAnalytics from './pages/admin-analytics';
 import AdminMessageCenter from './pages/admin-message-center';
 import ContactUs from './pages/contact-us';
+import ProtectedRoute from './components/ProtectedRoute';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 function App() {
   
@@ -29,7 +31,14 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
         <Route path="/registration-page" element={<Registration/>} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/order" element={<Order />} />
@@ -42,10 +51,24 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-product-management" element={<AdminProductManagement />} />
         <Route path="/admin-user-management" element={<AdminUserManagement />} />
-        <Route path="review-page" element={<ReviewPage />} />
+        <Route
+  path="/review-page"
+  element={
+    <ProtectedRoute>
+      <ReviewPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/contact"
+  element={
+    <ProtectedRoute>
+      <ContactUs />
+    </ProtectedRoute>
+  }
+/>
         <Route path="/admin-analytics" element={<AdminAnalytics />} />
         <Route path="/admin-message-center" element={<AdminMessageCenter />} />
-        <Route path="/contact" element={<ContactUs />} />
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );

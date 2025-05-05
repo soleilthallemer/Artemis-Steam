@@ -5,22 +5,42 @@ import "../css/bar.css";
 export default function Bar() {
   const [scrolled, setScrolled]   = useState(false);
   const [open, setOpen]           = useState(false);
-  const wrapRef = useRef(null);           // to close when you click outside
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const wrapRef = useRef(null);
 
-  /* add / remove shadow when scrolling */
+  /* scroll shadow effect */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* click‑away close */
+  /* detect outside click */
   useEffect(() => {
-    const handler = e =>
+    const handler = (e) =>
       open && wrapRef.current && !wrapRef.current.contains(e.target) && setOpen(false);
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
+
+  /* check login status */
+  useEffect(() => {
+    const email = localStorage.getItem("user_email");
+    const userId = localStorage.getItem("user_id");
+    setIsLoggedIn(!!(email && userId));
+  }, []);
+
+  const menuItems = [
+    { to: "/",           label: "Home" },
+    { to: "/menu",       label: "Menu" },
+    { to: "/about-us",   label: "About Us" },
+    { to: "/order",      label: "Order" },
+    !isLoggedIn && { to: "/login", label: "Log In" },
+    !isLoggedIn && { to: "/admin-login", label: "Admin Log In" },
+    isLoggedIn && { to: "/profile", label: "Profile" },
+    isLoggedIn && { to: "/review-page", label: "Reviews" },
+    isLoggedIn && { to: "/contact", label: "Contact Us" },
+  ].filter(Boolean); // remove false/null entries
 
   return (
     <header className={`topbar ${scrolled ? "shadow" : ""}`} ref={wrapRef}>
@@ -36,20 +56,9 @@ export default function Bar() {
         <span className={open ? "line line3 open" : "line line3"} />
       </button>
 
-      {/* ---------- drop‑down ---------- */}
       <nav className={`dropdown ${open ? "open" : ""}`}>
         <ul>
-          {[
-            { to: "/",           label: "Home"        },
-            { to: "/menu",       label: "Menu"        },
-            { to: "/about-us",   label: "About Us"    },
-            { to: "/order",      label: "Order"       },
-            { to: "/login",      label: "Log In"      },
-            { to: "/admin-login",label: "Admin Log In"},
-            { to: "/profile",    label: "Profile"     },
-            { to: "/review-page",label: "Reviews"     },
-            { to: "/contact",    label: "Contact Us"  },
-          ].map(({ to, label }) => (
+          {menuItems.map(({ to, label }) => (
             <li key={label} onClick={() => setOpen(false)}>
               <Link className="dd-link" to={to}>{label}</Link>
             </li>
