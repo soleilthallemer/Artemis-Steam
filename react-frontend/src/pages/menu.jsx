@@ -61,7 +61,7 @@ const CatalogMenuPage = () => {
     const k = keyOf(item);
     if (!customizations[k]) {
       const def = isDrink
-        ? { milk: "Whole", syrup: "None" }
+        ? { milk: "None", syrup: "None" }
         : { warmed:false, iceCream:false, chocolate:false };
         setCustomizations(p => ({ ...p, [k]: def }));
       return def;
@@ -442,7 +442,7 @@ const CatalogMenuPage = () => {
                       }))
                     }
                   >
-                    {["Whole", "Almond", "Oat", "Skim"].map(m => (
+                    {["None", "Whole", "Almond", "Oat", "Skim"].map(m => (
                       <option key={m}>{m}</option>
                     ))}
                   </select>
@@ -463,7 +463,7 @@ const CatalogMenuPage = () => {
                       }))
                     }
                   >
-                    {["None", "Vanilla", "Caramel", "Hazelnut"].map(m => (
+                    {["None", "Vanilla", "Caramel", "Hazelnut", "Lavender"].map(m => (
                       <option key={m}>{m}</option>
                     ))}
                   </select>
