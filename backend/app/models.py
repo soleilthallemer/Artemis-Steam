@@ -109,3 +109,5 @@ class ContactUs(db.Model):
 
     def __repr__(self):
         return f'<ContactUs {self.email} | {self.subject}>'
+
+
