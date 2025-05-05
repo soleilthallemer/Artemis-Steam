@@ -1,3 +1,6 @@
+/* -------------------------------------------------------------------------- */
+/*  src/pages/ProfilePage.jsx                                                 */
+/* -------------------------------------------------------------------------- */
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Bar from "./bar";
@@ -5,93 +8,115 @@ import "../css/bar.css";
 import "../css/profilepage.css";
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
-  const [orderHistory, setOrderHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
+  /* ─────────────────────────── helpers ──────────────────────────────── */
 
+  /** merge the many ways custom data may arrive */
+  const normaliseItem = (raw) => {
+    let custom = {};
+
+    /* JSON string / object / nothing */
+    if (typeof raw.customizations === "string" && raw.customizations.trim().startsWith("{")) {
+      try   { custom = JSON.parse(raw.customizations); }
+      catch { custom = {}; }
+    } else if (typeof raw.customizations === "object" && raw.customizations) {
+      custom = { ...raw.customizations };
+    }
+
+    /* dedicated columns */
+    if (raw.milk_option) custom.milk  = raw.milk_option;
+    if (raw.syrup)       custom.syrup = raw.syrup;
+
+    const size = raw.size || custom.size || null;
+
+    return { ...raw, size, custom };
+  };
+
+  /** turn a normalised item into a human‑readable string */
+  const formatItem = (it) => {
+    const parts = [];
+    parts.push(`${it.name}${it.size ? ` – ${it.size}` : ""}`);
+
+    if (it.custom.milk || it.custom.syrup) {
+      const milk  = it.custom.milk  ?? "Whole";
+      const syrup = it.custom.syrup ?? "None";
+      parts.push(`${milk} milk${syrup !== "None" ? `, ${syrup} syrup` : ""}`);
+    }
+
+    if (it.custom.warmed)    parts.push("warmed");
+    if (it.custom.iceCream)  parts.push("with ice‑cream");
+    if (it.custom.chocolate) parts.push("chocolate drizzle");
+
+    parts.push(`x${it.quantity}`);
+    return parts.join(" | ");
+  };
+
+  /* ─────────────────────────── state ─────────────────────────────────── */
+  const [user,          setUser]          = useState(null);
+  const [orderHistory,  setOrderHistory]  = useState([]);
+  const [loading,       setLoading]       = useState(true);
+  const [isAuth,        setIsAuth]        = useState(false);
+  const navigate                            = useNavigate();
+
+  /* ─────────────────────────── load profile & orders ─────────────────── */
   useEffect(() => {
-    const email = localStorage.getItem("user_email");
+    const email  = localStorage.getItem("user_email");
     const userId = localStorage.getItem("user_id");
 
     if (!email || !userId) {
-      setIsAuthenticated(false);
+      setIsAuth(false);
       setLoading(false);
       return;
     }
+    setIsAuth(true);
 
-    setIsAuthenticated(true);
-
-    const fetchProfileAndOrders = async () => {
+    (async () => {
       try {
-        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
-          headers: { "Content-Type": "application/json" },
-        });
+        /* profile ------------------------------------------------------ */
+        const resUser = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`);
+        if (resUser.ok) setUser(await resUser.json());
 
-        if (userRes.ok) {
-          const userData = await userRes.json();
-          setUser(userData);
-        } else {
-          console.error("Failed to fetch user profile.");
-        }
+        /* orders ------------------------------------------------------- */
+        const resOrders = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${userId}`);
+        if (!resOrders.ok) throw new Error("orders fetch failed");
 
-        const orderRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${userId}`, {
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (orderRes.ok) {
-          const orderData = await orderRes.json();
-          const formatted = orderData.map((order) => ({
-            id: order.order_id || "N/A",
-            total_price: order.total_amount ? order.total_amount.toFixed(2) : "0.00",
-            order_date: order.order_date
-              ? new Date(order.order_date).toLocaleDateString()
-              : "Unknown Date",
-            status: order.status || "Pending",
-            order_items: order.items || [],  // Use "order_items" to match your render code
-          }));
-          setOrderHistory(formatted);
-        } else {
-          console.error("Failed to fetch order history.");
-        }
+        const rawOrders = await resOrders.json();
+        const formatted = rawOrders.map((o) => ({
+          id:          o.order_id,
+          total_price: (o.total_amount ?? 0).toFixed(2),
+          order_date:  o.order_date ? new Date(o.order_date).toLocaleDateString() : "Unknown",
+          status:      o.status ?? "Pending",
+          items:       (o.items || []).map(normaliseItem)
+        }));
+        setOrderHistory(formatted);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Failed loading profile / orders:", err);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchProfileAndOrders();
+    })();
   }, []);
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    setUser(null);
-    setOrderHistory([]);
+  /* ─────────────────────────── actions ───────────────────────────────── */
+  const logout = () => {
     localStorage.clear();
-    setIsAuthenticated(false);
     navigate("/login", { replace: true });
   };
 
-  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "Guest";
+  if (loading) return <div className="profile-page"><p>Loading…</p></div>;
 
-  if (loading) {
-    return <div className="profile-page"><p>Loading...</p></div>;
-  }
+  /* ─────────────────────────── render ────────────────────────────────── */
+  const fullName = user ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() : "Guest";
 
   return (
     <div className="profile-page">
       <Bar />
-
-      <div style={{ paddingTop: "72px" }}>
-      {/* existing container / cart / menu JSX here */}
-      </div>
+      <div style={{ paddingTop: "72px" }} />
 
       <div className="container">
         <section className="profile-card">
-          {isAuthenticated && user ? (
+          {isAuth && user ? (
             <>
+              {/* ---------- profile header ---------- */}
               <div className="profile-info">
                 <img
                   className="profile-picture"
@@ -100,13 +125,14 @@ const ProfilePage = () => {
                 />
                 <div className="user-details">
                   <h2 className="username">{fullName}</h2>
-                  <p className="email">{user.email || "No email"}</p>
+                  <p className="email">{user.email}</p>
                 </div>
-                <button className="logout-button" onClick={handleLogout}>
+                <button className="logout-button" onClick={logout}>
                   Logout
                 </button>
               </div>
 
+              {/* ---------- order history ---------- */}
               <div className="order-history">
                 <h3>Order History</h3>
                 {orderHistory.length === 0 ? (
@@ -115,33 +141,27 @@ const ProfilePage = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Order #</th>
+                        <th>Order&nbsp;#</th>
                         <th>Date</th>
                         <th>Status</th>
                         <th>Items</th>
-                        <th>Price</th>
+                        <th>Total&nbsp;$</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {orderHistory.map((order, index) => (
-                        <tr key={index}>
-                          <td>{order.id}</td>
-                          <td>{order.order_date}</td>
-                          <td>{order.status}</td>
+                      {orderHistory.map((o) => (
+                        <tr key={o.id}>
+                          <td>{o.id}</td>
+                          <td>{o.order_date}</td>
+                          <td>{o.status}</td>
                           <td>
-                            {order.order_items.length > 0 ? (
-                              <ul>
-                                {order.order_items.map((item, i) => (
-                                  <li key={i}>
-                                    {item.name} (x{item.quantity}) - ${item.price.toFixed(2)}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              "No items"
-                            )}
+                            <ul>
+                              {o.items.map((it, idx) => (
+                                <li key={idx}>{formatItem(it)}</li>
+                              ))}
+                            </ul>
                           </td>
-                          <td>${order.total_price}</td>
+                          <td>{o.total_price}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -150,35 +170,15 @@ const ProfilePage = () => {
               </div>
             </>
           ) : (
+            /* ---------- not logged‑in state ---------- */
             <div className="profile-info" style={{ textAlign: "center", marginTop: "2rem" }}>
-              <p style={{ fontSize: "1.5rem", color: "black", fontWeight: "bold" }}>
-                No user is logged in.
-              </p>
-              <Link
-                to="/login"
-                className="login-button"
-                style={{
-                  display: "inline-block",
-                  fontSize: "1.2rem",
-                  color: "black",
-                  textDecoration: "underline",
-                  marginTop: "1rem"
-                }}
-              >
-                Go to Login
+              <p style={{ fontSize: "1.5rem", fontWeight: 600 }}>No user is logged in.</p>
+              <Link to="/login" className="login-button" style={{ marginTop: "1rem" }}>
+                Go&nbsp;to&nbsp;Login
               </Link>
-
-              <Link
-                to="/admin-login"
-                style={{
-                  display: "inline-block",
-                  fontSize: "1.2rem",
-                  color: "black",
-                  textDecoration: "underline",
-                  marginTop: "1rem"
-                }}
-              >
-                or Log in as Admin
+              <br />
+              <Link to="/admin-login" style={{ marginTop: "0.5rem" }}>
+                or&nbsp;Log&nbsp;in&nbsp;as&nbsp;Admin
               </Link>
             </div>
           )}
