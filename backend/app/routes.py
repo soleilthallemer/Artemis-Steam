@@ -255,7 +255,10 @@ def get_order_items(order_id):
         "order_id": item.order_id,
         "item_id": item.item_id,
         "quantity": item.quantity,
-        "price": float(item.price)
+        "price": float(item.price),
+        "milk_option": item.milk_option,    
+        "syrup": item.syrup,            
+        "customizations": item.customizations
     } for item in order_items])
 
 @main.route('/order_items', methods=['POST'])
