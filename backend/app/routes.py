@@ -40,7 +40,7 @@ def create_order():
     total_amount = data.get('total_amount', 0)
     items = data.get('items', [])
 
-    if not user_id or total_amount <= 0:
+    if not user_id or total_amount < 0:
         return jsonify({"error": "Invalid order. User ID and total amount > 0 are required."}), 400
 
     if not items:
