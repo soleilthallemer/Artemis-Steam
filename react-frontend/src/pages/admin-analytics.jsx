@@ -129,17 +129,15 @@ const AdminAnalytics = () => {
             <table className="analytics-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
                   <th>User</th>
-                  <th>Activity</th>
+                  <th>Total Orders</th>
                 </tr>
               </thead>
               <tbody>
                 {mostActiveUsers.map((u) => (
-                  <tr key={u.rank}>
-                    <td>{u.rank}</td>
+                  <tr key={u.orders}>
                     <td>{u.name}</td>
-                    <td>{u.activity}</td>
+                    <td>{u.orders}</td>
                   </tr>
                 ))}
               </tbody>
@@ -154,17 +152,15 @@ const AdminAnalytics = () => {
             <table className="analytics-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
                   <th>Employee</th>
-                  <th>Tasks</th>
+                  <th>Orders Claimed</th>
                 </tr>
               </thead>
               <tbody>
                 {mostProductiveEmployees.map((emp) => (
-                  <tr key={emp.rank}>
-                    <td>{emp.rank}</td>
+                  <tr key={emp.claims}>
                     <td>{emp.name}</td>
-                    <td>{emp.tasks}</td>
+                    <td>{emp.claims}</td>
                   </tr>
                 ))}
               </tbody>
@@ -185,7 +181,6 @@ const AdminAnalytics = () => {
             <table className="analytics-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
                   <th>Product</th>
                   <th>Status</th>
                   <th>Sales</th>
@@ -193,22 +188,21 @@ const AdminAnalytics = () => {
               </thead>
               <tbody>
                 {mostPopularItems.map((item) => (
-                  <tr key={item.rank}>
-                    <td>{item.rank}</td>
-                    <td>{item.product}</td>
+                  <tr key={item.total_ordered}>
+                    <td>{item.name}</td>
                     <td>
-                      {item.status === "In Stock" && (
+                      {item.currently_available === true && (
                         <span className="status-badge in-stock">
                           In Stock
                         </span>
                       )}
-                      {item.status === "Discontinued" && (
+                      {item.currently_available === false && (
                         <span className="status-badge discontinued">
                           Discontinued
                         </span>
                       )}
                     </td>
-                    <td>{item.sales}</td>
+                    <td>{item.total_ordered}</td>
                   </tr>
                 ))}
               </tbody>
