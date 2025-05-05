@@ -43,9 +43,6 @@ def create_order():
     if not user_id or total_amount < 0:
         return jsonify({"error": "Invalid order. User ID and total amount > 0 are required."}), 400
 
-    if not items:
-        return jsonify({"error": "Order must include at least one item."}), 400
-
     order = Order(
         user_id=user_id,
         total_amount=total_amount
