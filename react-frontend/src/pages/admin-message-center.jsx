@@ -99,9 +99,9 @@ const AdminMessageCenter = () => {
             <p className="message-meta">
               From: {selectedMessage.from}
               <br />
-              Received: {selectedMessage.date} {selectedMessage.time}
+              Received: {selectedMessage.created_at}
             </p>
-            <div className="message-body">{selectedMessage.body}</div>
+            <div className="message-body">{selectedMessage.message}</div>
           </div>
         ) : (
           <div className="message-list-container">
@@ -116,8 +116,7 @@ const AdminMessageCenter = () => {
                     <th>Subject</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Date</th>
-                    <th>Time</th>
+                    <th>Recieved</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -126,8 +125,7 @@ const AdminMessageCenter = () => {
                       <td>{msg.subject}</td>
                       <td>{msg.name}</td>
                       <td>{msg.email}</td>
-                      <td>{msg.date}</td>
-                      <td>{msg.time}</td>
+                      <td>{msg.created_at}</td>
                     </tr>
                   ))}
                 </tbody>
