@@ -97,9 +97,9 @@ const AdminMessageCenter = () => {
             </button>
             <h2 className="message-subject">{selectedMessage.subject}</h2>
             <p className="message-meta">
-              From: {selectedMessage.from}
-              <br />
-              Received: {selectedMessage.date} {selectedMessage.time}
+              From:&nbsp;{selectedMessage.from || "Unknown"}
+            <br />
+              Received:&nbsp;{selectedMessage.date ?? "‑‑"} {selectedMessage.time ?? ""}
             </p>
             <div className="message-body">{selectedMessage.body}</div>
           </div>
@@ -121,7 +121,7 @@ const AdminMessageCenter = () => {
                 </thead>
                 <tbody>
                   {messages.map((msg) => {
-                    const sender = msg.from || "";           // fallback to empty string
+                    const sender = msg.from || "";        
                     const displayName = sender.split(" (")[0] || "Unknown";
 
                     return (
