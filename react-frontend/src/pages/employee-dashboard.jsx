@@ -1,130 +1,201 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../css/employee-dashboard.css';
+/* -------------------------------------------------------------------------- */
+/*  src/pages/employee-dashboard.jsx                                          */
+/* -------------------------------------------------------------------------- */
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../css/employee-dashboard.css";
 
 const EmployeeDashboard = () => {
+  /* ════════════════════════════════════ HELPERS ═══════════════════════════ */
+
+  /**
+   * Normalise one order‑item coming from the back‑end so we can treat every
+   * field consistently in the UI.
+   */
+  const normaliseItem = (raw) => {
+    /* 0. whichever key the API used ─────────────────────────────────────── */
+    const incoming = raw.custom ?? raw.customizations;      // ← NEW
+    let custom = {};
+
+    /* 1. incoming may be JSON string | object | null/undefined */
+    if (typeof incoming === "string" && incoming.trim().startsWith("{")) {
+      try   { custom = JSON.parse(incoming); }
+      catch { custom = {}; }
+    } else if (typeof incoming === "object" && incoming) {
+      custom = { ...incoming };
+    }
+
+    /* 2. back‑end columns milk_option / syrup override JSON if present */
+    if (raw.milk_option) custom.milk  = raw.milk_option;
+    if (raw.syrup)       custom.syrup = raw.syrup;
+
+    /* 3. size can be separate or tucked inside that JSON */
+    const size = raw.size || custom.size || null;
+
+    return { ...raw, size, custom };
+  };
+
+  /**
+   * Convert a *normalised* item into a readable string, e.g.  
+   * “Matcha Latte – Medium | Oat milk, Vanilla syrup | warmed | x2”
+   */
+  const formatItem = (it) => {
+    if (!it) return "";
+
+    const parts = [];
+    parts.push(`${it.name}${it.size ? ` – ${it.size}` : ""}`);
+
+    /* Drinks: milk + syrup */
+    if (it.custom.milk || it.custom.syrup) {
+      const milk  = it.custom.milk  ?? "Whole";
+      const syrup = it.custom.syrup ?? "None";
+      parts.push(
+        `${milk} milk${syrup !== "None" ? `, ${syrup} syrup` : ""}`
+      );
+    }
+
+    /* Food flags */
+    if (it.custom.warmed)    parts.push("warmed");
+    if (it.custom.iceCream)  parts.push("with ice‑cream");
+    if (it.custom.chocolate) parts.push("chocolate drizzle");
+
+    parts.push(`x${it.quantity}`);
+    return parts.join(" | ");
+  };
+
+  /* ════════════════════════════════════ STATE ════════════════════════════ */
   const [orders, setOrders] = useState([]);
-  const navigate = useNavigate();
+  const navigate            = useNavigate();
+  const employeeId          = localStorage.getItem("user_id");
 
-  // Use employee id stored in localStorage after login
-  const currentEmployeeId = localStorage.getItem("user_id");
-
+  /* ════════════════════════════════════ EFFECTS ══════════════════════════ */
   useEffect(() => {
-    const fetchOrders = async () => {
+    (async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch orders");
-        }
-        const data = await response.json();
-        setOrders(data);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    };
+        const res  = await fetch(
+          `http://${process.env.REACT_APP_API_IP}:5000/orders`
+        );
+        const data = await res.json();
 
-    fetchOrders();
+        /* normalise every item so the rest of the UI is trivial */
+        const cleaned = data.map((o) => ({
+          ...o,
+          items: Array.isArray(o.items) ? o.items.map(normaliseItem) : [],
+        }));
+        setOrders(cleaned);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
+    })();
   }, []);
 
-  // Filter orders to only show those that are not "Completed"
+  /* ════════════════════════════════════ DERIVED LISTS ════════════════════ */
   const unclaimedOrders = orders
-    .filter(order => order.claimed_by == null && order.status !== "Completed")
+    .filter((o) => !o.claimed_by && o.status !== "Completed")
     .sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
 
   const claimedOrders = orders
-    .filter(order => order.claimed_by != null && order.status !== "Completed")
+    .filter((o) => o.claimed_by && o.status !== "Completed")
     .sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
 
-  // When an employee claims an order, update that order's claimed_by and status.
-  const handleClaimOrder = async (orderId) => {
+  /* ════════════════════════════════════ ACTIONS ══════════════════════════ */
+  const claimOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ user_id: currentEmployeeId })
-      });
-      if (!response.ok) {
-        throw new Error("Failed to claim order");
-      }
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order.order_id === orderId
-            ? { ...order, claimed_by: currentEmployeeId, status: "Claimed" }
-            : order
+      const res = await fetch(
+        `http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/claim`,
+        {
+          method : "POST",
+          headers: { "Content-Type": "application/json" },
+          body   : JSON.stringify({ user_id: employeeId }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to claim order");
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.order_id === orderId ? { ...o, claimed_by: employeeId, status: "Claimed" } : o
         )
       );
-    } catch (error) {
-      console.error("Error claiming order:", error);
-      alert("Error claiming order. Please try again.");
+    } catch (err) {
+      console.error(err);
+      alert("Could not claim order, please try again.");
     }
   };
 
+  /* ════════════════════════════════════ RENDER ═══════════════════════════ */
   return (
     <div className="employee-dashboard">
+      {/* ───── Top banner ──────────────────────────────────────────────── */}
       <header className="banner">
         <div className="bar">
           <ul>
             <li><Link to="/employee-dashboard">Dashboard</Link></li>
             <li><Link to="/employee-profile">Profile</Link></li>
-            <li><Link to="/login">Log Out</Link></li>
+            <li><Link to="/login">Log&nbsp;Out</Link></li>
           </ul>
         </div>
       </header>
+
       <main>
         <h1>Order Dashboard</h1>
-  
-        {/* Unclaimed Orders Section */}
+
+        {/* ───── Unclaimed orders ──────────────────────────────────────── */}
         <section className="unclaimed-orders">
           <h2>Unclaimed Orders</h2>
           {unclaimedOrders.length === 0 ? (
             <p>No unclaimed orders at the moment.</p>
           ) : (
             <ul className="order-list">
-              {unclaimedOrders.map(order => (
-                <li key={order.order_id} className="order-summary-item">
+              {unclaimedOrders.map((o) => (
+                <li key={o.order_id} className="order-summary-item">
                   <div className="order-info">
-                    <strong>Order #{order.order_id}</strong>
-                    <p>
-                      Items:{" "}
-                      {order.items && Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
-                        : "No items listed"}
-                    </p>
-                    <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
+                    <strong>Order&nbsp;#{o.order_id}</strong>
+                    <ul className="item-breakdown">
+                      {o.items.length
+                        ? o.items.map((it, idx) => (
+                            <li key={idx}>{formatItem(it)}</li>
+                          ))
+                        : <li>No items listed</li>}
+                    </ul>
+                    <p>Created: {new Date(o.order_date).toLocaleString()}</p>
                   </div>
-                  <button className="claim-order-button" onClick={() => handleClaimOrder(order.order_id)}>
-                    Claim Order
+
+                  <button
+                    className="claim-order-button"
+                    onClick={() => claimOrder(o.order_id)}
+                  >
+                    Claim
                   </button>
                 </li>
               ))}
             </ul>
           )}
         </section>
-  
-        {/* Claimed Orders Section */}
+
+        {/* ───── Claimed orders ────────────────────────────────────────── */}
         <section className="claimed-orders">
           <h2>Claimed Orders</h2>
           {claimedOrders.length === 0 ? (
             <p>No claimed orders at the moment.</p>
           ) : (
             <ul className="order-list">
-              {claimedOrders.map(order => (
-                <li key={order.order_id} className="order-summary-item">
+              {claimedOrders.map((o) => (
+                <li key={o.order_id} className="order-summary-item">
                   <div className="order-info">
-                    <strong>Order #{order.order_id}</strong>
-                    <p>
-                      Items:{" "}
-                      {order.items && Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
-                        : "No items listed"}
-                    </p>
-                    <p>Created At: {new Date(order.order_date).toLocaleString()}</p>
+                    <strong>Order&nbsp;#{o.order_id}</strong>
+                    <ul className="item-breakdown">
+                      {o.items.length
+                        ? o.items.map((it, idx) => (
+                            <li key={idx}>{formatItem(it)}</li>
+                          ))
+                        : <li>No items listed</li>}
+                    </ul>
+                    <p>Created: {new Date(o.order_date).toLocaleString()}</p>
                   </div>
+
                   <div className="order-status">
-                    <p>Claimed By: {order.claimed_by}</p>
-                    <p>Status: {order.status}</p>
+                    <p>Claimed&nbsp;By: {o.claimed_by}</p>
+                    <p>Status: {o.status}</p>
                   </div>
                 </li>
               ))}
@@ -132,8 +203,9 @@ const EmployeeDashboard = () => {
           )}
         </section>
       </main>
+
       <footer>
-        <p>© 2025 Artemis &amp; Steam. All rights reserved.</p>
+        <p>© 2025 Artemis &amp; Steam. All rights reserved.</p>
       </footer>
     </div>
   );

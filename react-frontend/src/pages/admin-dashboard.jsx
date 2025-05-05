@@ -133,12 +133,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard dashboard-container">
-<<<<<<< Updated upstream
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""} active`}>
-=======
-            <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
->>>>>>> Stashed changes
         <div className="sidebar-header">
           {sidebarOpen && <h1>Artemis &amp; Steam</h1>}
           <button className="close-btn" onClick={toggleSidebar}>
@@ -146,7 +142,6 @@ const AdminDashboard = () => {
           </button>
         </div>
         <nav className="sidebar-nav">
-<<<<<<< Updated upstream
           <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">dashboard</span>
             {sidebarOpen && <span>Dashboard</span>}
@@ -160,23 +155,12 @@ const AdminDashboard = () => {
             {sidebarOpen && <span>Messages</span>}
             <span className="badge"></span>
           </Link>
-=======
-
-          <Link to="/admin-dashboard" className={`nav-item ${sidebarOpen ? "label" : ""} active`}>
-            <span className="material-icons">dashboard</span>
-            {sidebarOpen && <span>Dashboard</span>}
-          </Link>
->>>>>>> Stashed changes
           <Link to="/admin-user-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">groups</span>
             {sidebarOpen && <span>User Management</span>}
           </Link>
-<<<<<<< Updated upstream
           <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
-=======
-          <Link to="/admin-product-management" className={`nav-item ${sidebarOpen ? "label" : ""} `}>
 
->>>>>>> Stashed changes
             <span className="material-icons">inventory_2</span>
             {sidebarOpen && <span>Product Management</span>}
           </Link>

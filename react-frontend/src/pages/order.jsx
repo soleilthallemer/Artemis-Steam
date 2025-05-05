@@ -169,11 +169,11 @@ const OrderPage = () => {
                           .filter(k => orderItem.custom[k])
                           .map((k, i) => (
                             <React.Fragment key={k}>
-                              {i > 0 || orderItem.custom.milk ? ", " : ""}
+                              {i > 0 || orderItem.custom.milk ? ", " : "" }
                               {{
-                                warmed:   "warmed",
-                                iceCream: "with ice‑cream",
-                                chocolate:"chocolate drizzle"
+                                warmed:   " warmed",
+                                iceCream: " with ice‑cream",
+                                chocolate:" chocolate drizzle"
                               }[k]}
                             </React.Fragment>
                           ))}

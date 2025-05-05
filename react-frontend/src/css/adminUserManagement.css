@@ -8,25 +8,10 @@
 .admin-user-management {
   font-family: "Helvetica Neue", Arial, sans-serif;
   background-color: #EBE6E0;
-<<<<<<< Updated upstream
   padding: 1rem .09rem;
   color: #27030f;
 }
 
-=======
-  padding: 1rem;
-  color: #27030f;
-}
-
-/* Headings */
-.admin-user-management h2 {
-  font-size: 1.75rem;
-  margin-bottom: 1rem;
-  color: #27030f !important;
-  text-align: left;
-}
-
->>>>>>> Stashed changes
 .admin-user-management h3 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
@@ -295,13 +280,5 @@
   font-size: 1rem;
   color: #27030f !important;
   margin-bottom: 1.5rem;
-  text-align: left;
-}
-
-.admin-user-management .page-subtitle {
-  color: #27030f !important;
-  margin-bottom: 0.75rem; 
-  font-size: 1rem;
-  color: #27030f !important;
   text-align: left;
 }

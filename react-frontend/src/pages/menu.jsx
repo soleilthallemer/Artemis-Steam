@@ -133,9 +133,13 @@ const CatalogMenuPage = () => {
     };
 
     setCartItems((prev) => {
-      const index = prev.findIndex(
-        (i) => i.name === newItem.name && i.size === newItem.size
-      );
+      const sameItem = (a, b) =>
+        a.name === b.name &&
+        a.size === b.size &&
+        JSON.stringify(a.custom) === JSON.stringify(b.custom);
+        
+        const index = prev.findIndex(i => sameItem(i, newItem));
+
       if (index >= 0) {
         const updated = [...prev];
         updated[index].quantity += quantity;
@@ -223,11 +227,26 @@ const CatalogMenuPage = () => {
     const userId = localStorage.getItem("user_id");
     if (!userId) return alert("User not logged in!");
 
+      const payload = {
+          user_id:      userId,
+          total_amount: totalPrice,
+          items: cartItems.map((it) => ({
+            item_id:  it.item_id,
+            quantity: it.quantity,
+            price:    it.price,
+      
+            milk_option: it.custom?.milk  ?? null,
+            syrup:       it.custom?.syrup ?? null,
+      
+            customizations: JSON.stringify(it.custom ?? {})
+          }))
+      };
+
     try {
       const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, total_amount: totalPrice }),
+        body   : JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -417,7 +436,7 @@ const CatalogMenuPage = () => {
                       setCustomizations(prev => ({
                         ...prev,
                         [keyOf(customizeFor)]: {
-                          ...prev[customizeFor.item_id],
+                          ...prev[keyOf(customizeFor)],
                           milk: e.target.value,
                         },
                       }))
@@ -438,7 +457,7 @@ const CatalogMenuPage = () => {
                       setCustomizations(prev => ({
                         ...prev,
                         [keyOf(customizeFor)]: {
-                          ...prev[customizeFor.item_id],
+                          ...prev[keyOf(customizeFor)],
                           syrup: e.target.value,
                         },
                       }))
@@ -461,7 +480,8 @@ const CatalogMenuPage = () => {
                       onChange={(e)=>setCustomizations((p)=>({
                         ...p,
                         [keyOf(customizeFor)]:
-                        {...p[customizeFor.item_id], [key]:e.target.checked}
+                        {...p[keyOf(customizeFor)], [key]: e.target.checked
+                        }
                       }))}/>
                     &nbsp;{{
                       warmed:   "Warm it up",

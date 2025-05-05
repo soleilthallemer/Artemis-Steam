@@ -248,12 +248,7 @@ const AdminProductManagement = () => {
           <Link to="/admin-message-center" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">message</span>
             {sidebarOpen && <span>Messages</span>}
-<<<<<<< Updated upstream
             <span className="badge"></span>
-=======
-            {/*  unread badge */}
-            <span className="badge"></span> 
->>>>>>> Stashed changes
           </Link>
           <Link to="/admin-user-management" className={`nav-item ${sidebarOpen ? "label" : ""}`}>
             <span className="material-icons">groups</span>

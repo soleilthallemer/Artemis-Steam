@@ -4,125 +4,146 @@ import { Link, useNavigate } from "react-router-dom";
 import "../css/employee-profile.css";
 
 const EmployeeProfile = () => {
-  const [user, setUser] = useState(null);
-  const [claimedOrders, setClaimedOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
+  /* ───────────────────────── helpers ───────────────────────── */
 
+  /** ensure predictable shape: { size, custom:{} } */
+  const normaliseItem = (raw) => {
+    let custom = raw.customizations ?? raw.custom;   // back‑end may call it either
+    if (typeof custom === "string" && custom.trim().startsWith("{")) {
+      try   { custom = JSON.parse(custom); }
+      catch { custom = {}; }
+    }
+    custom = custom || {};
+
+    const size = raw.size || custom.size || null;
+
+    return { ...raw, size, custom };
+  };
+
+  /** human‑readable summary */
+  const formatItem = (item) => {
+    const { name, size, quantity } = item;
+    const c = item.custom || {};
+
+    const parts = [];
+    parts.push(`${name}${size ? ` – ${size}` : ""}`);
+
+    /* drink custom options */
+    if (c.milk || c.syrup) {
+      const milk  = c.milk  ?? "Whole";
+      const syrup = c.syrup ?? "None";
+      parts.push(`${milk} milk${syrup !== "None" ? `, ${syrup} syrup` : ""}`);
+    }
+
+    /* food flags */
+    if (c.warmed)    parts.push("warmed");
+    if (c.iceCream)  parts.push("with ice‑cream");
+    if (c.chocolate) parts.push("chocolate drizzle");
+
+    parts.push(`x${quantity}`);
+    return parts.join(" | ");
+  };
+
+  /* ───────────────────────── state ─────────────────────────── */
+  const [user, setUser]                   = useState(null);
+  const [claimedOrders, setClaimedOrders] = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [isAuthenticated, setAuth]        = useState(false);
+  const navigate                          = useNavigate();
+
+  /* ───────────────────────── effects ────────────────────────── */
   useEffect(() => {
-    // Retrieve stored user_email and user_id (for employees, they are users)
-    const email = localStorage.getItem("user_email");
-    const userId = localStorage.getItem("user_id");
+    const email   = localStorage.getItem("user_email");
+    const userId  = localStorage.getItem("user_id");
 
     if (!email || !userId) {
-      setIsAuthenticated(false);
+      setAuth(false);
       setLoading(false);
       return;
     }
+    setAuth(true);
 
-    setIsAuthenticated(true);
-
-    const fetchProfileAndOrders = async () => {
+    (async () => {
       try {
-        // Fetch employee profile using the /users/<email> endpoint
-        const userRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/users/${email}`, {
-          headers: { "Content-Type": "application/json" },
-        });
+        /* ── profile */
+        const uRes = await fetch(
+          `http://${process.env.REACT_APP_API_IP}:5000/users/${email}`
+        );
+        if (uRes.ok) setUser(await uRes.json());
 
-        if (userRes.ok) {
-          const userData = await userRes.json();
-          setUser(userData);
-        } else {
-          console.error("Failed to fetch user profile.");
-        }
+        /* ── orders */
+        const oRes = await fetch(
+          `http://${process.env.REACT_APP_API_IP}:5000/orders`
+        );
+        if (oRes.ok) {
+          const allOrders = await oRes.json();
 
-        // Fetch all orders
-        const orderRes = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders`, {
-          headers: { "Content-Type": "application/json" },
-        });
+          /* keep only orders claimed by this employee and normalise items */
+          const mine = allOrders
+            .filter((o) => String(o.claimed_by) === String(userId))
+            .map((o) => ({
+              ...o,
+              items: Array.isArray(o.items)
+                ? o.items.map(normaliseItem)
+                : [],
+            }))
+            .sort((a, b) => new Date(b.order_date) - new Date(a.order_date)); // newest first
 
-        if (orderRes.ok) {
-          const orderData = await orderRes.json();
-          // Filter orders claimed by the current user (employee)
-          const filteredOrders = orderData.filter(
-            order => String(order.claimed_by) === String(userId)
-          );
-          // Sort orders by newest first using order_date
-          filteredOrders.sort((a, b) => new Date(a.order_date) - new Date(b.order_date));
-          setClaimedOrders(filteredOrders);
-        } else {
-          console.error("Failed to fetch order history.");
+          setClaimedOrders(mine);
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching profile/orders:", err);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchProfileAndOrders();
+    })();
   }, [navigate]);
 
-  // Handler to update an order's status
-  const updateOrderStatus = async (orderId, newStatus) => {
+  /* ───────────────────────── actions (unchanged) ───────────── */
+  const updateOrderStatus = async (orderId, status) => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (!response.ok) throw new Error("Failed to update order status");
-
-      setClaimedOrders(prev =>
-        prev.map(order =>
-          order.order_id === orderId ? { ...order, status: newStatus } : order
-        )
+      const res = await fetch(
+        `http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/status`,
+        {
+          method : "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body   : JSON.stringify({ status }),
+        }
       );
-    } catch (error) {
-      console.error("Error updating order status:", error);
+      if (!res.ok) throw new Error();
+      setClaimedOrders((prev) =>
+        prev.map((o) => (o.order_id === orderId ? { ...o, status } : o))
+      );
+    } catch {
       alert("Failed to update order status.");
     }
   };
 
-  // Handler to remove an order claim (unclaim)
-  const removeOrder = async (orderId) => {
+  const unclaimOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/remove-claim`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" }
-      });
-      if (!response.ok) {
-        throw new Error("Failed to remove order claim");
-      }
-      setClaimedOrders(prev => prev.filter(order => order.order_id !== orderId));
-    } catch (error) {
-      console.error("Error removing order claim:", error);
+      const res = await fetch(
+        `http://${process.env.REACT_APP_API_IP}:5000/orders/${orderId}/remove-claim`,
+        { method: "PUT" }
+      );
+      if (!res.ok) throw new Error();
+      setClaimedOrders((prev) => prev.filter((o) => o.order_id !== orderId));
+    } catch {
       alert("Failed to remove order.");
     }
   };
 
-  // Handler to finalize an order (mark as Completed) and remove it
   const finalizeOrder = async (orderId) => {
     await updateOrderStatus(orderId, "Completed");
-    await removeOrder(orderId);
+    await unclaimOrder(orderId);
   };
 
-  // Handler for logging out
-  const handleLogout = (e) => {
-    e.preventDefault();
-    setUser(null);
-    setClaimedOrders([]);
+  const logout = () => {
     localStorage.clear();
-    setIsAuthenticated(false);
     navigate("/login", { replace: true });
   };
 
-  const fullName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "Guest";
-
-  if (loading) {
-    return <div className="profile-page"><p>Loading...</p></div>;
-  }
+  /* ───────────────────────── render ─────────────────────────── */
+  if (loading) return <div className="profile-page">Loading…</div>;
 
   return (
     <div className="employee-profile">
@@ -140,34 +161,32 @@ const EmployeeProfile = () => {
         <div className="profile-info">
           {user ? (
             <>
-              <h1>{user.name || `${user.first_name} ${user.last_name}`}</h1>
+              <h1>{`${user.first_name} ${user.last_name}`}</h1>
               <p>{user.email}</p>
             </>
           ) : (
-            <p>Loading employee data...</p>
+            <p>Loading employee data…</p>
           )}
         </div>
-        
+
         <section className="claimed-orders">
           <h2>Claimed Orders</h2>
           {claimedOrders.length === 0 ? (
             <p>No orders claimed yet.</p>
           ) : (
             <ul className="order-list">
-              {claimedOrders.map(order => (
+              {claimedOrders.map((order) => (
                 <li key={order.order_id} className="order-summary-item">
                   <div className="order-info">
-                    <strong>Order #{order.order_id}</strong>
-                    {order.items && Array.isArray(order.items) ? (
-                      <p>
-                        Items:{" "}
-                        {order.items && order.items.length > 0
-                          ? order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')
-                          : "No items listed"}
-                      </p>
-                    ) : (
-                      <p>Items: (none listed)</p>
-                    )}
+                    <strong>Order #{order.order_id}</strong>
+                    <ul className="item-breakdown">
+                      {order.items.length
+                        ? order.items.map((it, idx) => (
+                            <li key={idx}>{formatItem(it)}</li>
+                          ))
+                        : <li>No items listed</li>}
+                    </ul>
+                    <p>Created: {new Date(order.order_date).toLocaleString()}</p>
                   </div>
 
                   <div className="status-and-actions-column">
@@ -175,22 +194,24 @@ const EmployeeProfile = () => {
                       <span className="status-label">Status:</span>
                       <select
                         value={
-                          (order.status === "In Progress" || order.status === "Completed")
+                          ["Claimed", "In Progress", "Completed"].includes(order.status)
                             ? order.status
                             : "Claimed"
                         }
-                        onChange={(e) => updateOrderStatus(order.order_id, e.target.value)}
+                        onChange={(e) =>
+                          updateOrderStatus(order.order_id, e.target.value)
+                        }
                       >
-                        <option value="Claimed">Claimed</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
+                        <option>Claimed</option>
+                        <option>In Progress</option>
+                        <option>Completed</option>
                       </select>
                     </div>
 
                     <div className="order-actions">
                       <button
                         className="action-btn remove-btn"
-                        onClick={() => removeOrder(order.order_id)}
+                        onClick={() => unclaimOrder(order.order_id)}
                       >
                         Remove
                       </button>
@@ -210,7 +231,7 @@ const EmployeeProfile = () => {
       </main>
 
       <footer>
-        <p>© 2025 Artemis &amp; Steam. All rights reserved.</p>
+        <p>© 2025 Artemis & Steam. All rights reserved.</p>
       </footer>
     </div>
   );
