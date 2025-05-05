@@ -97,7 +97,7 @@ const AdminMessageCenter = () => {
             </button>
             <h2 className="message-subject">{selectedMessage.subject}</h2>
             <p className="message-meta">
-              From: {selectedMessage.from}
+              From: {selectedMessage.name} {selectedMessage.email}
               <br />
               Received: {selectedMessage.created_at}
             </p>
