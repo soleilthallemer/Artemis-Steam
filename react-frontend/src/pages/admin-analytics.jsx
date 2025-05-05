@@ -28,9 +28,9 @@ const AdminAnalytics = () => {
         if (!res.ok) throw new Error("Network response was not ok");
         const json = await res.json();
         // Expecting: { activeUsers: [...], productiveEmployees: [...], popularItems: [...] }
-        setMostActiveUsers(json.activeUsers || []);
-        setMostProductiveEmployees(json.productiveEmployees || []);
-        setMostPopularItems(json.popularItems || []);
+        setMostActiveUsers(json.top_active_users || []);
+        setMostProductiveEmployees(json.top_employees || []);
+        setMostPopularItems(json.popular_items || []);
       } catch (err) {
         console.error("Failed to load analytics:", err);
       }
