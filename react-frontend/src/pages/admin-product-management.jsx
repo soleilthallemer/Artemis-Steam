@@ -50,6 +50,10 @@ const AdminProductManagement = () => {
   const [nameError, setNameError] = useState("");
   const [imageError, setImageError] = useState("");
 
+  const [description, setDescription] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  const [calories, setCalories] = useState("");
+
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -70,8 +74,9 @@ const AdminProductManagement = () => {
     setPrice("");
     setStock("");
     setImage("");
-    setNameError("");
-    setImageError("");
+    setDescription("");
+    setIngredients("");
+    setCalories("");
     setShowForm(true);
   };
 
@@ -82,10 +87,10 @@ const AdminProductManagement = () => {
     setCategory(product.category);
     setPrice(product.price);
     setStock(product.stock);
-
     setImage(product.image);
-    setNameError("");
-    setImageError("");
+    setDescription(product.description || "");
+    setIngredients(product.ingredients || "");
+    setCalories(product.calories || "");
     setShowForm(true);
   };
 
@@ -145,16 +150,16 @@ const AdminProductManagement = () => {
 
     const payload = {
       name,
-      description: "",                    // ✅ If unused, send as empty string
+      description,
       category,
       price: parseFloat(price),
-      size_options: "",                   // ✅ Optional: or remove from backend
-      ingredients: "",                    // ✅ Optional: or remove from backend
+      size_options: "",
+      ingredients,
       image_url: image,
       availability_status: parseInt(stock, 10) > 0,
       quantity: parseInt(stock, 10),
-      calories: 0,                        // ✅ Optional: hardcoded for now
-      preparation_time: 0                // ✅ Optional
+      calories: parseInt(calories || 0, 10),
+      preparation_time: 0,
     };
     
 
@@ -351,13 +356,60 @@ const AdminProductManagement = () => {
               {nameError && <span className="modal-error-message">{nameError}</span>}
 
               <label htmlFor="category">Category</label>
-              <input type="text" name="category" id="category" value={category} onChange={(e) => setCategory(e.target.value)} required />
+              <select
+                  name="category"
+                  id="category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+              >
+                <option value="">-- Select Category --</option>
+                <option value="Food">Food</option>
+               <option value="Drink">Drink</option>
+              </select>
+
 
               <label htmlFor="price">Price</label>
               <input type="number" name="price" id="price" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} required />
 
               <label htmlFor="stock">Available Stock</label>
-              <input type="number" name="stock" id="stock" value={stock} onChange={(e) => setStock(e.target.value)} required />
+<input
+  type="number"
+  name="stock"
+  id="stock"
+  value={stock}
+  onChange={(e) => setStock(e.target.value)}
+  required
+/>
+
+<label htmlFor="description">Description</label>
+<textarea
+  name="description"
+  id="description"
+  rows="2"
+  value={description}
+  onChange={(e) => setDescription(e.target.value)}
+/>
+
+<label htmlFor="ingredients">Ingredients</label>
+<textarea
+  name="ingredients"
+  id="ingredients"
+  rows="2"
+  value={ingredients}
+  onChange={(e) => setIngredients(e.target.value)}
+/>
+
+<label htmlFor="calories">Calories</label>
+<input
+  type="number"
+  name="calories"
+  id="calories"
+  value={calories}
+  onChange={(e) => setCalories(e.target.value)}
+  required
+/>
+
 
               <label htmlFor="image">Product Image</label>
               <div className="image-edit-container">
