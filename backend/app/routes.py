@@ -332,7 +332,10 @@ def get_user_orders(user_id):
             "item_id": item.item_id,
             "name": item.menu_item.name,
             "quantity": item.quantity,
-            "price": float(item.price)
+            "price": float(item.price),
+            "milk_option": item.milk_option,    
+            "syrup": item.syrup,            
+            "customizations": item.customizations
         } for item in order.order_items]
     } for order in orders]), 200
 
