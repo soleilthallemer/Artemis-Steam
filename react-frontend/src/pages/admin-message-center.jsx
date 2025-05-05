@@ -114,7 +114,8 @@ const AdminMessageCenter = () => {
                 <thead>
                   <tr>
                     <th>Subject</th>
-                    <th>From</th>
+                    <th>Name</th>
+                    <th>Email</th>
                     <th>Date</th>
                     <th>Time</th>
                   </tr>
@@ -123,7 +124,8 @@ const AdminMessageCenter = () => {
                   {messages.map((msg) => (
                     <tr key={msg.id} onClick={() => handleViewMessage(msg)}>
                       <td>{msg.subject}</td>
-                      <td>{msg.from.split(" (")[0]}</td>
+                      <td>{msg.name}</td>
+                      <td>{msg.email}</td>
                       <td>{msg.date}</td>
                       <td>{msg.time}</td>
                     </tr>
