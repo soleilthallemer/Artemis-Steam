@@ -120,14 +120,19 @@ const AdminMessageCenter = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {messages.map((msg) => (
-                    <tr key={msg.id} onClick={() => handleViewMessage(msg)}>
-                      <td>{msg.subject}</td>
-                      <td>{msg.from.split(" (")[0]}</td>
-                      <td>{msg.date}</td>
-                      <td>{msg.time}</td>
-                    </tr>
-                  ))}
+                  {messages.map((msg) => {
+                    const sender = msg.from || "";           // fallback to empty string
+                    const displayName = sender.split(" (")[0] || "Unknown";
+
+                    return (
+                      <tr key={msg.id} onClick={() => handleViewMessage(msg)}>
+                        <td>{msg.subject ?? "‑‑"}</td>
+                        <td>{displayName}</td>
+                        <td>{msg.date ?? "‑‑"}</td>
+                        <td>{msg.time ?? "‑‑"}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
