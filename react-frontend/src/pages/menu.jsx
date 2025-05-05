@@ -82,16 +82,28 @@ const CatalogMenuPage = () => {
   };
 
   const openCustomize = (item) => {
-    if (!customizations[keyOf(item)]) {
-      setCustomizations((prev) => ({
-        ...prev,
-        [keyOf(item)]:  isDrinkItem(item)
-        ? { milk: "Whole", syrup: "Normal" }
-          : { warmed: false, iceCream: false, chocolate: false },
-      }));
-    }
+    const key     = keyOf(item);
+    const isDrink = isDrinkItem(item);
+  
+    setCustomizations((prev) => ({
+      ...prev,
+      [key]: {
+        // keep anything the user already set for this item
+        ...(prev[key] || {}),
+  
+        // sensible defaults if nothing there yet
+        milk   : prev[key]?.milk  ?? (isDrink ? "None" : undefined),
+        syrup  : prev[key]?.syrup ?? (isDrink ? "None" : undefined),
+  
+        warmed    : prev[key]?.warmed    ?? false,
+        iceCream  : prev[key]?.iceCream  ?? false,
+        chocolate : prev[key]?.chocolate ?? false,
+      },
+    }));
+  
     setCustomizeFor(item);
   };
+  
 
   const saveCustomization = () => {
     setCustomizeFor(null);
