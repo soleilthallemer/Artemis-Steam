@@ -135,11 +135,16 @@ const AdminUserManagement = () => {
 
       {/* Main Content */}
       <div className="main-content">
+<<<<<<< Updated upstream
       <div className="page-header">
         <h1 className="page-title">User Management Portal</h1>
         <p className="page-subtitle">Manage your users and create new users.</p>
       </div>
 
+=======
+        <h2 className="page-title">User Management Portal</h2>
+        <p className="page-subtitle">Manage your users and create new ones.</p>
+>>>>>>> Stashed changes
 
         {/* Create User Form */}
         <form className="create-user-form" onSubmit={handleCreateUser}>

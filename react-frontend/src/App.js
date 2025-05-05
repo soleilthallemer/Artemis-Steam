@@ -19,7 +19,10 @@ import AdminUserManagement from './pages/admin-user-management';
 import ReviewPage from './pages/review-page';
 import AdminAnalytics from './pages/admin-analytics';
 import AdminMessageCenter from './pages/admin-message-center';
+<<<<<<< Updated upstream
 import ContactUs from './pages/contact-us';
+=======
+>>>>>>> Stashed changes
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
@@ -45,7 +48,10 @@ function App() {
         <Route path="review-page" element={<ReviewPage />} />
         <Route path="/admin-analytics" element={<AdminAnalytics />} />
         <Route path="/admin-message-center" element={<AdminMessageCenter />} />
+<<<<<<< Updated upstream
         <Route path="/contact" element={<ContactUs />} />
+=======
+>>>>>>> Stashed changes
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes> 
   );
