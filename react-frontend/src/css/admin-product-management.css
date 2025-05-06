@@ -386,7 +386,6 @@ body {
   border: 1px solid #ccc;
 }
 
-/* make inputs, selects & textareas share the same look */
 .form-input {
   display: block;
   width: 100%;
@@ -401,7 +400,6 @@ body {
   box-sizing: border-box;
 }
 
-/* ensure dropdowns aren’t too short */
 select.form-input {
   height: calc(1.4em + 1rem);
 }
