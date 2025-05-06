@@ -6,7 +6,8 @@ const AdminProductManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
-
+  const [messageCount, setMessageCount] = useState(0);
+  
   const [products, setProducts] = useState([]);
   const [nextId, setNextId] = useState(1);
 
@@ -21,7 +22,11 @@ const AdminProductManagement = () => {
         price: parseFloat(item.price),
         stock: item.quantity,
         status: item.quantity > 0 ? "In Stock" : "Out of Stock",
-        image: item.image_url
+        image: item.image_url,
+        description: item.description   || "",
+        ingredients: item.ingredients   || "",
+        calories:    item.calories      || "",
+        preparation_time: item.preparation_time || 0,
       }));
       setProducts(formatted);
       if (formatted.length > 0) {
@@ -355,67 +360,73 @@ const AdminProductManagement = () => {
               <input type="text" name="name" id="name" value={name} onChange={(e) => { setNameError(""); setName(e.target.value); }} required />
               {nameError && <span className="modal-error-message">{nameError}</span>}
 
+              {/* Category dropdown */}
               <label htmlFor="category">Category</label>
-              <select
-                  name="category"
+                <select
                   id="category"
+                  name="category"
+                  className="form-input"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={e => setCategory(e.target.value)}
                   required
-              >
-                <option value="">-- Select Category --</option>
-                <option value="Food">Food</option>
-               <option value="Drink">Drink</option>
-              </select>
-
+                >
+                  <option value="">-- Select Category --</option>
+                  <option value="Food">Food</option>
+                  <option value="Drink">Drink</option>
+                </select>
 
               <label htmlFor="price">Price</label>
               <input type="number" name="price" id="price" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} required />
 
               <label htmlFor="stock">Available Stock</label>
-<input
-  type="number"
-  name="stock"
-  id="stock"
-  value={stock}
-  onChange={(e) => setStock(e.target.value)}
-  required
-/>
+                <input
+                  type="number"
+                  name="stock"
+                  id="stock"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                  required
+                />
 
-<label htmlFor="description">Description</label>
-<textarea
-  name="description"
-  id="description"
-  rows="2"
-  value={description}
-  onChange={(e) => setDescription(e.target.value)}
-/>
+              {/* Description textarea */}
+              <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  className="form-input"
+                  rows="2"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  required
+                />
 
-<label htmlFor="ingredients">Ingredients</label>
-<textarea
-  name="ingredients"
-  id="ingredients"
-  rows="2"
-  value={ingredients}
-  onChange={(e) => setIngredients(e.target.value)}
-/>
+              {/* Ingredients textarea */}
+              <label htmlFor="ingredients">Ingredients</label>
+                <textarea
+                  id="ingredients"
+                  name="ingredients"
+                  className="form-input"
+                  rows="2"
+                  value={ingredients}
+                  onChange={e => setIngredients(e.target.value)}
+                  required
+                />
 
-<label htmlFor="calories">Calories</label>
-<input
-  type="number"
-  name="calories"
-  id="calories"
-  value={calories}
-  onChange={(e) => setCalories(e.target.value)}
-  required
-/>
-
+              <label htmlFor="calories">Calories</label>
+                <input
+                  type="number"
+                  name="calories"
+                  id="calories"
+                  value={calories}
+                  onChange={(e) => setCalories(e.target.value)}
+                  required
+                />
 
               <label htmlFor="image">Product Image</label>
-              <div className="image-edit-container">
-                {image && <img src={image} alt="Preview" className="image-preview" />}
-                <input type="file" name="image" id="image" accept="image/*" onChange={handleImageChange} />
-              </div>
+                <div className="image-edit-container">
+                  {image && <img src={image} alt="Preview" className="image-preview" />}
+                  <input type="file" name="image" id="image" accept="image/*" onChange={handleImageChange} />
+                </div>
               {imageError && <span className="modal-error-message">{imageError}</span>}
 
               <div className="modal-actions">
